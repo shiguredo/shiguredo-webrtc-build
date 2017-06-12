@@ -1,0 +1,8 @@
+{
+    "webrtc_branch": "59",
+    "webrtc_commit": "1",
+    "webrtc_revision": "a100a39fd25df18f51bf0144d1347fea2462a279",
+    "python": "python",
+    "ios_arch": ["arm64"],
+    "android_arch": ["armeabi-v7a", "arm64-v8a"]
+}

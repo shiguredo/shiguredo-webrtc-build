@@ -1,0 +1,71 @@
+diff --git a/tools-webrtc/android/build_aar.py b/tools-webrtc/android/build_aar.py
+index 9db8f8f2b5..497d8c3d3c 100755
+--- a/tools-webrtc/android/build_aar.py
++++ b/tools-webrtc/android/build_aar.py
+@@ -56,6 +56,11 @@ def _ParseArgs():
+       help='Debug logging.')
+   parser.add_argument('--extra-gn-args', default=[], nargs='*',
+       help='Additional GN args to be used during Ninja generation.')
++  parser.add_argument('--build_config', default='release',
++      choices=['debug', 'release'],
++      help='The build config. Can be "debug" or "release". '
++           'Defaults to "release".')
++  parser.add_argument('--tmpdir', help='Temporary directory.')
+   return parser.parse_args()
+ 
+ 
+@@ -114,13 +119,12 @@ def _GetArmVersion(arch):
+     raise Exception('Unknown arch: ' + arch)
+ 
+ 
+-def Build(tmp_dir, arch, use_goma, extra_gn_args):
++def Build(tmp_dir, arch, flavor, use_goma, extra_gn_args):
+   """Generates target architecture using GN and builds it using ninja."""
+   logging.info('Building: %s', arch)
+   output_directory = _GetOutputDirectory(tmp_dir, arch)
+   gn_args = {
+     'target_os': 'android',
+-    'is_debug': False,
+     'is_component_build': False,
+     'target_cpu': _GetTargetCpu(arch),
+     'use_goma': use_goma
+@@ -128,6 +132,15 @@ def Build(tmp_dir, arch, use_goma, extra_gn_args):
+   arm_version = _GetArmVersion(arch)
+   if arm_version:
+     gn_args['arm_version'] = arm_version
++
++  # Add flavor option.
++  if flavor == 'debug':
++    gn_args['is_debug'] = True
++  elif flavor == 'release':
++    gn_args['is_debug'] = False
++  else:
++    raise ValueError('Unexpected flavor type: %s' % flavor)
++
+   gn_args_str = '--args=' + ' '.join([
+       k + '=' + _EncodeForGN(v) for k, v in gn_args.items()] + extra_gn_args)
+ 
+@@ -162,10 +175,12 @@ def main():
+   args = _ParseArgs()
+   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
+ 
+-  tmp_dir = tempfile.mkdtemp()
++  tmp_dir = args.tmpdir
++  if tmp_dir is None:
++    tmp_dir = tempfile.mkdtemp()
+ 
+   for arch in args.arch:
+-    Build(tmp_dir, arch, args.use_goma, args.extra_gn_args)
++    Build(tmp_dir, arch, args.build_config, args.use_goma, args.extra_gn_args)
+ 
+   with zipfile.ZipFile(args.output, 'w') as aar_file:
+     # Architecture doesn't matter here, arbitrarily using the first one.
+@@ -173,8 +188,6 @@ def main():
+     for arch in args.arch:
+       Collect(aar_file, tmp_dir, arch)
+ 
+-  shutil.rmtree(tmp_dir, True)
+-
+ 
+ if __name__ == '__main__':
+   sys.exit(main())
