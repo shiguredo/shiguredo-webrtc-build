@@ -15,6 +15,11 @@ iOS と Android 向けの WebRTC ライブラリをビルドします。WebRTC �
 
 Chrome の安定版のバージョンに合わせて追従していきます。 master ブランチやリリースブランチの HEAD への追従は行いません。
 
+## ダウンロード
+
+実行可能なビルドツールは [Releases](https://github.com/shiguredo/sora-webrtc-build/releases) からダウンロードできます (ビルド済みの WebRTC ライブラリではありません) 。
+リポジトリを clone する必要はありません。
+
 ## ビルドのシステム条件
 
 Android のビルドは Linux のみサポートされているため、一台の Mac で iOS/Android の両方のビルドはできません。
