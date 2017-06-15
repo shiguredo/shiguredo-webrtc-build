@@ -541,11 +541,16 @@ func main() {
 
 	case "selfdist":
 		dist := fmt.Sprintf("sora-webrtc-build-%s", fullVersion)
+		patchDir := filepath.Join(dist, "patch")
 		Execf("rm -rf %s %s.zip", dist, dist)
 		Execf("mkdir %s", dist)
 		Execf("go build webrtc-build.go")
 		Execf("cp webrtc-build %s", dist)
 		Execf("cp config.json %s", dist)
+		os.MkdirAll(patchDir, 0755)
+		Execf("cp patch/BUILD.gn.diff %s", patchDir)
+		Execf("cp patch/build_ios_libs.py.diff %s", patchDir)
+		Execf("cp patch/build_aar.py.diff %s", patchDir)
 		Execf("tar czf %s.zip %s", dist, dist)
 
 	default:
