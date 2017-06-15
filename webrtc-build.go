@@ -19,7 +19,7 @@ import (
 	"syscall"
 )
 
-var maintenanceVersion = "0"
+var maintenanceVersion = "2"
 
 var fullVersion string
 
@@ -551,7 +551,7 @@ func main() {
 		Execf("cp patch/BUILD.gn.diff %s", patchDir)
 		Execf("cp patch/build_ios_libs.py.diff %s", patchDir)
 		Execf("cp patch/build_aar.py.diff %s", patchDir)
-		Execf("tar czf %s.zip %s", dist, dist)
+		Execf("tar czf %s.tar.gz %s", dist, dist)
 
 	default:
 		fmt.Printf("Error: Unknown command: %s\n", subcmd)
