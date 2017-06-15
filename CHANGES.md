@@ -11,9 +11,13 @@
 
 # 59.x
 
+## 59.1.2
+
+- [CHANGE] パッチファイルをリリースバイナリに含める
+
 ## 59.1.1
 
-- [CHANGE] iOS: フレームワーク: ヘッダーファイルに RTCCameraVideoCapturer.h
+- [CHANGE] iOS: フレームワーク: ヘッダーファイルに RTCCameraVideoCapturer.h を追加する
 
 ## 59.1.0
 
