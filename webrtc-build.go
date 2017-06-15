@@ -93,6 +93,13 @@ func Exists(filename string) bool {
 	return err == nil
 }
 
+func FailIfNotExists(filename string) {
+	if !Exists(filename) {
+		fmt.Printf("Error: File '%s' is not found\n", filename)
+		os.Exit(1)
+	}
+}
+
 // https://github.com/hnakamur/execcommandexample
 func RunCommand(name string, arg ...string) (stdout, stderr string, exitCode int, err error) {
 	cmd := exec.Command(name, arg...)
@@ -244,6 +251,8 @@ func Sync() {
 }
 
 func Patch(diff string, target string) {
+	FailIfNotExists(diff)
+	FailIfNotExists(target)
 	ExecIgnore("patch", "-buN", diff, target)
 }
 
