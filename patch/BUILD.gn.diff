@@ -1,8 +1,16 @@
 diff --git a/webrtc/sdk/BUILD.gn b/webrtc/sdk/BUILD.gn
-index d8e745c83..3ee714ff0 100644
+index d8e745c83f..5357f53c05 100644
 --- a/webrtc/sdk/BUILD.gn
 +++ b/webrtc/sdk/BUILD.gn
-@@ -338,6 +338,7 @@ if (is_ios || is_mac) {
+@@ -310,6 +310,7 @@ if (is_ios || is_mac) {
+         "objc/Framework/Headers/WebRTC/RTCAudioSource.h",
+         "objc/Framework/Headers/WebRTC/RTCAudioTrack.h",
+         "objc/Framework/Headers/WebRTC/RTCCameraPreviewView.h",
++        "objc/Framework/Headers/WebRTC/RTCCameraVideoCapturer.h",
+         "objc/Framework/Headers/WebRTC/RTCConfiguration.h",
+         "objc/Framework/Headers/WebRTC/RTCDataChannel.h",
+         "objc/Framework/Headers/WebRTC/RTCDataChannelConfiguration.h",
+@@ -338,6 +339,7 @@ if (is_ios || is_mac) {
          "objc/Framework/Headers/WebRTC/RTCSSLAdapter.h",
          "objc/Framework/Headers/WebRTC/RTCSessionDescription.h",
          "objc/Framework/Headers/WebRTC/RTCTracing.h",
