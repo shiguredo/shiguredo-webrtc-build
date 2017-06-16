@@ -262,7 +262,7 @@ func InitiOSBuild() {
 	Patch(filepath.Join(WebRTCSourceDir, "webrtc/sdk/BUILD.gn"),
 		"patch/BUILD.gn.diff")
 	Patch(filepath.Join(WebRTCSourceDir,
-		"webrtc/sdk/objc/Framework/Headers/WebRTC"),
+		"webrtc/sdk/objc/Framework/Headers/WebRTC/WebRTC.h"),
 		"patch/WebRTC.h.diff")
 }
 
