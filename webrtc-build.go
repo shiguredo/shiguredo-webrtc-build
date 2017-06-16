@@ -413,19 +413,21 @@ func PrintHelp() {
 	fmt.Println("  fetch")
 	fmt.Println("        Get or update source files")
 	fmt.Println("  build")
-	fmt.Println("        Build iOS or Android libraries for debug and release")
-	fmt.Println("  build-framework-debug (iOS)")
-	fmt.Println("        Build a framework for debug")
-	fmt.Println("  build-framework-release (iOS)")
-	fmt.Println("        Build a framework for release")
-	fmt.Println("  build-static-debug (iOS)")
-	fmt.Println("        Build a static library for debug")
-	fmt.Println("  build-static-release (iOS)")
-	fmt.Println("        Build a static library for release")
-	fmt.Println("  build-debug (Android)")
-	fmt.Println("        Build a library for debug")
-	fmt.Println("  build-release (Android)")
-	fmt.Println("        Build a library for release")
+	fmt.Println("        Build all libraries for debug and release")
+	fmt.Println("  debug")
+	fmt.Println("        Build all libraries for debug")
+	fmt.Println("  release")
+	fmt.Println("        Build all libraries for release")
+	if isMac {
+		fmt.Println("  framework-debug")
+		fmt.Println("        Build a framework for debug")
+		fmt.Println("  framework-release")
+		fmt.Println("        Build a framework for release")
+		fmt.Println("  static-debug")
+		fmt.Println("        Build a static library for debug")
+		fmt.Println("  static-release")
+		fmt.Println("        Build a static library for release")
+	}
 	fmt.Println("  dist")
 	fmt.Println("        Archive libraries")
 	fmt.Println("  clean")
@@ -441,19 +443,19 @@ func PrintHelp() {
 }
 
 func main() {
-	flag.Parse()
-
-	if len(os.Args) <= 1 || *helpFlag {
-		PrintHelp()
-		os.Exit(1)
-	}
-
 	if runtime.GOOS == "darwin" {
 		isMac = true
 	} else if runtime.GOOS == "linux" {
 		isLinux = true
 	} else {
 		fmt.Printf("Error: %s OS is not supported\n", runtime.GOOS)
+		os.Exit(1)
+	}
+
+	flag.Parse()
+
+	if len(os.Args) <= 1 || *helpFlag {
+		PrintHelp()
 		os.Exit(1)
 	}
 
@@ -464,14 +466,6 @@ func main() {
 	os.Setenv("PATH", depotToolsDir+":"+path)
 
 	subcmd := flag.Arg(0)
-	if strings.HasPrefix(subcmd, "build") || strings.HasPrefix(subcmd, "dist") {
-		if isMac {
-			subcmd = "ios-" + subcmd
-		} else {
-			subcmd = "android-" + subcmd
-		}
-	}
-
 	switch subcmd {
 	case "setup":
 		GetDepotTools()
@@ -480,44 +474,56 @@ func main() {
 		ConfigGclient()
 		Sync()
 
-	case "ios-build":
+	case "build":
+		if isMac {
+			InitiOSBuild()
+			BuildiOSFramework("debug")
+			BuildiOSFramework("release")
+			BuildiOSStatic("debug")
+			BuildiOSStatic("release")
+		} else {
+			BuildAndroidLibrary("debug")
+			BuildAndroidLibrary("release")
+		}
+
+	case "debug":
+		if isMac {
+			BuildiOSFramework("debug")
+			BuildiOSStatic("debug")
+		} else {
+			BuildAndroidLibrary("debug")
+		}
+
+	case "release":
+		if isMac {
+			BuildiOSFramework("release")
+			BuildiOSStatic("release")
+		} else {
+			BuildAndroidLibrary("release")
+		}
+
+	case "framework-debug":
 		InitiOSBuild()
 		BuildiOSFramework("debug")
-		BuildiOSFramework("release")
-		BuildiOSStatic("debug")
-		BuildiOSStatic("release")
 
-	case "ios-build-framework-debug":
-		InitiOSBuild()
-		BuildiOSFramework("debug")
-
-	case "ios-build-framework-release":
+	case "framework-release":
 		InitiOSBuild()
 		BuildiOSFramework("release")
 
-	case "ios-build-static-debug":
+	case "static-debug":
 		InitiOSBuild()
 		BuildiOSStatic("debug")
 
-	case "ios-build-static-release":
+	case "static-release":
 		InitiOSBuild()
 		BuildiOSStatic("release")
 
-	case "android-build":
-		BuildAndroidLibrary("debug")
-		BuildAndroidLibrary("release")
-
-	case "android-build-debug":
-		BuildAndroidLibrary("debug")
-
-	case "android-build-release":
-		BuildAndroidLibrary("release")
-
-	case "ios-dist":
-		ArchiveiOSProducts()
-
-	case "android-dist":
-		ArchiveAndroidProducts()
+	case "dist":
+		if isMac {
+			ArchiveiOSProducts()
+		} else {
+			ArchiveAndroidProducts()
+		}
 
 	case "clean":
 		Exec("rm", "-rf", buildDir,
