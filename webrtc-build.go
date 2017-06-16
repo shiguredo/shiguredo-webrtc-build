@@ -19,7 +19,7 @@ import (
 	"syscall"
 )
 
-var maintenanceVersion = "2"
+var maintenanceVersion = "3"
 
 var fullVersion string
 
