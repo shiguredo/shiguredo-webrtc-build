@@ -19,7 +19,7 @@ import (
 	"syscall"
 )
 
-var maintenanceVersion = "3"
+var version = "60.1.0"
 
 var fullVersion string
 
@@ -200,11 +200,9 @@ func LoadConfig() {
 	FailIf(err)
 	json.Unmarshal(raw, &config)
 
-	iOSArchive = fmt.Sprintf("sora-webrtc-%s.%s.%s-ios",
-		config.WebRTCBranch, config.WebRTCCommit, maintenanceVersion)
+	iOSArchive = fmt.Sprintf("sora-webrtc-%s-ios", version)
 	iOSArchiveZip = iOSArchive + ".zip"
-	androidArchive = fmt.Sprintf("sora-webrtc-%s.%s.%s-android",
-		config.WebRTCBranch, config.WebRTCCommit, maintenanceVersion)
+	androidArchive = fmt.Sprintf("sora-webrtc-%s-android", version)
 	androidArchiveZip = androidArchive + ".zip"
 }
 
@@ -460,9 +458,7 @@ func main() {
 	}
 
 	LoadConfig()
-	fullVersion = fmt.Sprintf("%s.%s.%s-%s-%s",
-		config.WebRTCBranch, config.WebRTCCommit, maintenanceVersion,
-		runtime.GOOS, runtime.GOARCH)
+	fullVersion = fmt.Sprintf("%s-%s-%s", version, runtime.GOOS, runtime.GOARCH)
 
 	path := os.Getenv("PATH")
 	os.Setenv("PATH", depotToolsDir+":"+path)
