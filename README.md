@@ -172,14 +172,13 @@ Android 向けのビルドはいくつか注意点があります。
 export PATH=../depot_tools:$PATH
 ```
 
-### ``./webrtc-build fetch`` の実行が途中で止まってしまった
+### ``./webrtc-build fetch``: 実行が途中で止まってしまった
 
 再度 ``./webrtc-build fetch`` を実行してください。
 ``./webrtc-build fetch`` は何度実行しても問題ありません。
 
-### ``stderr:.gclient file in parent directory XXX might not be the file you want to use``
+### ``./webrtc-build build``: ``stderr:.gclient file in parent directory XXX might not be the file you want to use``
 
-``./webrtc-build build`` で次のエラーが出ることがあります。
 このエラーが出たら冒頭の方法を試してみてください。
 
 ```
@@ -187,9 +186,8 @@ stderr:.gclient file in parent directory /home/shiguredo/sora-webrtc-build/webrt
 stderr:gn.py: Could not find gn executable at: /home/shiguredo/sora-webrtc-build/webrtc/src/buildtools/linux64/gn
 ```
 
-### ``Error: Command 'XXX' returned non-zero exit status 1 in XXX``
+### ``./webrtc-build build``: ``Error: Command 'XXX' returned non-zero exit status 1 in XXX``
 
-``./webrtc-build build`` で次のエラーが出ることがあります。
 このエラーでも冒頭の方法を試してみてください。
 
 ```
