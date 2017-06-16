@@ -58,7 +58,7 @@ var distDirAndroidDebug = filepath.Join(distDir, "android-debug")
 var distDirAndroidRelease = filepath.Join(distDir, "android-release")
 
 var iOSBuildScript = filepath.Join(WebRTCSourceDir,
-	"tools-webrtc/ios/build_ios_libs.py")
+	"tools_webrtc/ios/build_ios_libs.py")
 
 var buildInfo = filepath.Join(buildDir, "build_info.json")
 
@@ -80,7 +80,7 @@ var iOSCarthageFile = iOSFrameworkName
 var iOSCarthageFileZip = iOSCarthageFile + ".zip"
 
 var androidBuildScript = filepath.Join(WebRTCSourceDir,
-	"tools-webrtc/android/build_aar.py")
+	"tools_webrtc/android/build_aar.py")
 
 var androidArchive string
 
@@ -257,11 +257,10 @@ func Patch(diff string, target string) {
 func InitiOSBuild() {
 	fmt.Println("Patch...")
 	Patch(iOSBuildScript, "patch/build_ios_libs.py.diff")
-	Patch(filepath.Join(WebRTCSourceDir, "webrtc/sdk/BUILD.gn"),
-		"patch/BUILD.gn.diff")
-	Patch(filepath.Join(WebRTCSourceDir,
-		"webrtc/sdk/objc/Framework/Headers/WebRTC/WebRTC.h"),
-		"patch/WebRTC.h.diff")
+	Patch(filepath.Join(WebRTCSourceDir, "webrtc/tools/BUILD.gn"),
+		"patch/webrtc_tools_BUILD.gn.diff")
+	Patch(filepath.Join(WebRTCSourceDir, "webrtc/webrtc.gni"),
+		"patch/webrtc_webrtc.gni.diff")
 }
 
 func BuildiOSFramework(config string) {
@@ -553,10 +552,10 @@ func main() {
 		Execf("cp webrtc-build %s", dist)
 		Execf("cp config.json %s", dist)
 		os.MkdirAll(patchDir, 0755)
-		Execf("cp patch/BUILD.gn.diff %s", patchDir)
+		Execf("cp patch/webrtc_tools_BUILD.gn.diff %s", patchDir)
+		Execf("cp patch/webrtc_webrtc.gni.diff %s", patchDir)
 		Execf("cp patch/build_ios_libs.py.diff %s", patchDir)
 		Execf("cp patch/build_aar.py.diff %s", patchDir)
-		Execf("cp patch/WebRTC.h.diff %s", patchDir)
 		Execf("tar czf %s.tar.gz %s", dist, dist)
 
 	default:
