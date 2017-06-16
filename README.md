@@ -177,6 +177,11 @@ export PATH=../depot_tools:$PATH
 再度 ``./webrtc-build fetch`` を実行してください。
 ``./webrtc-build fetch`` は何度実行しても問題ありません。
 
+### ``./webrtc-build fetch``: ``stderr:error: Your local changes to the following files would be overwritten by checkout``
+
+パッチの適用後に ``./webrtc-build fetch`` を実行すると、リポジトリに変更があるために指定のリビジョンをチェックアウトできずにエラーになります。
+``./webrtc-build reset`` を実行して、リポジトリの変更を戻してから再度 ``./webrtc-build fetch`` を実行してください。
+
 ### ``./webrtc-build build``: ``stderr:.gclient file in parent directory XXX might not be the file you want to use``
 
 このエラーが出たら冒頭の方法を試してみてください。
