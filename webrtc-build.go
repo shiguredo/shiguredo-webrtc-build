@@ -261,6 +261,9 @@ func InitiOSBuild() {
 	Patch(iOSBuildScript, "patch/build_ios_libs.py.diff")
 	Patch(filepath.Join(WebRTCSourceDir, "webrtc/sdk/BUILD.gn"),
 		"patch/BUILD.gn.diff")
+	Patch(filepath.Join(WebRTCSourceDir,
+		"webrtc/sdk/objc/Framework/Headers/WebRTC"),
+		"patch/WebRTC.h.diff")
 }
 
 func BuildiOSFramework(config string) {
@@ -551,6 +554,7 @@ func main() {
 		Execf("cp patch/BUILD.gn.diff %s", patchDir)
 		Execf("cp patch/build_ios_libs.py.diff %s", patchDir)
 		Execf("cp patch/build_aar.py.diff %s", patchDir)
+		Execf("cp patch/WebRTC.h.diff %s", patchDir)
 		Execf("tar czf %s.tar.gz %s", dist, dist)
 
 	default:
