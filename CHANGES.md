@@ -11,6 +11,20 @@
 
 # 59.x
 
+## 59.1.3
+
+- [CHANGE] Makefile を追加した
+
+- [CHANGE] iOS: フレームワーク: WebRTC.h にインポートするヘッダーファイルを追加した
+
+  - RTCCameraVideoCapturer.h
+
+  - RTCMTLVideoView.h
+
+  - RTCVideoCapturer.h
+
+- [FIX] アーカイブの拡張子が .zip になっていたのを .tar.gz に修正した
+
 ## 59.1.2
 
 - [CHANGE] パッチファイルをリリースバイナリに含める
