@@ -527,11 +527,16 @@ func main() {
 	case "clean":
 		Exec("rm", "-rf", buildDir,
 			iOSArchive, iOSArchiveZip, androidArchive, androidArchiveZip,
+			"webrtc/src/testing/gmock",
+			"webrtc/src/testing/gtest",
 			filepath.Join(WebRTCDir, ".gclient"),
 			filepath.Join(WebRTCDir, ".gclient_entries"))
 
 	case "reset":
-		dirs := []string{"webrtc/depot_tools", "webrtc/src", "webrtc/src/webrtc"}
+		dirs := []string{"webrtc/depot_tools",
+			"webrtc/src",
+			"webrtc/src/webrtc",
+			"webrtc/src/tools_webrtc"}
 		for _, dir := range dirs {
 			fmt.Printf("Discard changes of %s...\n", dir)
 			Exec("git", "-C", dir, "checkout", "--", ".")
