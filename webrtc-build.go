@@ -19,7 +19,7 @@ import (
 	"syscall"
 )
 
-var maintenanceVersion = "3"
+var version = "60.1.0"
 
 var fullVersion string
 
@@ -58,7 +58,7 @@ var distDirAndroidDebug = filepath.Join(distDir, "android-debug")
 var distDirAndroidRelease = filepath.Join(distDir, "android-release")
 
 var iOSBuildScript = filepath.Join(WebRTCSourceDir,
-	"tools-webrtc/ios/build_ios_libs.py")
+	"tools_webrtc/ios/build_ios_libs.py")
 
 var buildInfo = filepath.Join(buildDir, "build_info.json")
 
@@ -80,7 +80,7 @@ var iOSCarthageFile = iOSFrameworkName
 var iOSCarthageFileZip = iOSCarthageFile + ".zip"
 
 var androidBuildScript = filepath.Join(WebRTCSourceDir,
-	"tools-webrtc/android/build_aar.py")
+	"tools_webrtc/android/build_aar.py")
 
 var androidArchive string
 
@@ -200,11 +200,9 @@ func LoadConfig() {
 	FailIf(err)
 	json.Unmarshal(raw, &config)
 
-	iOSArchive = fmt.Sprintf("sora-webrtc-%s.%s.%s-ios",
-		config.WebRTCBranch, config.WebRTCCommit, maintenanceVersion)
+	iOSArchive = fmt.Sprintf("sora-webrtc-%s-ios", version)
 	iOSArchiveZip = iOSArchive + ".zip"
-	androidArchive = fmt.Sprintf("sora-webrtc-%s.%s.%s-android",
-		config.WebRTCBranch, config.WebRTCCommit, maintenanceVersion)
+	androidArchive = fmt.Sprintf("sora-webrtc-%s-android", version)
 	androidArchiveZip = androidArchive + ".zip"
 }
 
@@ -259,11 +257,10 @@ func Patch(diff string, target string) {
 func InitiOSBuild() {
 	fmt.Println("Patch...")
 	Patch(iOSBuildScript, "patch/build_ios_libs.py.diff")
-	Patch(filepath.Join(WebRTCSourceDir, "webrtc/sdk/BUILD.gn"),
-		"patch/BUILD.gn.diff")
-	Patch(filepath.Join(WebRTCSourceDir,
-		"webrtc/sdk/objc/Framework/Headers/WebRTC/WebRTC.h"),
-		"patch/WebRTC.h.diff")
+	Patch(filepath.Join(WebRTCSourceDir, "webrtc/tools/BUILD.gn"),
+		"patch/webrtc_tools_BUILD.gn.diff")
+	Patch(filepath.Join(WebRTCSourceDir, "webrtc/webrtc.gni"),
+		"patch/webrtc_webrtc.gni.diff")
 }
 
 func BuildiOSFramework(config string) {
@@ -415,19 +412,21 @@ func PrintHelp() {
 	fmt.Println("  fetch")
 	fmt.Println("        Get or update source files")
 	fmt.Println("  build")
-	fmt.Println("        Build iOS or Android libraries for debug and release")
-	fmt.Println("  build-framework-debug (iOS)")
-	fmt.Println("        Build a framework for debug")
-	fmt.Println("  build-framework-release (iOS)")
-	fmt.Println("        Build a framework for release")
-	fmt.Println("  build-static-debug (iOS)")
-	fmt.Println("        Build a static library for debug")
-	fmt.Println("  build-static-release (iOS)")
-	fmt.Println("        Build a static library for release")
-	fmt.Println("  build-debug (Android)")
-	fmt.Println("        Build a library for debug")
-	fmt.Println("  build-release (Android)")
-	fmt.Println("        Build a library for release")
+	fmt.Println("        Build all libraries for debug and release")
+	fmt.Println("  debug")
+	fmt.Println("        Build all libraries for debug")
+	fmt.Println("  release")
+	fmt.Println("        Build all libraries for release")
+	if isMac {
+		fmt.Println("  framework-debug")
+		fmt.Println("        Build a framework for debug")
+		fmt.Println("  framework-release")
+		fmt.Println("        Build a framework for release")
+		fmt.Println("  static-debug")
+		fmt.Println("        Build a static library for debug")
+		fmt.Println("  static-release")
+		fmt.Println("        Build a static library for release")
+	}
 	fmt.Println("  dist")
 	fmt.Println("        Archive libraries")
 	fmt.Println("  clean")
@@ -443,13 +442,6 @@ func PrintHelp() {
 }
 
 func main() {
-	flag.Parse()
-
-	if len(os.Args) <= 1 || *helpFlag {
-		PrintHelp()
-		os.Exit(1)
-	}
-
 	if runtime.GOOS == "darwin" {
 		isMac = true
 	} else if runtime.GOOS == "linux" {
@@ -459,23 +451,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	flag.Parse()
+
+	if len(os.Args) <= 1 || *helpFlag {
+		PrintHelp()
+		os.Exit(1)
+	}
+
 	LoadConfig()
-	fullVersion = fmt.Sprintf("%s.%s.%s-%s-%s",
-		config.WebRTCBranch, config.WebRTCCommit, maintenanceVersion,
-		runtime.GOOS, runtime.GOARCH)
+	fullVersion = fmt.Sprintf("%s-%s-%s", version, runtime.GOOS, runtime.GOARCH)
 
 	path := os.Getenv("PATH")
 	os.Setenv("PATH", depotToolsDir+":"+path)
 
 	subcmd := flag.Arg(0)
-	if strings.HasPrefix(subcmd, "build") || strings.HasPrefix(subcmd, "dist") {
-		if isMac {
-			subcmd = "ios-" + subcmd
-		} else {
-			subcmd = "android-" + subcmd
-		}
-	}
-
 	switch subcmd {
 	case "setup":
 		GetDepotTools()
@@ -484,53 +473,70 @@ func main() {
 		ConfigGclient()
 		Sync()
 
-	case "ios-build":
+	case "build":
+		if isMac {
+			InitiOSBuild()
+			BuildiOSFramework("debug")
+			BuildiOSFramework("release")
+			BuildiOSStatic("debug")
+			BuildiOSStatic("release")
+		} else {
+			BuildAndroidLibrary("debug")
+			BuildAndroidLibrary("release")
+		}
+
+	case "debug":
+		if isMac {
+			BuildiOSFramework("debug")
+			BuildiOSStatic("debug")
+		} else {
+			BuildAndroidLibrary("debug")
+		}
+
+	case "release":
+		if isMac {
+			BuildiOSFramework("release")
+			BuildiOSStatic("release")
+		} else {
+			BuildAndroidLibrary("release")
+		}
+
+	case "framework-debug":
 		InitiOSBuild()
 		BuildiOSFramework("debug")
-		BuildiOSFramework("release")
-		BuildiOSStatic("debug")
-		BuildiOSStatic("release")
 
-	case "ios-build-framework-debug":
-		InitiOSBuild()
-		BuildiOSFramework("debug")
-
-	case "ios-build-framework-release":
+	case "framework-release":
 		InitiOSBuild()
 		BuildiOSFramework("release")
 
-	case "ios-build-static-debug":
+	case "static-debug":
 		InitiOSBuild()
 		BuildiOSStatic("debug")
 
-	case "ios-build-static-release":
+	case "static-release":
 		InitiOSBuild()
 		BuildiOSStatic("release")
 
-	case "android-build":
-		BuildAndroidLibrary("debug")
-		BuildAndroidLibrary("release")
-
-	case "android-build-debug":
-		BuildAndroidLibrary("debug")
-
-	case "android-build-release":
-		BuildAndroidLibrary("release")
-
-	case "ios-dist":
-		ArchiveiOSProducts()
-
-	case "android-dist":
-		ArchiveAndroidProducts()
+	case "dist":
+		if isMac {
+			ArchiveiOSProducts()
+		} else {
+			ArchiveAndroidProducts()
+		}
 
 	case "clean":
 		Exec("rm", "-rf", buildDir,
 			iOSArchive, iOSArchiveZip, androidArchive, androidArchiveZip,
+			"webrtc/src/testing/gmock",
+			"webrtc/src/testing/gtest",
 			filepath.Join(WebRTCDir, ".gclient"),
 			filepath.Join(WebRTCDir, ".gclient_entries"))
 
 	case "reset":
-		dirs := []string{"webrtc/depot_tools", "webrtc/src", "webrtc/src/webrtc"}
+		dirs := []string{"webrtc/depot_tools",
+			"webrtc/src",
+			"webrtc/src/webrtc",
+			"webrtc/src/tools_webrtc"}
 		for _, dir := range dirs {
 			fmt.Printf("Discard changes of %s...\n", dir)
 			Exec("git", "-C", dir, "checkout", "--", ".")
@@ -551,10 +557,10 @@ func main() {
 		Execf("cp webrtc-build %s", dist)
 		Execf("cp config.json %s", dist)
 		os.MkdirAll(patchDir, 0755)
-		Execf("cp patch/BUILD.gn.diff %s", patchDir)
+		Execf("cp patch/webrtc_tools_BUILD.gn.diff %s", patchDir)
+		Execf("cp patch/webrtc_webrtc.gni.diff %s", patchDir)
 		Execf("cp patch/build_ios_libs.py.diff %s", patchDir)
 		Execf("cp patch/build_aar.py.diff %s", patchDir)
-		Execf("cp patch/WebRTC.h.diff %s", patchDir)
 		Execf("tar czf %s.tar.gz %s", dist, dist)
 
 	default:
