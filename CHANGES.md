@@ -9,6 +9,16 @@
 - FIX
     - バグ修正
 
+# 60.x
+
+## 60.1.0
+
+- [CHANGE] M60 のビルドに対応した
+
+- [CHANGE] config.json で指定できた webrtc-build のバージョンをソースコードに直接記述した
+
+- [CHANGE] webrtc-build のサブコマンド名を短縮した
+
 # 59.x
 
 ## 59.1.3

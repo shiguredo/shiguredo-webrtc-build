@@ -1,0 +1,13 @@
+diff --git a/webrtc/webrtc.gni b/webrtc/webrtc.gni
+index d4acaf5268..5c4a6bc807 100644
+--- a/webrtc/webrtc.gni
++++ b/webrtc/webrtc.gni
+@@ -306,7 +306,7 @@ template("rtc_executable") {
+     configs -= rtc_remove_configs
+     configs -= invoker.suppressed_configs
+     deps = [
+-      "//build/config:exe_and_shlib_deps",
++      #"//build/config:exe_and_shlib_deps",
+     ]
+     deps += invoker.deps
+     public_configs = [ rtc_common_inherited_config ]
