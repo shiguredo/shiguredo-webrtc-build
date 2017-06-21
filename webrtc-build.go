@@ -402,6 +402,11 @@ func ArchiveAndroidProducts() {
 	Exec("zip", "-rq", androidArchiveZip, androidArchive)
 }
 
+func Fetch() {
+	ConfigGclient()
+	Sync()
+}
+
 type BuildScheme struct {
 	Debug, Release, Framework, Static bool
 }
@@ -468,6 +473,10 @@ var helpFlag = flag.Bool("h", false, "Print this message")
 func PrintHelp() {
 	fmt.Println("Usage: build [options] <command>")
 	fmt.Println("\nCommands:")
+	fmt.Println("  all")
+	fmt.Println("        Do all phases after clean and reset")
+	fmt.Println("  update")
+	fmt.Println("        clean, reset, setup and fetch")
 	fmt.Println("  setup")
 	fmt.Println("        Get depot_tools")
 	fmt.Println("  fetch")
@@ -527,12 +536,25 @@ func main() {
 
 	subcmd := flag.Arg(0)
 	switch subcmd {
+	case "all":
+		Clean()
+		Reset()
+		GetDepotTools()
+		Fetch()
+		Build(BuildScheme{Debug: true, Release: true, Framework: true, Static: true})
+		Archive()
+
+	case "update":
+		Clean()
+		Reset()
+		GetDepotTools()
+		Fetch()
+
 	case "setup":
 		GetDepotTools()
 
 	case "fetch":
-		ConfigGclient()
-		Sync()
+		Fetch()
 
 	case "build":
 		Build(BuildScheme{Debug: true, Release: true, Framework: true, Static: true})
