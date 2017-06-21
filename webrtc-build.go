@@ -19,7 +19,7 @@ import (
 	"syscall"
 )
 
-var version = "60.1.0"
+var version = "60.4.0"
 
 var fullVersion string
 
@@ -402,11 +402,81 @@ func ArchiveAndroidProducts() {
 	Exec("zip", "-rq", androidArchiveZip, androidArchive)
 }
 
+func Fetch() {
+	ConfigGclient()
+	Sync()
+}
+
+type BuildScheme struct {
+	Debug, Release, Framework, Static bool
+}
+
+func Build(scheme BuildScheme) {
+	if isMac {
+		InitiOSBuild()
+		if scheme.Framework {
+			if scheme.Debug {
+				BuildiOSFramework("debug")
+			}
+			if scheme.Release {
+				BuildiOSFramework("release")
+			}
+		}
+		if scheme.Static {
+			if scheme.Debug {
+				BuildiOSStatic("debug")
+			}
+			if scheme.Release {
+				BuildiOSStatic("release")
+			}
+		}
+	} else {
+		if scheme.Debug {
+			BuildAndroidLibrary("debug")
+		}
+		if scheme.Release {
+			BuildAndroidLibrary("release")
+		}
+	}
+}
+
+func Archive() {
+	if isMac {
+		ArchiveiOSProducts()
+	} else {
+		ArchiveAndroidProducts()
+	}
+}
+
+func Clean() {
+	Exec("rm", "-rf", buildDir,
+		iOSArchive, iOSArchiveZip, androidArchive, androidArchiveZip,
+		"webrtc/src/testing/gmock",
+		"webrtc/src/testing/gtest",
+		filepath.Join(WebRTCDir, ".gclient"),
+		filepath.Join(WebRTCDir, ".gclient_entries"))
+}
+
+func Reset() {
+	dirs := []string{"webrtc/depot_tools",
+		"webrtc/src",
+		"webrtc/src/webrtc",
+		"webrtc/src/tools_webrtc"}
+	for _, dir := range dirs {
+		fmt.Printf("Discard changes of %s...\n", dir)
+		Exec("git", "-C", dir, "checkout", "--", ".")
+	}
+}
+
 var helpFlag = flag.Bool("h", false, "Print this message")
 
 func PrintHelp() {
 	fmt.Println("Usage: build [options] <command>")
 	fmt.Println("\nCommands:")
+	fmt.Println("  all")
+	fmt.Println("        Do all phases after clean and reset")
+	fmt.Println("  update")
+	fmt.Println("        clean, reset, setup and fetch")
 	fmt.Println("  setup")
 	fmt.Println("        Get depot_tools")
 	fmt.Println("  fetch")
@@ -466,81 +536,55 @@ func main() {
 
 	subcmd := flag.Arg(0)
 	switch subcmd {
+	case "all":
+		Clean()
+		Reset()
+		GetDepotTools()
+		Fetch()
+		Build(BuildScheme{Debug: true, Release: true, Framework: true, Static: true})
+		Archive()
+
+	case "update":
+		Clean()
+		Reset()
+		GetDepotTools()
+		Fetch()
+
 	case "setup":
 		GetDepotTools()
 
 	case "fetch":
-		ConfigGclient()
-		Sync()
+		Fetch()
 
 	case "build":
-		if isMac {
-			InitiOSBuild()
-			BuildiOSFramework("debug")
-			BuildiOSFramework("release")
-			BuildiOSStatic("debug")
-			BuildiOSStatic("release")
-		} else {
-			BuildAndroidLibrary("debug")
-			BuildAndroidLibrary("release")
-		}
+		Build(BuildScheme{Debug: true, Release: true, Framework: true, Static: true})
 
 	case "debug":
-		if isMac {
-			BuildiOSFramework("debug")
-			BuildiOSStatic("debug")
-		} else {
-			BuildAndroidLibrary("debug")
-		}
+		Build(BuildScheme{Debug: true, Framework: true, Static: true})
 
 	case "release":
-		if isMac {
-			BuildiOSFramework("release")
-			BuildiOSStatic("release")
-		} else {
-			BuildAndroidLibrary("release")
-		}
+		Build(BuildScheme{Release: true, Framework: true, Static: true})
 
 	case "framework-debug":
-		InitiOSBuild()
-		BuildiOSFramework("debug")
+		Build(BuildScheme{Debug: true, Framework: true})
 
 	case "framework-release":
-		InitiOSBuild()
-		BuildiOSFramework("release")
+		Build(BuildScheme{Release: true, Framework: true})
 
 	case "static-debug":
-		InitiOSBuild()
-		BuildiOSStatic("debug")
+		Build(BuildScheme{Debug: true, Static: true})
 
 	case "static-release":
-		InitiOSBuild()
-		BuildiOSStatic("release")
+		Build(BuildScheme{Release: true, Static: true})
 
 	case "dist":
-		if isMac {
-			ArchiveiOSProducts()
-		} else {
-			ArchiveAndroidProducts()
-		}
+		Archive()
 
 	case "clean":
-		Exec("rm", "-rf", buildDir,
-			iOSArchive, iOSArchiveZip, androidArchive, androidArchiveZip,
-			"webrtc/src/testing/gmock",
-			"webrtc/src/testing/gtest",
-			filepath.Join(WebRTCDir, ".gclient"),
-			filepath.Join(WebRTCDir, ".gclient_entries"))
+		Clean()
 
 	case "reset":
-		dirs := []string{"webrtc/depot_tools",
-			"webrtc/src",
-			"webrtc/src/webrtc",
-			"webrtc/src/tools_webrtc"}
-		for _, dir := range dirs {
-			fmt.Printf("Discard changes of %s...\n", dir)
-			Exec("git", "-C", dir, "checkout", "--", ".")
-		}
+		Reset()
 
 	case "help":
 		PrintHelp()
