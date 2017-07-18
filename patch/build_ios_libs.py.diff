@@ -8,15 +8,3 @@ index 734f3e216..2303a8c6e 100755
  IOS_DEPLOYMENT_TARGET = '8.0'
 -LIBVPX_BUILD_VP9 = False
 +LIBVPX_BUILD_VP9 = True
- 
- 
- def _ParseArgs():
-@@ -95,7 +95,7 @@ def BuildWebRTC(output_dir, target_arch, flavor, build_type,
-                 use_goma, extra_gn_args):
-   output_dir = os.path.join(output_dir, target_arch + '_libs')
-   gn_args = ['target_os="ios"', 'ios_enable_code_signing=false',
--             'use_xcode_clang=true', 'is_component_build=false']
-+             'use_xcode_clang=false', 'is_component_build=false']
- 
-   # Add flavor option.
-   if flavor == 'debug':
