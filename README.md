@@ -227,3 +227,35 @@ Traceback (most recent call last):
 OSError: [Errno 2] No such file or directory
 Error: Command '/usr/bin/python src/third_party/binutils/download.py' returned non-zero exit status 1 in /home/shiguredo/sora-webrtc-build/webrtc
 ```
+
+## 新しいバージョンへの対応 (開発者向け)
+
+- コミットポジションごとに ``develop`` ブランチから新しいブランチを派生する。ブランチ名は "リリースブランチ.コミットポジション.x" とする。
+
+- ``config.json`` に WebRTC のバージョンを記述する。
+
+  ```
+  "webrtc_branch": "60",
+  "webrtc_commit": "9",
+  "webrtc_revision": "9710de31ef15f42c86ccb0d69bd245da940b16fa",
+  ```
+
+- ``webrtc-build.go`` 内で定義されているバージョンを変更する。
+
+  ```
+  // 新しいバージョンに変更する
+  var version = "60.9.1"
+  ```
+
+- CHANGES に追記する。
+
+- タグを打つ。タグ名は "リリースブランチ.コミットポジション.メンテナンス" とする。
+
+- ``develop`` ブランチにマージする。新しいブランチは削除せず、引き続き使用する。
+
+- ``make`` を実行して ``webrtc-build.go`` をビルドする。
+
+- ``make dist`` を実行する。
+  実行したプラットフォーム向けの ``sora-webrtc-build-*.tar.gz`` が生成される。
+
+- GitHub のリリースノートに ``sora-webrtc-build-*.tar.gz`` を添付する。
