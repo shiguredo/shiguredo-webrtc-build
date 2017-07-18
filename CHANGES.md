@@ -15,6 +15,12 @@
 
 - [CHANGE] コミットポジション 9 のビルドに対応した
 
+- [CHANGE] iOS: コンパイラに Xcode を使うようにした
+
+- [CHANGE] iOS: Xcode 8.3.3 に対応した
+
+- [CHANGE] iOS: Bitcode を有効にした
+
 ## 60.4.1
 
 - [CHANGE] アーキテクチャに x86_64 を追加した
