@@ -61,9 +61,11 @@ iOSInjectionProject/
 
 *.swp
 depot_tools
-webrtc
+webrtc/.gclient*
+webrtc/src
+webrtc/build
+webrtc/depot_tools
 webrtc-build
-build
 dist
 WebRTC.framework
 sora-webrtc-*
