@@ -280,7 +280,7 @@ func BuildiOSFramework(config string) {
 
 func ExecOSBuildScript(ty string, buildDir, buildConfig string) {
 	args := []string{config.Python, iOSBuildScript, "-o", buildDir,
-		"-b", ty, "--build_config", buildConfig, "--arch"}
+		"-b", ty, "-e", "--build_config", buildConfig, "--arch"}
 	args = append(args, config.IOSArch...)
 	Exec("time", args...)
 }
