@@ -19,7 +19,7 @@ import (
 	"syscall"
 )
 
-var version = "60.9.1"
+var version = "60.9.2"
 
 var fullVersion string
 
@@ -272,6 +272,7 @@ func BuildiOSFramework(config string) {
 	Execf("rm -rf %s %s %s",
 		filepath.Join(buildDir, iOSFrameworkName),
 		filepath.Join(buildDir, iOSDsymName),
+		filepath.Join(buildDir, "arm_libs", iOSFrameworkName),
 		filepath.Join(buildDir, "arm64_libs", iOSFrameworkName))
 	ExecOSBuildScript("framework", buildDir, config)
 	os.Chdir(wd)
@@ -307,6 +308,8 @@ func BuildiOSStatic(buildConfig string) {
 	Execf("rm -rf %s %s %s %s",
 		filepath.Join(buildDir, iOSStaticName),
 		includeDir,
+		filepath.Join(buildDir, "arm_libs", iOSStaticName),
+		filepath.Join(buildDir, "arm_libs", "include"),
 		filepath.Join(buildDir, "arm64_libs", iOSStaticName),
 		filepath.Join(buildDir, "arm64_libs", "include"))
 	ExecOSBuildScript("static_only", buildDir, buildConfig)
@@ -376,10 +379,10 @@ func ArchiveiOSProducts() {
 	Exec("mv", iOSCarthageFileZip, distDiriOSCarthage)
 
 	// static
-	Exec("cp", "-r", buildDir+"/ios-static-debug/arm64_libs/librtc_sdk_objc.a",
+	Exec("cp", "-r", buildDir+"/ios-static-debug/librtc_sdk_objc.a",
 		distDiriOSDebug)
 	Exec("cp", "-r", buildDir+"ios-static-debug/include", distDiriOSDebug)
-	Exec("cp", "-r", buildDir+"/ios-static-release/arm64_libs/librtc_sdk_objc.a",
+	Exec("cp", "-r", buildDir+"/ios-static-release/librtc_sdk_objc.a",
 		distDiriOSRelease)
 	Exec("cp", "-r", buildDir+"/ios-static-release/include", distDiriOSRelease)
 
