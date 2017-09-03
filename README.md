@@ -45,7 +45,7 @@ Android のビルドは Linux のみサポートされているため、一台�
 ## 仕様
 
 - 対応する WebRTC のバージョン: M59 ([a100a39](https://chromium.googlesource.com/external/webrtc/+/a100a39fd25df18f51bf0144d1347fea2462a279))
-- 対応するアーキテクチャ: arm64 (iOS), armeabi-v7a/arm64-v8a (Android)
+- 対応するアーキテクチャ: arm64, armv7 (iOS), armarmeabi-v7a/arm64-v8a (Android)
 - VP9 有効
 - (iOS) Bitcode 非対応
 
