@@ -269,7 +269,9 @@ func BuildiOSFramework(config string) {
 	Execf("rm -rf %s %s %s",
 		filepath.Join(buildDir, iOSFrameworkName),
 		filepath.Join(buildDir, iOSDsymName),
-		filepath.Join(buildDir, "arm64_libs", iOSFrameworkName))
+		filepath.Join(buildDir, "arm64_libs", iOSFrameworkName),
+		filepath.Join(buildDir, "arm_libs", iOSFrameworkName),
+		filepath.Join(buildDir, "x64_libs", iOSFrameworkName))
 	ExecOSBuildScript("framework", buildDir, config)
 	os.Chdir(wd)
 	GenerateBuildInfo(buildDir + "/" + iOSFrameworkName)
