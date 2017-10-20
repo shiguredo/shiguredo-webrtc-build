@@ -238,13 +238,13 @@ func Sync() {
 		FailIf(os.Mkdir(WebRTCSourceDir, 0755))
 	}
 	os.Chdir(WebRTCSourceDir)
-	Exec(gclient, "sync", "--with_branch_heads", "-v", "-R")
-	Exec(gclient, "runhooks", "-v")
 	Exec("git", "fetch", "origin")
 	Exec("git", "checkout", "-B",
 		fmt.Sprintf("M%s", config.WebRTCBranch),
 		fmt.Sprintf("refs/remotes/branch-heads/%s", config.WebRTCBranch))
 	Exec("git", "checkout", config.WebRTCRevision)
+	Exec(gclient, "sync", "--with_branch_heads", "-v", "-R")
+	Exec(gclient, "runhooks", "-v")
 	os.Chdir(wd)
 }
 
