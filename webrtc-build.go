@@ -260,12 +260,6 @@ func InitiOSBuild() {
 	}
 	fmt.Println("Patch...")
 	Patch(iOSBuildScript, "patch/build_ios_libs.py.diff")
-	Patch(filepath.Join(WebRTCSourceDir, "webrtc/tools/BUILD.gn"),
-		"patch/webrtc_tools_BUILD.gn.diff")
-	Patch(filepath.Join(WebRTCSourceDir, "webrtc/webrtc.gni"),
-		"patch/webrtc_webrtc.gni.diff")
-	Exec("cp", "patch/build/config/compiler/BUILD.gn",
-		filepath.Join(WebRTCSourceDir, "build/config/compiler"))
 }
 
 func BuildiOSFramework(config string) {
