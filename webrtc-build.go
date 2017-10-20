@@ -255,6 +255,9 @@ func Patch(diff string, target string) {
 }
 
 func InitiOSBuild() {
+	if *noPatchFlag {
+		return
+	}
 	fmt.Println("Patch...")
 	Patch(iOSBuildScript, "patch/build_ios_libs.py.diff")
 	Patch(filepath.Join(WebRTCSourceDir, "webrtc/tools/BUILD.gn"),
@@ -471,6 +474,7 @@ func Reset() {
 }
 
 var helpFlag = flag.Bool("h", false, "Print this message")
+var noPatchFlag = flag.Bool("no-patch", false, "Does not patch before build")
 
 func PrintHelp() {
 	fmt.Println("Usage: build [options] <command>")
