@@ -25,8 +25,8 @@ Chrome の安定版のバージョンに合わせて追従していきます。 
 Android のビルドは Linux のみサポートされているため、一台の Mac で iOS/Android の両方のビルドはできません。
 
 - iOS
-  - Mac OS X 10.12.5+
-  - Xcode 8.3.3+
+  - Mac OS X 10.12.6+
+  - Xcode 9.0+
   - Python 2.7
 - Android
   - Ubuntu Linux 16.04 64bit
@@ -44,10 +44,10 @@ Android のビルドは Linux のみサポートされているため、一台�
 
 ## 仕様
 
-- 対応する WebRTC のバージョン: M59 ([a100a39](https://chromium.googlesource.com/external/webrtc/+/a100a39fd25df18f51bf0144d1347fea2462a279))
-- 対応するアーキテクチャ: arm64 (iOS), armeabi-v7a/arm64-v8a (Android)
+- 対応する WebRTC のバージョン: M62 ([6f21dc2](https://chromium.googlesource.com/external/webrtc/+/6f21dc245689c29730002da09534a8d275e6aa92))
+- 対応するアーキテクチャ: arm64/armv7 (iOS), armeabi-v7a/arm64-v8a (Android)
 - VP9 有効
-- (iOS) Bitcode 非対応
+- (iOS) Bitcode 対応
 
 ## 使い方
 
