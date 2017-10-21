@@ -19,7 +19,7 @@ import (
 	"syscall"
 )
 
-var version = "62.12.0"
+var version = "62.12.1"
 
 var fullVersion string
 
