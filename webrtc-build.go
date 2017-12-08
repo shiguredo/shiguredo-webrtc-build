@@ -88,6 +88,15 @@ var androidArchiveZip string
 
 var androidAARName = "libwebrtc.aar"
 
+func containsString(list []string, s string) bool {
+	for _, e := range list {
+		if e == s {
+			return true
+		}
+	}
+	return false
+}
+
 func Exists(filename string) bool {
 	_, err := os.Stat(filename)
 	return err == nil
@@ -190,7 +199,10 @@ type Config struct {
 	WebRTCRevision string   `json:"webrtc_revision"`
 	Python         string   `json:"python"`
 	IOSArch        []string `json:"ios_arch"`
+	IOSTargets     []string `json:"ios_targets"`
 	AndroidArch    []string `json:"android_arch"`
+	BuildConfig    []string `json:"build_config"`
+	ApplyPatch     bool     `json:"apply_patch"`
 }
 
 var config Config
@@ -255,11 +267,10 @@ func Patch(diff string, target string) {
 }
 
 func InitiOSBuild() {
-	if *noPatchFlag {
-		return
+	if config.ApplyPatch {
+		fmt.Println("Patch...")
+		Patch(iOSBuildScript, "patch/build_ios_libs.py.diff")
 	}
-	fmt.Println("Patch...")
-	Patch(iOSBuildScript, "patch/build_ios_libs.py.diff")
 }
 
 func BuildiOSFramework(config string) {
@@ -331,7 +342,7 @@ func BuildAndroidLibrary(buildConfig string) {
 	fmt.Printf("Build Android library for %s...\n", buildConfig)
 
 	fmt.Println("Patch...")
-	if !*noPatchFlag {
+	if config.ApplyPatch {
 		Patch(androidBuildScript, "patch/build_aar.py.diff")
 	}
 
@@ -471,40 +482,19 @@ func Reset() {
 	}
 }
 
-var helpFlag = flag.Bool("h", false, "Print this message")
-var noPatchFlag = flag.Bool("no-patch", false, "Does not patch before build")
-
 func PrintHelp() {
 	fmt.Println("Usage: build [options] <command>")
 	fmt.Println("\nCommands:")
 	fmt.Println("  all")
-	fmt.Println("        Do all phases after clean and reset")
-	fmt.Println("  update")
-	fmt.Println("        clean, reset, setup and fetch")
-	fmt.Println("  setup")
-	fmt.Println("        Get depot_tools")
+	fmt.Println("        clean, build, archive")
 	fmt.Println("  fetch")
-	fmt.Println("        Get or update source files")
+	fmt.Println("        Get depot_tools and source files")
 	fmt.Println("  build")
-	fmt.Println("        Build all libraries for release")
-	fmt.Println("  debug")
-	fmt.Println("        Build all libraries for debug")
-	if isMac {
-		fmt.Println("  framework")
-		fmt.Println("        Build a framework for release")
-		fmt.Println("  framework-debug")
-		fmt.Println("        Build a framework for debug")
-		fmt.Println("  static")
-		fmt.Println("        Build a static library for release")
-		fmt.Println("  static-debug")
-		fmt.Println("        Build a static library for debug")
-	}
-	fmt.Println("  dist")
+	fmt.Println("        Build libraries")
+	fmt.Println("  archive")
 	fmt.Println("        Archive libraries")
 	fmt.Println("  clean")
-	fmt.Println("        Remove all built files")
-	fmt.Println("  reset")
-	fmt.Println("        Discard all changes")
+	fmt.Println("        Remove all built files and discard all changes")
 	fmt.Println("  help")
 	fmt.Println("        Print this message")
 	fmt.Println("  version")
@@ -525,13 +515,21 @@ func main() {
 
 	flag.Parse()
 
-	if len(os.Args) <= 1 || *helpFlag {
+	if len(os.Args) <= 1 {
 		PrintHelp()
 		os.Exit(1)
 	}
 
 	LoadConfig()
 	fullVersion = fmt.Sprintf("%s-%s-%s", version, runtime.GOOS, runtime.GOARCH)
+
+	scheme := BuildScheme{}
+	scheme.Debug = containsString(config.BuildConfig, "debug")
+	scheme.Release = containsString(config.BuildConfig, "release")
+	if isMac {
+		scheme.Framework = containsString(config.IOSTargets, "framework")
+		scheme.Static = containsString(config.IOSTargets, "static")
+	}
 
 	path := os.Getenv("PATH")
 	os.Setenv("PATH", depotToolsDir+":"+path)
@@ -543,46 +541,21 @@ func main() {
 		Reset()
 		GetDepotTools()
 		Fetch()
-		Build(BuildScheme{Release: true, Framework: true, Static: true})
+		Build(scheme)
 		Archive()
 
-	case "update":
-		Clean()
-		Reset()
-		GetDepotTools()
-		Fetch()
-
-	case "setup":
-		GetDepotTools()
-
 	case "fetch":
+		GetDepotTools()
 		Fetch()
 
 	case "build":
-		Build(BuildScheme{Release: true, Framework: true, Static: true})
+		Build(scheme)
 
-	case "debug":
-		Build(BuildScheme{Debug: true, Framework: true, Static: true})
-
-	case "framework-debug":
-		Build(BuildScheme{Debug: true, Framework: true})
-
-	case "framework":
-		Build(BuildScheme{Release: true, Framework: true})
-
-	case "static-debug":
-		Build(BuildScheme{Debug: true, Static: true})
-
-	case "static":
-		Build(BuildScheme{Release: true, Static: true})
-
-	case "dist":
+	case "archive":
 		Archive()
 
 	case "clean":
 		Clean()
-
-	case "reset":
 		Reset()
 
 	case "help":
