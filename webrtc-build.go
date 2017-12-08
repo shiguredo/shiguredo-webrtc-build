@@ -486,20 +486,18 @@ func PrintHelp() {
 	fmt.Println("  fetch")
 	fmt.Println("        Get or update source files")
 	fmt.Println("  build")
-	fmt.Println("        Build all libraries for debug and release")
+	fmt.Println("        Build all libraries for release")
 	fmt.Println("  debug")
 	fmt.Println("        Build all libraries for debug")
-	fmt.Println("  release")
-	fmt.Println("        Build all libraries for release")
 	if isMac {
+		fmt.Println("  framework")
+		fmt.Println("        Build a framework for release")
 		fmt.Println("  framework-debug")
 		fmt.Println("        Build a framework for debug")
-		fmt.Println("  framework-release")
-		fmt.Println("        Build a framework for release")
+		fmt.Println("  static")
+		fmt.Println("        Build a static library for release")
 		fmt.Println("  static-debug")
 		fmt.Println("        Build a static library for debug")
-		fmt.Println("  static-release")
-		fmt.Println("        Build a static library for release")
 	}
 	fmt.Println("  dist")
 	fmt.Println("        Archive libraries")
@@ -545,7 +543,7 @@ func main() {
 		Reset()
 		GetDepotTools()
 		Fetch()
-		Build(BuildScheme{Debug: true, Release: true, Framework: true, Static: true})
+		Build(BuildScheme{Release: true, Framework: true, Static: true})
 		Archive()
 
 	case "update":
@@ -561,24 +559,21 @@ func main() {
 		Fetch()
 
 	case "build":
-		Build(BuildScheme{Debug: true, Release: true, Framework: true, Static: true})
+		Build(BuildScheme{Release: true, Framework: true, Static: true})
 
 	case "debug":
 		Build(BuildScheme{Debug: true, Framework: true, Static: true})
 
-	case "release":
-		Build(BuildScheme{Release: true, Framework: true, Static: true})
-
 	case "framework-debug":
 		Build(BuildScheme{Debug: true, Framework: true})
 
-	case "framework-release":
+	case "framework":
 		Build(BuildScheme{Release: true, Framework: true})
 
 	case "static-debug":
 		Build(BuildScheme{Debug: true, Static: true})
 
-	case "static-release":
+	case "static":
 		Build(BuildScheme{Release: true, Static: true})
 
 	case "dist":
