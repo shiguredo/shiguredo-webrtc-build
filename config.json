@@ -1,7 +1,7 @@
 {
     "webrtc_branch": "63",
-    "webrtc_commit": "11",
-    "webrtc_revision": "b3b6cd16aa86eaacd512ac717f8710583ceb5a44",
+    "webrtc_commit": "13",
+    "webrtc_revision": "b3fd9700eb1d5e79e7eed37db0bca2fae059fefe",
     "python": "python",
     "ios_arch": ["arm64", "arm", "x64"],
     "android_arch": ["armeabi-v7a", "arm64-v8a"]
