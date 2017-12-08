@@ -331,7 +331,9 @@ func BuildAndroidLibrary(buildConfig string) {
 	fmt.Printf("Build Android library for %s...\n", buildConfig)
 
 	fmt.Println("Patch...")
-	Patch(androidBuildScript, "patch/build_aar.py.diff")
+	if !*noPatchFlag {
+		Patch(androidBuildScript, "patch/build_aar.py.diff")
+	}
 
 	os.Chdir(WebRTCSourceDir)
 	buildDir := filepath.Join(buildDir, fmt.Sprintf("android-%s", buildConfig))
