@@ -31,6 +31,8 @@ var configFile = "config.json"
 
 var wd, _ = os.Getwd()
 
+var patchDir = filepath.Join(wd, "patch")
+
 var depotToolsURL = "https://chromium.googlesource.com/chromium/tools/depot_tools.git"
 
 var depotToolsDir = filepath.Join(wd, "webrtc/depot_tools")
@@ -203,6 +205,12 @@ type Config struct {
 	AndroidArch    []string `json:"android_arch"`
 	BuildConfig    []string `json:"build_config"`
 	ApplyPatch     bool     `json:"apply_patch"`
+	Patches        []Patch  `json:"patches"`
+}
+
+type Patch struct {
+	Patch  string `json:"patch"`
+	Target string `json:"target"`
 }
 
 var config Config
@@ -260,17 +268,10 @@ func Sync() {
 	os.Chdir(wd)
 }
 
-func Patch(diff string, target string) {
-	FailIfNotExists(diff)
+func ApplyPatch(patch string, target string) {
+	FailIfNotExists(patch)
 	FailIfNotExists(target)
-	ExecIgnore("patch", "-buN", diff, target)
-}
-
-func InitiOSBuild() {
-	if config.ApplyPatch {
-		fmt.Println("Patch...")
-		Patch(iOSBuildScript, "patch/build_ios_libs.py.diff")
-	}
+	ExecIgnore("patch", "-buN", target, patch)
 }
 
 func BuildiOSFramework(config string) {
@@ -340,11 +341,6 @@ func BuildiOSStatic(buildConfig string) {
 
 func BuildAndroidLibrary(buildConfig string) {
 	fmt.Printf("Build Android library for %s...\n", buildConfig)
-
-	fmt.Println("Patch...")
-	if config.ApplyPatch {
-		Patch(androidBuildScript, "patch/build_aar.py.diff")
-	}
 
 	os.Chdir(WebRTCSourceDir)
 	buildDir := filepath.Join(buildDir, fmt.Sprintf("android-%s", buildConfig))
@@ -426,8 +422,16 @@ type BuildScheme struct {
 }
 
 func Build(scheme BuildScheme) {
+	if config.ApplyPatch {
+		fmt.Println("Apply patches...")
+		for _, patch := range config.Patches {
+			patchFile := filepath.Join(patchDir, patch.Patch)
+			targetFile := filepath.Join(WebRTCSourceDir, patch.Target)
+			ApplyPatch(patchFile, targetFile)
+		}
+	}
+
 	if isMac {
-		InitiOSBuild()
 		if scheme.Framework {
 			if scheme.Debug {
 				BuildiOSFramework("debug")
