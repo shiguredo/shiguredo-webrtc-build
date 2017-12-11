@@ -93,20 +93,18 @@ Android 向けのビルドはいくつか注意点があります。
 
 1. シェルを Bash に変更する
 
-2. ``./webrtc-build setup`` を実行する
+2. ``./webrtc-build fetch`` を実行する。初回はライセンスの同意を求める処理で止まります
 
-3. ``./webrtc-build fetch`` を実行する。初回はライセンスの同意を求める処理で止まります
-
-4. ``webrtc`` ディレクトリ下で ``gclient sync`` を実行し、途中で表示されるライセンスに同意する。初回以降は不要です
+3. ``webrtc`` ディレクトリ下で ``gclient sync`` を実行し、途中で表示されるライセンスに同意する。初回以降は不要です
 
    ```
    $ cd webrtc
    $ ./depot_tools/gclient sync
    ```
 
-5. 再度 ``./webrtc-build fetch`` を実行する
+4. 再度 ``./webrtc-build fetch`` を実行する
 
-6. ``./webrtc-build build`` を実行する
+5. ``./webrtc-build build`` を実行する
 
 ## ビルドの設定
 
@@ -165,7 +163,7 @@ Android 向けのビルドはいくつか注意点があります。
 
 ### depot_tools のコマンド (gclient など) を使いたい
 
-``./webrtc-build setup`` でダウンロードした depot_tools は ``webrtc/depot_tools`` にダウンロードされます。コマンド検索パスにディレクトリを追加します。
+``./webrtc-build fetch`` でダウンロードした depot_tools は ``webrtc/depot_tools`` にダウンロードされます。コマンド検索パスにディレクトリを追加します。
 
 例: ``webrtc/src`` ディレクトリで depot_tools のコマンドを使う場合
 
