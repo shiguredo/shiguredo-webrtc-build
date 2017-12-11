@@ -1,71 +1,54 @@
-diff --git a/tools-webrtc/android/build_aar.py b/tools-webrtc/android/build_aar.py
-index 9db8f8f2b5..497d8c3d3c 100755
---- a/tools-webrtc/android/build_aar.py
-+++ b/tools-webrtc/android/build_aar.py
-@@ -56,6 +56,11 @@ def _ParseArgs():
+--- build_aar.py.orig	2017-12-11 22:45:27.000000000 +0900
++++ build_aar.py	2017-12-11 22:49:09.000000000 +0900
+@@ -60,6 +60,10 @@
+       help='Use goma.')
+   parser.add_argument('--verbose', action='store_true', default=False,
        help='Debug logging.')
-   parser.add_argument('--extra-gn-args', default=[], nargs='*',
-       help='Additional GN args to be used during Ninja generation.')
 +  parser.add_argument('--build_config', default='release',
 +      choices=['debug', 'release'],
 +      help='The build config. Can be "debug" or "release". '
 +           'Defaults to "release".')
-+  parser.add_argument('--tmpdir', help='Temporary directory.')
+   parser.add_argument('--extra-gn-args', default=[], nargs='*',
+       help='Additional GN args to be used during Ninja generation.')
    return parser.parse_args()
- 
- 
-@@ -114,13 +119,12 @@ def _GetArmVersion(arch):
+@@ -120,13 +124,13 @@
      raise Exception('Unknown arch: ' + arch)
  
  
--def Build(tmp_dir, arch, use_goma, extra_gn_args):
-+def Build(tmp_dir, arch, flavor, use_goma, extra_gn_args):
+-def Build(build_dir, arch, use_goma, extra_gn_args):
++def Build(build_dir, arch, build_config, use_goma, extra_gn_args):
    """Generates target architecture using GN and builds it using ninja."""
    logging.info('Building: %s', arch)
-   output_directory = _GetOutputDirectory(tmp_dir, arch)
+   output_directory = _GetOutputDirectory(build_dir, arch)
    gn_args = {
      'target_os': 'android',
 -    'is_debug': False,
++    'is_debug': build_config == 'debug',
      'is_component_build': False,
+     'rtc_include_tests': False,
      'target_cpu': _GetTargetCpu(arch),
-     'use_goma': use_goma
-@@ -128,6 +132,15 @@ def Build(tmp_dir, arch, use_goma, extra_gn_args):
-   arm_version = _GetArmVersion(arch)
-   if arm_version:
-     gn_args['arm_version'] = arm_version
-+
-+  # Add flavor option.
-+  if flavor == 'debug':
-+    gn_args['is_debug'] = True
-+  elif flavor == 'release':
-+    gn_args['is_debug'] = False
-+  else:
-+    raise ValueError('Unexpected flavor type: %s' % flavor)
-+
-   gn_args_str = '--args=' + ' '.join([
-       k + '=' + _EncodeForGN(v) for k, v in gn_args.items()] + extra_gn_args)
+@@ -171,13 +175,13 @@
+   builder.GenerateLicenseText(output_dir)
  
-@@ -162,10 +175,12 @@ def main():
+ 
+-def BuildAar(archs, output_file, use_goma=False, extra_gn_args=None,
++def BuildAar(archs, output_file, build_config, use_goma=False, extra_gn_args=None,
+              ext_build_dir=None):
+   extra_gn_args = extra_gn_args or []
+   build_dir = ext_build_dir if ext_build_dir else tempfile.mkdtemp()
+ 
+   for arch in archs:
+-    Build(build_dir, arch, use_goma, extra_gn_args)
++    Build(build_dir, arch, build_config, use_goma, extra_gn_args)
+ 
+   with zipfile.ZipFile(output_file, 'w') as aar_file:
+     # Architecture doesn't matter here, arbitrarily using the first one.
+@@ -196,7 +200,7 @@
    args = _ParseArgs()
    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
  
--  tmp_dir = tempfile.mkdtemp()
-+  tmp_dir = args.tmpdir
-+  if tmp_dir is None:
-+    tmp_dir = tempfile.mkdtemp()
+-  BuildAar(args.arch, args.output, args.use_goma, args.extra_gn_args,
++  BuildAar(args.arch, args.output, args.build_config, args.use_goma, args.extra_gn_args,
+            args.build_dir)
  
-   for arch in args.arch:
--    Build(tmp_dir, arch, args.use_goma, args.extra_gn_args)
-+    Build(tmp_dir, arch, args.build_config, args.use_goma, args.extra_gn_args)
  
-   with zipfile.ZipFile(args.output, 'w') as aar_file:
-     # Architecture doesn't matter here, arbitrarily using the first one.
-@@ -173,8 +188,6 @@ def main():
-     for arch in args.arch:
-       Collect(aar_file, tmp_dir, arch)
- 
--  shutil.rmtree(tmp_dir, True)
--
- 
- if __name__ == '__main__':
-   sys.exit(main())
