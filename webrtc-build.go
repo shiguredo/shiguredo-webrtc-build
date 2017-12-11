@@ -204,6 +204,7 @@ type Config struct {
 	IOSTargets     []string `json:"ios_targets"`
 	AndroidArch    []string `json:"android_arch"`
 	BuildConfig    []string `json:"build_config"`
+	VP9            bool     `json:"vp9"`
 	ApplyPatch     bool     `json:"apply_patch"`
 	Patches        []Patch  `json:"patches"`
 }
@@ -293,6 +294,9 @@ func ExecOSBuildScript(ty string, buildDir, buildConfig string) {
 	args := []string{config.Python, iOSBuildScript, "-o", buildDir,
 		"-b", ty, "-e", "--build_config", buildConfig, "--arch"}
 	args = append(args, config.IOSArch...)
+	if config.VP9 {
+		args = append(args, "--vp9")
+	}
 	Exec("time", args...)
 }
 
