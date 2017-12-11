@@ -24,6 +24,7 @@ Chrome の安定版のバージョンに合わせて追従していきます。 
 
 Android のビルドは Linux のみサポートされているため、一台の Mac で iOS/Android の両方のビルドはできません。
 
+- Go 1.5.1+ (``webrtc-build`` コマンドをビルドする場合)
 - iOS
   - Mac OS X 10.12.6+
   - Xcode 9.0+
@@ -44,7 +45,7 @@ Android のビルドは Linux のみサポートされているため、一台�
 
 ## 仕様
 
-- 対応する WebRTC のバージョン: M62 ([6f21dc2](https://chromium.googlesource.com/external/webrtc/+/6f21dc245689c29730002da09534a8d275e6aa92))
+- 対応する WebRTC のバージョン: M63
 - 対応するアーキテクチャ: arm64/armv7 (iOS), armeabi-v7a/arm64-v8a (Android)
 - VP9 有効
 - (iOS) Bitcode 対応
@@ -52,57 +53,35 @@ Android のビルドは Linux のみサポートされているため、一台�
 ## 使い方
 
 ``webrtc-build`` コマンドを使います。
-``all`` サブコマンドを指定すると一連の処理 (ソースの取得からビルドまで) を一括で行います。
+
+``webrtc-build`` コマンドをソースコードからビルドするには ``make`` を実行します。 Go のインストールが必要です。
 
 ```
-$ ./webrtc-build all
+$ make
 ```
 
-### 主なサブコマンド
+``webrtc-build`` の主なサブコマンドは以下の通りです。
+``fetch`` と ``build`` を順に実行してください。
 
-次の順序でサブコマンドを実行するとライブラリをビルドできます。
+### ``fetch``
+
+``fetch`` は WebRTC ライブラリのソースコードと、ビルドに必要なツール [depot_tools](https://www.chromium.org/developers/how-tos/depottools) をダウンロードします。
+
+ソースコードのダウンロードは非常に時間がかかります。
+途中で中断してしまっても、再度実行すれば途中から再開できます。
+
+### ``build``
+
+``build`` は設定ファイル (``config.json``) で指定されたパッチをソースコードに当ててからビルドします。ビルドの成果物は ``webrtc/build`` ディレクトリ以下にあります。
+
 実行するプラットフォームによってビルド対象が異なります。
 Mac OS X では iOS 向け、 Linux では Android 向けのライブラリがビルドされます。
 
-1. ``./webrtc-build setup``
+### ``clean``
 
-2. ``./webrtc-build fetch``
+``clean`` はビルドの成果物を削除し、パッチを当てたソースコードを元の状態に戻します。
 
-3. ``./webrtc-build build``
-
-4. ``./webrtc-build dist`` (任意)
-
-``./webrtc-build setup`` は WebRTC のビルドで使われるツール [depot_tools](https://www.chromium.org/developers/how-tos/depottools) をローカルに取得します。
-マシンに depot_tools がインストールされていてもこちらが使われますので、必ず実行してください。
-
-``./webrtc-build fetch`` は WebRTC のソースコードをダウンロードし、ビルドに必要となるファイルを生成します。途中で中断してしまっても、再度実行すれば再開できます。
-
-``./webrtc-build build`` はライブラリをビルドします。ビルドの成果物は ``webrtc/build`` ディレクトリ以下にあります。
-
-``./webrtc-build dist`` はビルド成果物の配布用アーカイブを生成します。このコマンドの実行は必須ではありません。
-
-### iOS ライブラリのビルド用のコマンド
-
-Mac OS X では次のコマンドで iOS 向けのライブラリを個別にビルドできます。
-
-- ``build-framework-debug``: デバッグ設定のフレームワークをビルドします。
-- ``build-framework-release``: リリース設定のフレームワークをビルドします。
-- ``build-static-debug``: デバッグ設定の静的ライブラリをビルドします。
-- ``build-static-release``: リリース設定の静的ライブラリをビルドします。
-
-### Xcode について
-
-iOS 向けライブラリのビルドは、 Xcode の代わりに WebRTC のソースコードに含まれる clang を使うようにしてあります。
-最適化の効率は Xcode と比べて落ちるかもしれませんが、 Xcode のバージョンによるビルドエラーを回避できます。
-
-### Android ライブラリのビルド用のコマンド
-
-Linux では次のコマンドで Android 向けのライブラリを個別にビルドできます。
-
-- ``build-debug``: デバッグ設定の AAR ファイルをビルドします。
-- ``build-release``: リリース設定の AAR ファイルをビルドします。
-
-### Android ライブラリのビルド手順
+## Android ライブラリのビルドについて
 
 Android 向けのビルドはいくつか注意点があります。
 
@@ -129,31 +108,42 @@ Android 向けのビルドはいくつか注意点があります。
 
 6. ``./webrtc-build build`` を実行する
 
-### その他のコマンド
-
-その他のコマンドを次に示します。 iOS/Android で共通です。
-
-- ``./webrtc-build update``: ``clean``, ``reset``, ``setup``, ``fetch`` を順に実行します。 WebRTC のリビジョンの変更時に行うと便利です。
-
-- ``./webrtc-build clean``: ビルド過程で生成されたファイルをすべて削除します。
-
-- ``./webrtc-build reset``: WebRTC のソースコードに加えられた変更をすべて破棄し、リビジョンの状態に戻します。
-
-- ``./webrtc-build help``: ヘルプメッセージを表示します。
-
-- ``./webrtc-build version``: ビルドツールのバージョンを表示します。
-
 ## ビルドの設定
 
 ``config.json`` でビルドの設定が可能です。
 リリースブランチやリビジョンを変更したときは、 ``update`` または ``all`` で既存のソースコードへの変更を破棄してから更新しておくとビルドの失敗を防げます。
 
 - ``webrtc_branch``: リリースブランチ番号。
-- ``webrtc_commit``: コミットポジション番号。ソースコードのダウンロードに影響しません。
+
+- ``webrtc_commit``: コミットポジション番号。 **ソースコードのダウンロードには影響しません。**
+
 - ``webrtc_revision``: リビジョン番号。リリースブランチの取得後、指定したリビジョンをチェックアウトします。
+
 - ``python``: Python のパス。 WebRTC のソースコードに含まれるビルドスクリプトで使われます。
-- ``ios_arch``: iOS ライブラリでサポートするアーキテクチャ。 ['arm64', 'arm', 'x64', 'x86'] から複数選択可能です。
+
+- ``ios_arch``: iOS ライブラリでサポートするアーキテクチャ。 ['arm64', 'arm', 'x64', 'x86'] から複数選択可能です。ただし、シミュレーター向けのビルドはできますが、動作はサポートされていません。
+
+- ``ios_targets``: iOS ライブラリのビルド対象。複数選択可能です。
+
+  - ``framework``: フレームワーク
+
+  - ``static``: 静的ライブラリ
+
 - ``android_arch``: Android ライブラリでサポートするアーキテクチャ。 ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'] から複数選択可能です。
+
+- ``build_config``: ビルドの用途。複数選択可能です。
+
+  - ``debug``: デバッグ用
+
+  - ``release``: リリース用
+
+- ``apply_patch``: パッチの適用の可否。
+
+- ``patches``: 適用するパッチのリスト。各パッチのフォーマットは次の要素を持つ辞書です。
+
+  - ``patch``: 適用するパッチのパス。パッチは ``patch`` ディレクトリに置いてください。
+
+  - ``target``: パッチを適用するファイル。 ``webrtc/src`` 以下のファイルを指定します。
 
 ## ビルド情報 (iOS)
 
@@ -227,35 +217,3 @@ Traceback (most recent call last):
 OSError: [Errno 2] No such file or directory
 Error: Command '/usr/bin/python src/third_party/binutils/download.py' returned non-zero exit status 1 in /home/shiguredo/sora-webrtc-build/webrtc
 ```
-
-## 新しいバージョンへの対応 (開発者向け)
-
-- コミットポジションごとに ``develop`` ブランチから新しいブランチを派生する。ブランチ名は "リリースブランチ.コミットポジション.x" とする。
-
-- ``config.json`` に WebRTC のバージョンを記述する。
-
-  ```
-  "webrtc_branch": "60",
-  "webrtc_commit": "9",
-  "webrtc_revision": "9710de31ef15f42c86ccb0d69bd245da940b16fa",
-  ```
-
-- ``webrtc-build.go`` 内で定義されているバージョンを変更する。
-
-  ```
-  // 新しいバージョンに変更する
-  var version = "60.9.1"
-  ```
-
-- CHANGES に追記する。
-
-- タグを打つ。タグ名は "リリースブランチ.コミットポジション.メンテナンス" とする。
-
-- ``develop`` ブランチにマージする。新しいブランチは削除せず、引き続き使用する。
-
-- ``make`` を実行して ``webrtc-build.go`` をビルドする。
-
-- ``make dist`` を実行する。
-  実行したプラットフォーム向けの ``sora-webrtc-build-*.tar.gz`` が生成される。
-
-- GitHub のリリースノートに ``sora-webrtc-build-*.tar.gz`` を添付する。
