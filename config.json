@@ -5,6 +5,7 @@
     "python": "python",
     "ios_arch": ["arm64", "arm", "x64"],
     "ios_targets": ["framework"],
+    "ios_bitcode": true,
     "android_arch": ["armeabi-v7a", "arm64-v8a"],
     "build_config": ["release"],
     "vp9": true,

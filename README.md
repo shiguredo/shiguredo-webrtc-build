@@ -127,6 +127,8 @@ Android 向けのビルドはいくつか注意点があります。
 
   - ``static``: 静的ライブラリ
 
+- ``ios_bitcode``: Bitcode の可否。 Bitcode を有効にすると、ビルドしたバイナリのサイズが数百 MB になる可能性があります。
+
 - ``android_arch``: Android ライブラリでサポートするアーキテクチャ。 ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'] から複数選択可能です。
 
 - ``build_config``: ビルドの用途。複数選択可能です。

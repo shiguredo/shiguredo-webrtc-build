@@ -202,6 +202,7 @@ type Config struct {
 	Python         string   `json:"python"`
 	IOSArch        []string `json:"ios_arch"`
 	IOSTargets     []string `json:"ios_targets"`
+	IOSBitcode     bool     `json:"ios_bitcode"`
 	AndroidArch    []string `json:"android_arch"`
 	BuildConfig    []string `json:"build_config"`
 	VP9            bool     `json:"vp9"`
@@ -292,8 +293,11 @@ func BuildiOSFramework(config string) {
 
 func ExecOSBuildScript(ty string, buildDir, buildConfig string) {
 	args := []string{config.Python, iOSBuildScript, "-o", buildDir,
-		"-b", ty, "-e", "--build_config", buildConfig, "--arch"}
+		"-b", ty, "--build_config", buildConfig, "--arch"}
 	args = append(args, config.IOSArch...)
+	if config.IOSBitcode {
+		args = append(args, "--bitcode")
+	}
 	if config.VP9 {
 		args = append(args, "--vp9")
 	}
