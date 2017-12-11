@@ -24,7 +24,7 @@ Chrome の安定版のバージョンに合わせて追従していきます。 
 
 Android のビルドは Linux のみサポートされているため、一台の Mac で iOS/Android の両方のビルドはできません。
 
-- Go 1.5.1+ (``webrtc-build`` コマンドをビルドする場合)
+- Go 1.9.2+ (``webrtc-build`` コマンドをビルドする場合)
 - iOS
   - Mac OS X 10.12.6+
   - Xcode 9.0+
