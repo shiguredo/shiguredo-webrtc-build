@@ -489,8 +489,6 @@ func Reset() {
 func PrintHelp() {
 	fmt.Println("Usage: build [options] <command>")
 	fmt.Println("\nCommands:")
-	fmt.Println("  all")
-	fmt.Println("        clean, build, archive")
 	fmt.Println("  fetch")
 	fmt.Println("        Get depot_tools and source files")
 	fmt.Println("  build")
@@ -540,14 +538,6 @@ func main() {
 
 	subcmd := flag.Arg(0)
 	switch subcmd {
-	case "all":
-		Clean()
-		Reset()
-		GetDepotTools()
-		Fetch()
-		Build(scheme)
-		Archive()
-
 	case "fetch":
 		GetDepotTools()
 		Fetch()
