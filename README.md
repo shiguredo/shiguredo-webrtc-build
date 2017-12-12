@@ -99,7 +99,7 @@ Android 向けのビルドはいくつか注意点があります。
 
    ```
    $ cd webrtc
-   $ ./depot_tools/gclient sync
+   $ PATH=./depot_tools:$PATH gclient sync
    ```
 
 4. 再度 ``./webrtc-build fetch`` を実行する
