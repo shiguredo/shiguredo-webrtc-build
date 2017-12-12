@@ -47,8 +47,8 @@ Android のビルドは Linux のみサポートされているため、一台�
 
 - 対応する WebRTC のバージョン: M63
 - 対応するアーキテクチャ: arm64/armv7 (iOS), armeabi-v7a/arm64-v8a (Android)
-- VP9 有効
-- (iOS) Bitcode 対応
+- VP9 対応 (可否を指定可)
+- (iOS) Bitcode 対応 (可否を指定可)
 
 ## 使い方
 
