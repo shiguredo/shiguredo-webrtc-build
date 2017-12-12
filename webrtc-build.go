@@ -356,7 +356,7 @@ func BuildAndroidLibrary(buildConfig string) {
 	libaar := buildDir + "/" + androidAARName
 	Execf("mkdir -p %s", buildDir)
 	args := []string{config.Python, androidBuildScript,
-		"--output", libaar, "--tmpdir", tempDir,
+		"--output", libaar, "--build-dir", tempDir,
 		"--build_config", buildConfig, "--arch"}
 	args = append(args, config.AndroidArch...)
 	Exec("time", args...)
