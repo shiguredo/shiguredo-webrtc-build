@@ -222,9 +222,10 @@ func LoadConfig() {
 	FailIf(err)
 	json.Unmarshal(raw, &config)
 
-	iOSArchive = fmt.Sprintf("sora-webrtc-%s-ios", version)
+	info := fmt.Sprintf("%s.%s", config.WebRTCBranch, config.WebRTCCommit)
+	iOSArchive = fmt.Sprintf("sora-webrtc-%s-ios", info)
 	iOSArchiveZip = iOSArchive + ".zip"
-	androidArchive = fmt.Sprintf("sora-webrtc-%s-android", version)
+	androidArchive = fmt.Sprintf("sora-webrtc-%s-android", info)
 	androidArchiveZip = androidArchive + ".zip"
 }
 
