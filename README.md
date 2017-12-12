@@ -219,3 +219,35 @@ Traceback (most recent call last):
 OSError: [Errno 2] No such file or directory
 Error: Command '/usr/bin/python src/third_party/binutils/download.py' returned non-zero exit status 1 in /home/shiguredo/sora-webrtc-build/webrtc
 ```
+
+### ``gclient sync``: ``Check that PATH/webrtc or download_from_google_storage exist and have execution permission.``
+
+depot_tools のコマンドのパスが検索パスに含まれていない可能性があります。
+
+```
+$ ./depot_tools/gclient sync
+Syncing projects: 100% (43/43), done.
+Traceback (most recent call last):
+  File "./depot_tools/gclient.py", line 2681, in <module>
+    sys.exit(main(sys.argv[1:]))
+  File "./depot_tools/gclient.py", line 2667, in main
+    return dispatcher.execute(OptionParser(), argv)
+  File "/home/shiguredo/sora-webrtc-build/webrtc/depot_tools/subcommand.py", line 252, in execute
+    return command(parser, args[1:])
+  File "./depot_tools/gclient.py", line 2422, in CMDsync
+    ret = client.RunOnDeps('update', args)
+  File "./depot_tools/gclient.py", line 1512, in RunOnDeps
+    self.RunHooksRecursively(self._options, pm)
+  File "./depot_tools/gclient.py", line 1032, in RunHooksRecursively
+    hook.run(self.root.root_dir)
+  File "./depot_tools/gclient.py", line 218, in run
+    cmd, cwd=cwd, always=self._verbose)
+  File "/home/shiguredo/sora-webrtc-build/webrtc/depot_tools/gclient_utils.py", line 314, in CheckCallAndFilterAndHeader
+    return CheckCallAndFilter(args, **kwargs)
+  File "/home/shiguredo/sora-webrtc-build/webrtc/depot_tools/gclient_utils.py", line 509, in CheckCallAndFilter
+    **kwargs)
+  File "/home/shiguredo/sora-webrtc-build/webrtc/depot_tools/subprocess2.py", line 262, in __init__
+    % (str(e), kwargs.get('cwd'), args[0]))
+OSError: Execution failed with error: [Errno 2] No such file or directory.
+Check that /home/shiguredo/sora-webrtc-build/webrtc or download_from_google_storage exist and have execution permission.
+```
