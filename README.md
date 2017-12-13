@@ -185,6 +185,28 @@ export PATH=../depot_tools:$PATH
 パッチの適用後に ``./webrtc-build fetch`` を実行すると、リポジトリに変更があるために指定のリビジョンをチェックアウトできずにエラーになります。
 ``./webrtc-build reset`` を実行して、リポジトリの変更を戻してから再度 ``./webrtc-build fetch`` を実行してください。
 
+### ``./webrtc-build fetch``: ``stdout:Do you accept the license for version 11.2.0 of the Google Play services client library? [y/n]``
+
+このエラーは Linux でのみ (``webrtc-build`` を Android 向けに実行する場合のみ) 、 Google Play に関するライセンスへの同意を求められるときに発生します。
+``gclient sync`` を実行して、ライセンスに同意して引き続きダウンロードしてください。
+詳しくは上記の Android ライブラリのビルドを参照してください。
+
+```
+stdout:December 9, 2016
+stdout:
+stdout:Do you accept the license for version 11.2.0 of the Google Play services client library? [y/n]:
+stdout:> Traceback (most recent call last):
+stdout:  File "src/build/android/play_services/update.py", line 524, in <module>
+stdout:    sys.exit(main(sys.argv[1:]))
+stdout:  File "src/build/android/play_services/update.py", line 98, in main
+stdout:    return args.func(args)
+stdout:  File "src/build/android/play_services/update.py", line 191, in Download
+stdout:    config.version_number)):
+stdout:  File "src/build/android/play_services/update.py", line 399, in _CheckLicenseAgreement
+stdout:    return raw_input('> ') in ('Y', 'y')
+stdout:EOFError: EOF when reading a line
+```
+
 ### ``./webrtc-build build``: ``stderr:.gclient file in parent directory XXX might not be the file you want to use``
 
 このエラーが出たら冒頭の方法を試してみてください。
@@ -251,3 +273,4 @@ Traceback (most recent call last):
 OSError: Execution failed with error: [Errno 2] No such file or directory.
 Check that /home/shiguredo/sora-webrtc-build/webrtc or download_from_google_storage exist and have execution permission.
 ```
+
