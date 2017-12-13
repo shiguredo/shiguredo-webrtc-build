@@ -1,22 +1,20 @@
-diff --git a/tools-webrtc/ios/build_ios_libs.py b/tools-webrtc/ios/build_ios_libs.py
-index 734f3e216..2303a8c6e 100755
---- a/tools-webrtc/ios/build_ios_libs.py
-+++ b/tools-webrtc/ios/build_ios_libs.py
-@@ -32,7 +32,7 @@ SDK_FRAMEWORK_NAME = 'WebRTC.framework'
+--- build_ios_libs.py.orig	2017-12-11 22:17:46.000000000 +0900
++++ build_ios_libs.py	2017-12-11 22:18:11.000000000 +0900
+@@ -63,6 +63,8 @@
+       help='Specifies a revision number to embed if building the framework.')
+   parser.add_argument('-e', '--bitcode', action='store_true', default=False,
+       help='Compile with bitcode.')
++  parser.add_argument('--vp9', action='store_true', default=False,
++      help='Enables VP9.')
+   parser.add_argument('--verbose', action='store_true', default=False,
+       help='Debug logging.')
+   parser.add_argument('--use-goma', action='store_true', default=False,
+@@ -176,7 +178,7 @@
+   # Build all architectures.
+   for arch in architectures:
+     BuildWebRTC(args.output_dir, arch, args.build_config, gn_target_name,
+-                IOS_DEPLOYMENT_TARGET, LIBVPX_BUILD_VP9, args.bitcode,
++                IOS_DEPLOYMENT_TARGET, args.vp9, args.bitcode,
+                 args.use_goma, gn_args, args.build_type == 'static_only')
  
- DEFAULT_ARCHS = ENABLED_ARCHS = ['arm64', 'arm', 'x64', 'x86']
- IOS_DEPLOYMENT_TARGET = '8.0'
--LIBVPX_BUILD_VP9 = False
-+LIBVPX_BUILD_VP9 = True
- 
- 
- def _ParseArgs():
-@@ -95,7 +95,7 @@ def BuildWebRTC(output_dir, target_arch, flavor, build_type,
-                 use_goma, extra_gn_args):
-   output_dir = os.path.join(output_dir, target_arch + '_libs')
-   gn_args = ['target_os="ios"', 'ios_enable_code_signing=false',
--             'use_xcode_clang=true', 'is_component_build=false']
-+             'use_xcode_clang=false', 'is_component_build=false']
- 
-   # Add flavor option.
-   if flavor == 'debug':
+   # Create FAT archive.
