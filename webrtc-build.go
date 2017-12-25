@@ -47,6 +47,8 @@ var WebRTCSourceDir = filepath.Join(WebRTCDir, "src")
 
 var gclientConfig = filepath.Join(WebRTCDir, ".gclient")
 
+var gclientEntries = filepath.Join(WebRTCDir, ".gclient_entries")
+
 var buildDir = filepath.Join(WebRTCDir, "build")
 
 var distDir = filepath.Join(WebRTCDir, "dist")
@@ -572,6 +574,10 @@ func main() {
 		Fetch()
 
 	case "build":
+		if !Exists(gclientConfig) || !Exists(gclientEntries) {
+			fmt.Printf("Error: webrtc/.gclient or webrtc/.gclient_entries are not found. Do './webrtc-build fetch'.\n")
+			os.Exit(1)
+		}
 		Build(scheme)
 
 	case "archive":
