@@ -201,6 +201,7 @@ type Config struct {
 	WebRTCBranch   string   `json:"webrtc_branch"`
 	WebRTCCommit   string   `json:"webrtc_commit"`
 	WebRTCRevision string   `json:"webrtc_revision"`
+	MaintVersion   string   `json:"maint_version"`
 	Python         string   `json:"python"`
 	IOSArch        []string `json:"ios_arch"`
 	IOSTargets     []string `json:"ios_targets"`
@@ -218,16 +219,17 @@ type Patch struct {
 }
 
 var config Config
+var webRTCLibVersion string
 
 func LoadConfig() {
 	raw, err := ioutil.ReadFile(configFile)
 	FailIf(err)
 	json.Unmarshal(raw, &config)
 
-	info := fmt.Sprintf("%s.%s", config.WebRTCBranch, config.WebRTCCommit)
-	iOSArchive = fmt.Sprintf("sora-webrtc-%s-ios", info)
+	webRTCLibVersion = fmt.Sprintf("%s.%s.%s", config.WebRTCBranch, config.WebRTCCommit, config.MaintVersion)
+	iOSArchive = fmt.Sprintf("sora-webrtc-%s-ios", webRTCLibVersion)
 	iOSArchiveZip = iOSArchive + ".zip"
-	androidArchive = fmt.Sprintf("sora-webrtc-%s-android", info)
+	androidArchive = fmt.Sprintf("sora-webrtc-%s-android", webRTCLibVersion)
 	androidArchiveZip = androidArchive + ".zip"
 }
 
@@ -583,7 +585,7 @@ func main() {
 		PrintHelp()
 
 	case "version":
-		fmt.Println(fullVersion)
+		fmt.Printf("webrtc-build %s, library %s\n", fullVersion, webRTCLibVersion)
 
 	case "selfdist":
 		dist := fmt.Sprintf("sora-webrtc-build-%s", fullVersion)
