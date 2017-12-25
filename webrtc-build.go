@@ -45,6 +45,8 @@ var WebRTCDir = filepath.Join(wd, "webrtc")
 
 var WebRTCSourceDir = filepath.Join(WebRTCDir, "src")
 
+var gclientConfig = filepath.Join(WebRTCDir, ".gclient")
+
 var buildDir = filepath.Join(WebRTCDir, "build")
 
 var distDir = filepath.Join(WebRTCDir, "dist")
@@ -239,27 +241,48 @@ func GetDepotTools() {
 	}
 }
 
-func ConfigGclient() {
-	os.Chdir("webrtc")
-	fmt.Println("Configure gclient...")
-	Exec(gclient, "config", "--unmanaged", "--name=src", WebRTCURL)
-	if file, err := os.OpenFile(".gclient", os.O_RDWR|os.O_APPEND, 0755); FailIf(err) {
-		if isMac {
-			FailIf2(file.WriteString("target_os = ['ios']"))
-		} else {
-			FailIf2(file.WriteString("target_os = ['android']"))
-		}
-		file.Close()
-	}
-	os.Chdir(wd)
-}
-
-func Sync() {
+func Fetch() {
 	fmt.Printf("Checkout the code with release branch M%s (%s)...\n",
 		config.WebRTCBranch, config.WebRTCRevision)
-	if !Exists(WebRTCSourceDir) {
-		FailIf(os.Mkdir(WebRTCSourceDir, 0755))
+
+	// fetch コマンドの内容を手動で実行する
+	// fetch は中断に対応していない (再実行するとエラーになる)
+	os.Chdir(WebRTCDir)
+	if isMac {
+		Exec(gclient, "config", "--spec",
+			"solutions = [\n"+
+				"  {\n"+
+				"    \"url\": \"https://webrtc.googlesource.com/src.git\",\n"+
+				"    \"managed\": False,\n"+
+				"    \"name\": \"src\",\n"+
+				"    \"deps_file\": \"DEPS\",\n"+
+				"    \"custom_deps\": {},\n"+
+				"  },\n"+
+				"]\n"+
+				"target_os = [\"ios\", \"mac\"]\n")
+	} else if isLinux {
+		Exec(gclient, "config", "--spec",
+			"solutions = [\n"+
+				"  {\n"+
+				"    \"url\": \"https://webrtc.googlesource.com/src.git\",\n"+
+				"    \"managed\": False,\n"+
+				"    \"name\": \"src\",\n"+
+				"    \"deps_file\": \"DEPS\",\n"+
+				"    \"custom_deps\": {},\n"+
+				"  },\n"+
+				"]\n"+
+				"target_os = [\"android\", \"linux\"]\n")
+	} else {
+		panic("unsupported OS")
 	}
+
+	Exec(gclient, "sync", "--nohooks", "--with_branch_heads", "-v", "-R")
+	Exec("git", "submodule", "foreach", "'git config -f $toplevel/.git/config submodule.$name.ignore all'")
+	Exec("git", "config", "--add", "remote.origin.fetch", "'+refs/tags/*:refs/tags/*'")
+	Exec("git", "config", "diff.ignoreSubmodules", "all")
+
+	// end fetch
+
 	os.Chdir(WebRTCSourceDir)
 	Exec("git", "fetch", "origin")
 	Exec("git", "checkout", "-B",
@@ -419,11 +442,6 @@ func ArchiveAndroidProducts() {
 	// archive
 	Exec("mv", distDir, androidArchive)
 	Exec("zip", "-rq", androidArchiveZip, androidArchive)
-}
-
-func Fetch() {
-	ConfigGclient()
-	Sync()
 }
 
 type BuildScheme struct {
