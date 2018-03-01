@@ -63,6 +63,12 @@ $ make
 ``webrtc-build`` の主なサブコマンドは以下の通りです。
 ``fetch`` と ``build`` を順に実行してください。
 
+### コマンドラインオプション
+
+- ``-h``: ヘルプメッセージを表示します。
+
+- ``-config`: 設定ファイルを指定します。デフォルトは ``config.json`` です。
+
 ### ``fetch``
 
 ``fetch`` は WebRTC ライブラリのソースコードと、ビルドに必要なツール [depot_tools](https://www.chromium.org/developers/how-tos/depottools) をダウンロードします。
