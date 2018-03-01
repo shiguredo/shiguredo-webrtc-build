@@ -27,7 +27,7 @@ var isMac = false
 
 var isLinux = false
 
-var configFile = "config.json"
+var defaultConfigFile = "config.json"
 
 var wd, _ = os.Getwd()
 
@@ -224,7 +224,7 @@ var config Config
 var webRTCLibVersion string
 
 func LoadConfig() {
-	raw, err := ioutil.ReadFile(configFile)
+	raw, err := ioutil.ReadFile(*configOpt)
 	FailIf(err)
 	json.Unmarshal(raw, &config)
 
@@ -536,6 +536,8 @@ func PrintHelp() {
 	flag.PrintDefaults()
 }
 
+var configOpt = flag.String("config", defaultConfigFile, "configuration file")
+
 func main() {
 	if runtime.GOOS == "darwin" {
 		isMac = true
@@ -548,7 +550,7 @@ func main() {
 
 	flag.Parse()
 
-	if len(os.Args) <= 1 {
+	if flag.NArg() < 1 {
 		PrintHelp()
 		os.Exit(1)
 	}
