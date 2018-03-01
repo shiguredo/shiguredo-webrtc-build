@@ -185,7 +185,7 @@ export PATH=../depot_tools:$PATH
 ### ``./webrtc-build fetch``: ``stderr:error: Your local changes to the following files would be overwritten by checkout``
 
 パッチの適用後に ``./webrtc-build fetch`` を実行すると、リポジトリに変更があるために指定のリビジョンをチェックアウトできずにエラーになります。
-``./webrtc-build reset`` を実行して、リポジトリの変更を戻してから再度 ``./webrtc-build fetch`` を実行してください。
+``./webrtc-build clean`` を実行して、リポジトリの変更を戻してから再度 ``./webrtc-build fetch`` を実行してください。
 
 ### ``./webrtc-build fetch``: ``stdout:Do you accept the license for version 11.2.0 of the Google Play services client library? [y/n]``
 
