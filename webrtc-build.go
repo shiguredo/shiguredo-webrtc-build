@@ -8,11 +8,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	. "github.com/shiguredo/yspata"
 	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"sync"
@@ -21,52 +21,48 @@ import (
 
 var version = "1.0.1"
 
-var fullVersion string
-
-var isMac = false
-
-var isLinux = false
+var fullVersion = FullVersion(version)
 
 var defaultConfigFile = "config.json"
 
 var wd, _ = os.Getwd()
 
-var patchDir = filepath.Join(wd, "patch")
+var patchDir = Join(wd, "patch")
 
 var depotToolsURL = "https://chromium.googlesource.com/chromium/tools/depot_tools.git"
 
-var depotToolsDir = filepath.Join(wd, "webrtc/depot_tools")
+var depotToolsDir = Join(wd, "webrtc/depot_tools")
 
-var gclient = filepath.Join(depotToolsDir, "gclient")
+var gclient = Join(depotToolsDir, "gclient")
 
 var WebRTCURL = "https://chromium.googlesource.com/external/webrtc"
 
-var WebRTCDir = filepath.Join(wd, "webrtc")
+var WebRTCDir = Join(wd, "webrtc")
 
-var WebRTCSourceDir = filepath.Join(WebRTCDir, "src")
+var WebRTCSourceDir = Join(WebRTCDir, "src")
 
-var gclientConfig = filepath.Join(WebRTCDir, ".gclient")
+var gclientConfig = Join(WebRTCDir, ".gclient")
 
-var gclientEntries = filepath.Join(WebRTCDir, ".gclient_entries")
+var gclientEntries = Join(WebRTCDir, ".gclient_entries")
 
-var buildDir = filepath.Join(WebRTCDir, "build")
+var buildDir = Join(WebRTCDir, "build")
 
-var distDir = filepath.Join(WebRTCDir, "dist")
+var distDir = Join(WebRTCDir, "dist")
 
-var distDiriOSDebug = filepath.Join(distDir, "ios-debug")
+var distDiriOSDebug = Join(distDir, "ios-debug")
 
-var distDiriOSRelease = filepath.Join(distDir, "ios-release")
+var distDiriOSRelease = Join(distDir, "ios-release")
 
-var distDiriOSCarthage = filepath.Join(distDir, "ios-carthage")
+var distDiriOSCarthage = Join(distDir, "ios-carthage")
 
-var distDirAndroidDebug = filepath.Join(distDir, "android-debug")
+var distDirAndroidDebug = Join(distDir, "android-debug")
 
-var distDirAndroidRelease = filepath.Join(distDir, "android-release")
+var distDirAndroidRelease = Join(distDir, "android-release")
 
-var iOSBuildScript = filepath.Join(WebRTCSourceDir,
+var iOSBuildScript = Join(WebRTCSourceDir,
 	"tools_webrtc/ios/build_ios_libs.py")
 
-var buildInfo = filepath.Join(buildDir, "build_info.json")
+var buildInfo = Join(buildDir, "build_info.json")
 
 var iOSFrameworkName = "WebRTC.framework"
 
@@ -74,7 +70,7 @@ var iOSDsymName = "WebRTC.dSYM"
 
 var iOSStaticName = "librtc_sdk_objc.a"
 
-var iOSHeaderDir = filepath.Join(WebRTCSourceDir,
+var iOSHeaderDir = Join(WebRTCSourceDir,
 	"webrtc/sdk/objc/Framework/Headers/WebRTC")
 
 var iOSArchive string
@@ -85,7 +81,7 @@ var iOSCarthageFile = iOSFrameworkName
 
 var iOSCarthageFileZip = iOSCarthageFile + ".zip"
 
-var androidBuildScript = filepath.Join(WebRTCSourceDir,
+var androidBuildScript = Join(WebRTCSourceDir,
 	"tools_webrtc/android/build_aar.py")
 
 var androidArchive string
@@ -93,27 +89,6 @@ var androidArchive string
 var androidArchiveZip string
 
 var androidAARName = "libwebrtc.aar"
-
-func containsString(list []string, s string) bool {
-	for _, e := range list {
-		if e == s {
-			return true
-		}
-	}
-	return false
-}
-
-func Exists(filename string) bool {
-	_, err := os.Stat(filename)
-	return err == nil
-}
-
-func FailIfNotExists(filename string) {
-	if !Exists(filename) {
-		fmt.Printf("Error: File '%s' is not found\n", filename)
-		os.Exit(1)
-	}
-}
 
 // https://github.com/hnakamur/execcommandexample
 func RunCommand(name string, arg ...string) (stdout, stderr string, exitCode int, err error) {
@@ -159,14 +134,14 @@ func RunCommand(name string, arg ...string) (stdout, stderr string, exitCode int
 func PrintOutputWithHeader(header string, r io.Reader) {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
-		fmt.Printf("%s%s\n", header, scanner.Text())
+		Printf("%s%s", header, scanner.Text())
 	}
 }
 
 func Exec(name string, arg ...string) string {
 	fmt.Printf("# %s %s\n", name, strings.Join(arg, " "))
 	stdout, _, _, err := RunCommand(name, arg...)
-	FailIf(err)
+	FailIf(err, "exec failed")
 	return stdout
 }
 
@@ -185,18 +160,6 @@ func ExecIgnoref(format string, arg ...interface{}) {
 	cmd := fmt.Sprintf(format, arg...)
 	args := strings.Split(cmd, " ")
 	ExecIgnore(args[0], args[1:]...)
-}
-
-func FailIf(err error) bool {
-	if err != nil {
-		fmt.Printf("Error: %s\n", err)
-		os.Exit(1)
-	}
-	return true
-}
-
-func FailIf2(_ interface{}, err error) {
-	FailIf(err)
 }
 
 type Config struct {
@@ -225,7 +188,7 @@ var webRTCLibVersion string
 
 func LoadConfig() {
 	raw, err := ioutil.ReadFile(*configOpt)
-	FailIf(err)
+	FailIf(err, "cannot read config file")
 	json.Unmarshal(raw, &config)
 
 	webRTCLibVersion = fmt.Sprintf("%s.%s.%s", config.WebRTCBranch, config.WebRTCCommit, config.MaintVersion)
@@ -246,13 +209,13 @@ func GetDepotTools() {
 }
 
 func Fetch() {
-	fmt.Printf("Checkout the code with release branch M%s (%s)...\n",
+	Printf("Checkout the code with release branch M%s (%s)...",
 		config.WebRTCBranch, config.WebRTCRevision)
 
 	// fetch コマンドの内容を手動で実行する
 	// fetch は中断に対応していない (再実行するとエラーになる)
 	os.Chdir(WebRTCDir)
-	if isMac {
+	if IsMac {
 		Exec(gclient, "config", "--spec",
 			"solutions = [\n"+
 				"  {\n"+
@@ -264,7 +227,7 @@ func Fetch() {
 				"  },\n"+
 				"]\n"+
 				"target_os = [\"ios\", \"mac\"]\n")
-	} else if isLinux {
+	} else if IsLinux {
 		Exec(gclient, "config", "--spec",
 			"solutions = [\n"+
 				"  {\n"+
@@ -305,15 +268,15 @@ func ApplyPatch(patch string, target string) {
 }
 
 func BuildiOSFramework(config string) {
-	fmt.Printf("Build iOS framework for %s...\n", config)
+	Printf("Build iOS framework for %s...", config)
 	os.Chdir(WebRTCSourceDir)
-	buildDir := filepath.Join(buildDir, fmt.Sprintf("ios-framework-%s", config))
+	buildDir := Join(buildDir, fmt.Sprintf("ios-framework-%s", config))
 	Execf("rm -rf %s %s %s",
-		filepath.Join(buildDir, iOSFrameworkName),
-		filepath.Join(buildDir, iOSDsymName),
-		filepath.Join(buildDir, "arm64_libs", iOSFrameworkName),
-		filepath.Join(buildDir, "arm_libs", iOSFrameworkName),
-		filepath.Join(buildDir, "x64_libs", iOSFrameworkName))
+		Join(buildDir, iOSFrameworkName),
+		Join(buildDir, iOSDsymName),
+		Join(buildDir, "arm64_libs", iOSFrameworkName),
+		Join(buildDir, "arm_libs", iOSFrameworkName),
+		Join(buildDir, "x64_libs", iOSFrameworkName))
 	ExecOSBuildScript("framework", buildDir, config)
 	os.Chdir(wd)
 	GenerateBuildInfo(buildDir + "/" + iOSFrameworkName)
@@ -334,40 +297,40 @@ func ExecOSBuildScript(ty string, buildDir, buildConfig string) {
 
 func GenerateBuildInfo(destDir string) {
 	fmt.Println("Generate build_info.json...")
-	if file, err := os.OpenFile(buildInfo, os.O_RDWR|os.O_CREATE, 0755); FailIf(err) {
-		body := fmt.Sprintf("{\n"+
-			"    \"webrtc_version\" : \"%s\",\n"+
-			"    \"webrtc_revision\" : \"%s\"\n"+
-			"}",
-			config.WebRTCBranch, config.WebRTCRevision)
-		FailIf2(file.WriteString(body))
-		file.Close()
-		ExecIgnore("cp", buildInfo, destDir)
-	}
+	file := OpenFile(buildInfo, os.O_RDWR|os.O_CREATE, 0755)
+	body := fmt.Sprintf("{\n"+
+		"    \"webrtc_version\" : \"%s\",\n"+
+		"    \"webrtc_revision\" : \"%s\"\n"+
+		"}",
+		config.WebRTCBranch, config.WebRTCRevision)
+	_, err := file.WriteString(body)
+	FailIf(err, "fail write string")
+	file.Close()
+	ExecIgnore("cp", buildInfo, destDir)
 }
 
 func BuildiOSStatic(buildConfig string) {
-	fmt.Printf("Build iOS static library for %s...\n", buildConfig)
+	Printf("Build iOS static library for %s...", buildConfig)
 	os.Chdir(WebRTCSourceDir)
-	buildDir := filepath.Join(buildDir, fmt.Sprintf("ios-static-%s", buildConfig))
-	includeDir := filepath.Join(buildDir, "include")
+	buildDir := Join(buildDir, fmt.Sprintf("ios-static-%s", buildConfig))
+	includeDir := Join(buildDir, "include")
 	Execf("rm -rf %s %s %s %s",
-		filepath.Join(buildDir, iOSStaticName),
+		Join(buildDir, iOSStaticName),
 		includeDir,
-		filepath.Join(buildDir, "arm64_libs", iOSStaticName),
-		filepath.Join(buildDir, "arm64_libs", "include"))
+		Join(buildDir, "arm64_libs", iOSStaticName),
+		Join(buildDir, "arm64_libs", "include"))
 	ExecOSBuildScript("static_only", buildDir, buildConfig)
 
 	if !Exists(includeDir) {
-		FailIf(os.Mkdir(includeDir, 0755))
+		FailIf(os.Mkdir(includeDir, 0755), "cannot mkdir")
 	}
 	headerDirHandle, err1 := os.Open(iOSHeaderDir)
-	FailIf(err1)
+	FailIf(err1, "cannot open %s", iOSHeaderDir)
 	infos, err2 := headerDirHandle.Readdir(0)
-	FailIf(err2)
+	FailIf(err2, "cannot read")
 	for _, info := range infos {
 		if !info.IsDir() && strings.HasSuffix(info.Name(), ".h") {
-			Execf("cp %s %s", filepath.Join(iOSHeaderDir, info.Name()), includeDir)
+			Execf("cp %s %s", Join(iOSHeaderDir, info.Name()), includeDir)
 		}
 	}
 
@@ -376,10 +339,10 @@ func BuildiOSStatic(buildConfig string) {
 }
 
 func BuildAndroidLibrary(buildConfig string) {
-	fmt.Printf("Build Android library for %s...\n", buildConfig)
+	Printf("Build Android library for ...", buildConfig)
 
 	os.Chdir(WebRTCSourceDir)
-	buildDir := filepath.Join(buildDir, fmt.Sprintf("android-%s", buildConfig))
+	buildDir := Join(buildDir, fmt.Sprintf("android-%s", buildConfig))
 	tempDir := buildDir + "/build"
 	libaar := buildDir + "/" + androidAARName
 	Execf("mkdir -p %s", buildDir)
@@ -400,13 +363,13 @@ func ArchiveiOSProducts() {
 	Exec("mkdir", distDiriOSCarthage)
 
 	// framework
-	var frameworkDebug = filepath.Join(buildDir,
+	var frameworkDebug = Join(buildDir,
 		"ios-framework-debug", iOSFrameworkName)
-	var frameworkRelease = filepath.Join(buildDir,
+	var frameworkRelease = Join(buildDir,
 		"ios-framework-release", iOSFrameworkName)
-	var dsymDebug = filepath.Join(buildDir,
+	var dsymDebug = Join(buildDir,
 		"ios-framework-debug", iOSDsymName)
-	var dsymRelease = filepath.Join(buildDir,
+	var dsymRelease = Join(buildDir,
 		"ios-framework-release", iOSDsymName)
 	Exec("cp", "-r", frameworkDebug, distDiriOSDebug)
 	Exec("cp", "-r", frameworkRelease, distDiriOSRelease)
@@ -456,13 +419,13 @@ func Build(scheme BuildScheme) {
 	if config.ApplyPatch {
 		fmt.Println("Apply patches...")
 		for _, patch := range config.Patches {
-			patchFile := filepath.Join(patchDir, patch.Patch)
-			targetFile := filepath.Join(WebRTCSourceDir, patch.Target)
+			patchFile := Join(patchDir, patch.Patch)
+			targetFile := Join(WebRTCSourceDir, patch.Target)
 			ApplyPatch(patchFile, targetFile)
 		}
 	}
 
-	if isMac {
+	if IsMac {
 		if scheme.Framework {
 			if scheme.Debug {
 				BuildiOSFramework("debug")
@@ -490,7 +453,7 @@ func Build(scheme BuildScheme) {
 }
 
 func Archive() {
-	if isMac {
+	if IsMac {
 		ArchiveiOSProducts()
 	} else {
 		ArchiveAndroidProducts()
@@ -502,8 +465,8 @@ func Clean() {
 		iOSArchive, iOSArchiveZip, androidArchive, androidArchiveZip,
 		"webrtc/src/testing/gmock",
 		"webrtc/src/testing/gtest",
-		filepath.Join(WebRTCDir, ".gclient"),
-		filepath.Join(WebRTCDir, ".gclient_entries"))
+		Join(WebRTCDir, ".gclient"),
+		Join(WebRTCDir, ".gclient_entries"))
 }
 
 func Reset() {
@@ -512,39 +475,38 @@ func Reset() {
 		"webrtc/src/webrtc",
 		"webrtc/src/tools_webrtc"}
 	for _, dir := range dirs {
-		fmt.Printf("Discard changes of %s...\n", dir)
+		Printf("Discard changes of %s...", dir)
 		Exec("git", "-C", dir, "checkout", "--", ".")
 	}
 }
 
 func PrintHelp() {
-	fmt.Println("Usage: build [options] <command>")
-	fmt.Println("\nCommands:")
-	fmt.Println("  fetch")
-	fmt.Println("        Get depot_tools and source files")
-	fmt.Println("  build")
-	fmt.Println("        Build libraries")
-	fmt.Println("  archive")
-	fmt.Println("        Archive libraries")
-	fmt.Println("  clean")
-	fmt.Println("        Remove all built files and discard all changes")
-	fmt.Println("  help")
-	fmt.Println("        Print this message")
-	fmt.Println("  version")
-	fmt.Println("        Print version")
-	fmt.Println("\nOptions:")
+	PrintLines(
+		"Usage: build [options] <command>",
+		"",
+		"Commands:",
+		"  fetch",
+		"        Get depot_tools and source files",
+		"  build",
+		"        Build libraries",
+		"  archive",
+		"        Archive libraries",
+		"  clean",
+		"        Remove all built files and discard all changes",
+		"  help",
+		"        Print this message",
+		"  version",
+		"        Print version",
+		"",
+		"Options:")
 	flag.PrintDefaults()
 }
 
 var configOpt = flag.String("config", defaultConfigFile, "configuration file")
 
 func main() {
-	if runtime.GOOS == "darwin" {
-		isMac = true
-	} else if runtime.GOOS == "linux" {
-		isLinux = true
-	} else {
-		fmt.Printf("Error: %s OS is not supported\n", runtime.GOOS)
+	if !(IsMac || IsLinux) {
+		Eprintf("%s OS is not supported\n", runtime.GOOS)
 		os.Exit(1)
 	}
 
@@ -556,14 +518,13 @@ func main() {
 	}
 
 	LoadConfig()
-	fullVersion = fmt.Sprintf("%s-%s-%s", version, runtime.GOOS, runtime.GOARCH)
 
 	scheme := BuildScheme{}
-	scheme.Debug = containsString(config.BuildConfig, "debug")
-	scheme.Release = containsString(config.BuildConfig, "release")
-	if isMac {
-		scheme.Framework = containsString(config.IOSTargets, "framework")
-		scheme.Static = containsString(config.IOSTargets, "static")
+	scheme.Debug = Contains(config.BuildConfig, "debug")
+	scheme.Release = Contains(config.BuildConfig, "release")
+	if IsMac {
+		scheme.Framework = Contains(config.IOSTargets, "framework")
+		scheme.Static = Contains(config.IOSTargets, "static")
 	}
 
 	path := os.Getenv("PATH")
@@ -577,7 +538,7 @@ func main() {
 
 	case "build":
 		if !Exists(gclientConfig) || !Exists(gclientEntries) {
-			fmt.Printf("Error: webrtc/.gclient or webrtc/.gclient_entries are not found. Do './webrtc-build fetch'.\n")
+			Eprintf("webrtc/.gclient or webrtc/.gclient_entries are not found. Do './webrtc-build fetch'.")
 			os.Exit(1)
 		}
 		Build(scheme)
@@ -593,11 +554,11 @@ func main() {
 		PrintHelp()
 
 	case "version":
-		fmt.Printf("webrtc-build %s, library %s\n", fullVersion, webRTCLibVersion)
+		Printf("webrtc-build %s, library %s", fullVersion, webRTCLibVersion)
 
 	case "selfdist":
 		dist := fmt.Sprintf("sora-webrtc-build-%s", fullVersion)
-		patchDir := filepath.Join(dist, "patch")
+		patchDir := Join(dist, "patch")
 		Execf("rm -rf %s %s.zip", dist, dist)
 		Execf("mkdir %s", dist)
 		Execf("go build webrtc-build.go")
@@ -611,7 +572,7 @@ func main() {
 		Execf("tar czf %s.tar.gz %s", dist, dist)
 
 	default:
-		fmt.Printf("Error: Unknown command: %s\n", subcmd)
+		Eprintf("Unknown command: %s", subcmd)
 		os.Exit(1)
 	}
 }
