@@ -1,0 +1,24 @@
+{
+    "webrtc_branch": "64",
+    "webrtc_commit": "6",
+    "webrtc_revision": "55ba4e633284d3ae1b2b4dd3a94731207bb5b3e2",
+    "maint_version": "0",
+    "python": "python",
+    "ios_arch": ["arm64"],
+    "ios_targets": ["framework"],
+    "ios_bitcode": false,
+    "android_arch": ["armeabi-v7a", "arm64-v8a"],
+    "build_config": ["release"],
+    "vp9": true,
+    "apply_patch": true,
+    "patches": [
+        {
+            "patch": "build_ios_libs.py.diff",
+            "target": "tools_webrtc/ios/build_ios_libs.py"
+        },
+        {
+            "patch": "build_aar.py.diff",
+            "target": "tools_webrtc/android/build_aar.py"
+        }
+    ]
+}
