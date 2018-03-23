@@ -245,7 +245,7 @@ func Fetch() {
 				"    \"custom_deps\": {},\n"+
 				"  },\n"+
 				"]\n"+
-				"target_os = [\"android\", \"linux\"]\n")
+				"target_os = [\"android\", \"unix\"]\n")
 	} else {
 		panic("unsupported OS")
 	}
