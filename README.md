@@ -195,6 +195,8 @@ export PATH=../depot_tools:$PATH
 
 ### ``./webrtc-build fetch``: ``stdout:Do you accept the license for version 11.2.0 of the Google Play services client library? [y/n]``
 
+**解決済み** at `1a26057` : y を stdin に流し込むように変更した。
+
 このエラーは Linux でのみ (``webrtc-build`` を Android 向けに実行する場合のみ) 、 Google Play に関するライセンスへの同意を求められるときに発生します。
 ``gclient sync`` を実行して、ライセンスに同意して引き続きダウンロードしてください。
 詳しくは上記の Android ライブラリのビルドを参照してください。
