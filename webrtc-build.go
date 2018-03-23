@@ -93,6 +93,13 @@ var androidAARName = "libwebrtc.aar"
 // https://github.com/hnakamur/execcommandexample
 func RunCommand(name string, arg ...string) (stdout, stderr string, exitCode int, err error) {
 	cmd := exec.Command(name, arg...)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return
+	}
+	io.WriteString(stdin, "y\n")
+	stdin.Close()
+
 	outReader, err := cmd.StdoutPipe()
 	if err != nil {
 		return
