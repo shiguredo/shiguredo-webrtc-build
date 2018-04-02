@@ -9,6 +9,12 @@
 - FIX
     - バグ修正
 
+# 66.6.x
+
+M66
+
+- [UPDATE] Google Paly services のライセンスに y で答えるよう変更した
+
 # 64.6.x
 
 M64
