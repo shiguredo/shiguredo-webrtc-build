@@ -89,26 +89,9 @@ Mac OS X では iOS 向け、 Linux では Android 向けのライブラリが�
 
 ## Android ライブラリのビルドについて
 
-Android 向けのビルドはいくつか注意点があります。
-
 - 実行時のシェルは Bash を推奨します。 Zsh だとビルドエラーになる場合がありました。
 
-以上を踏まえて、ビルドは次の手順で行います。
-
-1. シェルを Bash に変更する
-
-2. ``./webrtc-build fetch`` を実行する。初回はライセンスの同意を求める処理で止まります
-
-3. ``webrtc`` ディレクトリ下で ``gclient sync`` を実行し、途中で表示されるライセンスに同意する。初回以降は不要です
-
-   ```
-   $ cd webrtc
-   $ PATH=./depot_tools:$PATH gclient sync
-   ```
-
-4. 再度 ``./webrtc-build fetch`` を実行する
-
-5. ``./webrtc-build build`` を実行する
+- ``gclient sync`` を実行すると、ソースコードのダウンロード中に Google Play Service クライアントライブラリのライセンス許諾を求められますが、 ``webrtc-build`` コマンドはユーザーがライセンスを許諾したものとして処理を続けます。ご注意ください。
 
 ## ビルドの設定
 
@@ -256,30 +239,4 @@ Traceback (most recent call last):
     % (str(e), kwargs.get('cwd'), args[0]))
 OSError: Execution failed with error: [Errno 2] No such file or directory.
 Check that /home/shiguredo/sora-webrtc-build/webrtc or download_from_google_storage exist and have execution permission.
-```
-
-## トラブルシューティング (解決済み)
-
-### ``./webrtc-build fetch``: ``stdout:Do you accept the license for version 11.2.0 of the Google Play services client library? [y/n]``
-
-**解決済み** at `1a26057` : y を stdin に流し込むように変更した。
-
-このエラーは Linux でのみ (``webrtc-build`` を Android 向けに実行する場合のみ) 、 Google Play に関するライセンスへの同意を求められるときに発生します。
-``gclient sync`` を実行して、ライセンスに同意して引き続きダウンロードしてください。
-詳しくは上記の Android ライブラリのビルドを参照してください。
-
-```
-stdout:December 9, 2016
-stdout:
-stdout:Do you accept the license for version 11.2.0 of the Google Play services client library? [y/n]:
-stdout:> Traceback (most recent call last):
-stdout:  File "src/build/android/play_services/update.py", line 524, in <module>
-stdout:    sys.exit(main(sys.argv[1:]))
-stdout:  File "src/build/android/play_services/update.py", line 98, in main
-stdout:    return args.func(args)
-stdout:  File "src/build/android/play_services/update.py", line 191, in Download
-stdout:    config.version_number)):
-stdout:  File "src/build/android/play_services/update.py", line 399, in _CheckLicenseAgreement
-stdout:    return raw_input('> ') in ('Y', 'y')
-stdout:EOFError: EOF when reading a line
 ```
