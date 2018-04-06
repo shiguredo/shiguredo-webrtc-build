@@ -176,7 +176,7 @@ export PATH=../depot_tools:$PATH
 
 ### ``./webrtc-build build``: ``stderr:.gclient file in parent directory XXX might not be the file you want to use``
 
-このエラーが出たら冒頭の方法を試してみてください。
+``./webrtc-build fetch`` を実行してからもう一度試してください。
 
 ```
 stderr:.gclient file in parent directory /home/shiguredo/sora-webrtc-build/webrtc might not be the file you want to use
@@ -185,7 +185,7 @@ stderr:gn.py: Could not find gn executable at: /home/shiguredo/sora-webrtc-build
 
 ### ``./webrtc-build build``: ``Error: Command 'XXX' returned non-zero exit status 1 in XXX``
 
-このエラーでも冒頭の方法を試してみてください。
+``./webrtc-build fetch`` を実行してからもう一度試してください。
 
 ```
 ________ running '/usr/bin/python src/third_party/binutils/download.py' in '/home/shiguredo/sora-webrtc-build/webrtc'
