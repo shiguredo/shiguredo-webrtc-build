@@ -3,20 +3,14 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
 	. "github.com/shiguredo/yspata"
-	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"runtime"
 	"strings"
-	"sync"
-	"syscall"
 )
 
 var version = "1.0.1"
@@ -89,85 +83,6 @@ var androidArchive string
 var androidArchiveZip string
 
 var androidAARName = "libwebrtc.aar"
-
-// https://github.com/hnakamur/execcommandexample
-func RunCommand(name string, arg ...string) (stdout, stderr string, exitCode int, err error) {
-	cmd := exec.Command(name, arg...)
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return
-	}
-	io.WriteString(stdin, "y\n")
-	stdin.Close()
-
-	outReader, err := cmd.StdoutPipe()
-	if err != nil {
-		return
-	}
-	errReader, err := cmd.StderrPipe()
-	if err != nil {
-		return
-	}
-
-	var bufout, buferr bytes.Buffer
-	outReader2 := io.TeeReader(outReader, &bufout)
-	errReader2 := io.TeeReader(errReader, &buferr)
-
-	if err = cmd.Start(); err != nil {
-		return
-	}
-
-	wg := &sync.WaitGroup{}
-	wg.Add(2)
-	go func() { PrintOutputWithHeader("stdout:", outReader2); wg.Done() }()
-	go func() { PrintOutputWithHeader("stderr:", errReader2); wg.Done() }()
-	wg.Wait()
-	err = cmd.Wait()
-
-	stdout = bufout.String()
-	stderr = buferr.String()
-
-	if err != nil {
-		if err2, ok := err.(*exec.ExitError); ok {
-			if s, ok := err2.Sys().(syscall.WaitStatus); ok {
-				err = nil
-				exitCode = s.ExitStatus()
-			}
-		}
-	}
-	return
-}
-
-func PrintOutputWithHeader(header string, r io.Reader) {
-	scanner := bufio.NewScanner(r)
-	for scanner.Scan() {
-		Printf("%s%s", header, scanner.Text())
-	}
-}
-
-func Exec(name string, arg ...string) string {
-	fmt.Printf("# %s %s\n", name, strings.Join(arg, " "))
-	stdout, _, _, err := RunCommand(name, arg...)
-	FailIf(err, "exec failed")
-	return stdout
-}
-
-func Execf(format string, arg ...interface{}) {
-	cmd := fmt.Sprintf(format, arg...)
-	args := strings.Split(cmd, " ")
-	Exec(args[0], args[1:]...)
-}
-
-func ExecIgnore(name string, arg ...string) {
-	fmt.Printf("# %s %s\n", name, strings.Join(arg, " "))
-	RunCommand(name, arg...)
-}
-
-func ExecIgnoref(format string, arg ...interface{}) {
-	cmd := fmt.Sprintf(format, arg...)
-	args := strings.Split(cmd, " ")
-	ExecIgnore(args[0], args[1:]...)
-}
 
 type Config struct {
 	WebRTCBranch   string   `json:"webrtc_branch"`
@@ -271,7 +186,7 @@ func Fetch() {
 func ApplyPatch(patch string, target string) {
 	FailIfNotExists(patch)
 	FailIfNotExists(target)
-	ExecIgnore("patch", "-buN", target, patch)
+	ExecIg("patch", "-buN", target, patch)
 }
 
 func BuildiOSFramework(config string) {
@@ -313,7 +228,7 @@ func GenerateBuildInfo(destDir string) {
 	_, err := file.WriteString(body)
 	FailIf(err, "fail write string")
 	file.Close()
-	ExecIgnore("cp", buildInfo, destDir)
+	ExecIg("cp", buildInfo, destDir)
 }
 
 func BuildiOSStatic(buildConfig string) {
