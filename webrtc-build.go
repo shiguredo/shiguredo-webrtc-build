@@ -220,7 +220,7 @@ func ExecOSBuildScript(ty string, buildDir, buildConfig string) {
 
 func GenerateBuildInfo(destDir string) {
 	fmt.Println("Generate build_info.json...")
-	file := OpenFile(buildInfo, os.O_RDWR|os.O_CREATE, 0755)
+	file := OpenAll(buildInfo)
 	body := fmt.Sprintf("{\n"+
 		"    \"webrtc_version\" : \"%s\",\n"+
 		"    \"webrtc_revision\" : \"%s\"\n"+
