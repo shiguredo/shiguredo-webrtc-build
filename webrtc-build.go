@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	. "github.com/shiguredo/yspata"
+	"io"
 	"io/ioutil"
 	"os"
 	"runtime"
@@ -268,11 +269,17 @@ func BuildAndroidLibrary(buildConfig string) {
 	tempDir := buildDir + "/build"
 	libaar := buildDir + "/" + androidAARName
 	Execf("mkdir -p %s", buildDir)
+
 	args := []string{config.Python, androidBuildScript,
 		"--output", libaar, "--build-dir", tempDir,
 		"--build_config", buildConfig, "--arch"}
 	args = append(args, config.AndroidArch...)
-	Exec("time", args...)
+	cmd := Command("time", args...)
+	cmd.OnStdin = func(w io.WriteCloser) {
+		io.WriteString(w, "y\n")
+	}
+	cmd.Run().FailIf("build failed")
+
 	os.Chdir(wd)
 }
 
