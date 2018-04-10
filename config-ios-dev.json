@@ -1,8 +1,8 @@
 {
-    "webrtc_branch": "64",
-    "webrtc_commit": "6",
-    "webrtc_revision": "55ba4e633284d3ae1b2b4dd3a94731207bb5b3e2",
-    "maint_version": "0",
+    "webrtc_branch": "66",
+    "webrtc_commit": "8",
+    "webrtc_revision": "ab42706b6ce5158085ab04c3c85953366242a731",
+    "maint_version": "1",
     "python": "python",
     "ios_arch": ["arm64"],
     "ios_targets": ["framework"],
