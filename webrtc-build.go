@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -57,7 +58,7 @@ var distDirAndroidRelease = Join(distDir, "android-release")
 var iOSBuildScript = Join(WebRTCSourceDir,
 	"tools_webrtc/ios/build_ios_libs.py")
 
-var buildInfo = Join(buildDir, "build_info.json")
+var buildInfo = "build_info.json"
 
 var iOSFrameworkName = "WebRTC.framework"
 
@@ -193,7 +194,12 @@ func ApplyPatch(patch string, target string) {
 func BuildiOSFramework(config string) {
 	Printf("Build iOS framework for %s...", config)
 	os.Chdir(WebRTCSourceDir)
-	buildDir := Join(buildDir, fmt.Sprintf("ios-framework-%s", config))
+
+	_, base := filepath.Split(*configOpt)
+	base = strings.TrimSuffix(base, ".json")
+	buildDir := Join(buildDir,
+		fmt.Sprintf("build-%s", base),
+		fmt.Sprintf("ios-framework-%s", config))
 	Execf("rm -rf %s %s %s",
 		Join(buildDir, iOSFrameworkName),
 		Join(buildDir, iOSDsymName),
