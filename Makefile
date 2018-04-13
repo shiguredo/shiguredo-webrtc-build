@@ -1,7 +1,7 @@
 .PHONY: all dist clean
 
 webrtc-build:
-	go build webrtc-build.go
+	go build -o webrtc-build cmd/main.go
 
 all: webrtc-build
 
