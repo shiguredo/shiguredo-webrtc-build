@@ -155,15 +155,15 @@ func (b *Builder) Fetch() {
 	os.Chdir(b.Conf.WebRTCDir)
 	y.Exec(b.Conf.Gclient, "config", "--spec", b.Native.Solutions())
 	y.Exec(b.Conf.Gclient, "sync", "--nohooks", "--with_branch_heads", "-v", "-R")
-	y.Exec(b.Conf.Git, "submodule", "foreach", "'git config -f $toplevel/.git/config submodule.$name.ignore all'")
-	y.Exec(b.Conf.Git, "config", "--add", "remote.origin.fetch", "'+refs/tags/*:refs/tags/*'")
-	y.Exec(b.Conf.Git, "config", "diff.ignoreSubmodules", "all")
 
 	os.Chdir(b.Conf.WebRTCSrcDir)
+	y.Exec(b.Conf.Git, "submodule", "foreach", "'git config -f $toplevel/.git/config submodule.$name.ignore all'")
+	y.Exec(b.Conf.Git, "config", "diff.ignoreSubmodules", "all")
+
 	y.Exec(b.Conf.Git, "fetch", "origin")
 	y.Exec(b.Conf.Git, "checkout", "-B",
 		fmt.Sprintf("M%s", b.Conf.WebRTCBranch),
-		fmt.Sprintf("refs/remotes/branch-heads/%s", b.Conf.WebRTCBranch))
+		fmt.Sprintf("remotes/branch-heads/%s", b.Conf.WebRTCBranch))
 	y.Exec(b.Conf.Git, "checkout", b.Conf.WebRTCRevision)
 	y.Exec(b.Conf.Gclient, "sync", "--with_branch_heads", "-v", "-R")
 	y.Exec(b.Conf.Gclient, "runhooks", "-v")
