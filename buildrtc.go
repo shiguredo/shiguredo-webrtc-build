@@ -6,6 +6,7 @@ import (
 	y "github.com/shiguredo/yspata"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 var Version = "2.0.0"
@@ -114,6 +115,12 @@ func (c *Config) WebRTCVersion() string {
 }
 
 func NewBuilder(conf *Config, native Native) *Builder {
+	path := os.Getenv("PATH")
+	abs, err := filepath.Abs(conf.DepotToolsDir + ":" + path)
+	if err != nil {
+		panic(fmt.Sprintf("cannot get absolute path for %s", path))
+	}
+	os.Setenv("PATH", abs)
 	return &Builder{Conf: conf, Native: native}
 }
 
