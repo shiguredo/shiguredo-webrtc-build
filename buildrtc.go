@@ -104,10 +104,17 @@ func LoadConfig(path string) (*Config, error) {
 	raw, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
-	} else {
-		json.Unmarshal(raw, &conf)
-		return &conf, nil
 	}
+
+	json.Unmarshal(raw, &conf)
+	setAbsPath(&conf.DepotToolsDir)
+	setAbsPath(&conf.WebRTCDir)
+	setAbsPath(&conf.WebRTCSrcDir)
+	setAbsPath(&conf.BuildDir)
+	setAbsPath(&conf.DistDir)
+	setAbsPath(&conf.PatchDir)
+	setAbsPath(&conf.IOSHeaderDir)
+	return &conf, nil
 }
 
 func (c *Config) WebRTCVersion() string {
@@ -116,12 +123,17 @@ func (c *Config) WebRTCVersion() string {
 
 func NewBuilder(conf *Config, native Native) *Builder {
 	path := os.Getenv("PATH")
-	abs, err := filepath.Abs(conf.DepotToolsDir + ":" + path)
+	os.Setenv("PATH", conf.DepotToolsDir+":"+path)
+	setAbsPath(&conf.WebRTCSrcDir)
+	return &Builder{Conf: conf, Native: native}
+}
+
+func setAbsPath(path *string) {
+	abs, err := filepath.Abs(*path)
 	if err != nil {
 		panic(fmt.Sprintf("cannot get absolute path for %s", path))
 	}
-	os.Setenv("PATH", abs)
-	return &Builder{Conf: conf, Native: native}
+	*path = abs
 }
 
 func (b *Builder) GetDepotTools() {
