@@ -23,9 +23,6 @@
 
     "_git": "git",
     "_python": "python",
-    "_depot_tools_dir": "depot_tools",
-    "_gclient_config": ".gclient",
-    "_gclient_entries": ".gclient_entries",
     "_webrtc_dir": "webrtc",
     "_webrtc_src_dir": "webrtc/src",
     "_build_dir": "webrtc/build",
@@ -33,7 +30,7 @@
     "_patch_dir": "patch",
     "_depot_tools_dir": "webrtc/depot_tools",
     "_gclient": "gclient",
-    "_gclient_config": ".gclient_config",
+    "_gclient_config": ".gclient",
     "_gclient_entries": ".gclient_entries",
 
     "_ios_build_info": "build_info.json",
