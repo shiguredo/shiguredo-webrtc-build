@@ -37,7 +37,7 @@
     "_ios_build_script": "tools_webrtc/ios/build_ios_libs.py",
     "_ios_framework": "WebRTC.framework",
     "_ios_dsym": "WebRTC.dSYM",
-    "_ios_header_dir": "webrtc/sdk/objc/Framework/Headers/WebRTC",
+    "_ios_header_dir": "sdk/objc/Framework/Headers/WebRTC",
     "_ios_static": "librtc_sdk_objc.a",
     "_ios_debug_dir": "ios-debug",
     "_ios_release_dir": "ios-release",

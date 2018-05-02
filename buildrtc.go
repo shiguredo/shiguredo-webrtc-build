@@ -113,7 +113,7 @@ func LoadConfig(path string) (*Config, error) {
 	setAbsPath(&conf.BuildDir)
 	setAbsPath(&conf.DistDir)
 	setAbsPath(&conf.PatchDir)
-	setAbsPath(&conf.IOSHeaderDir)
+	conf.IOSHeaderDir = y.Join(conf.WebRTCSrcDir, conf.IOSHeaderDir)
 	conf.Gclient = y.Join(conf.DepotToolsDir, conf.Gclient)
 	conf.GclientConf = y.Join(conf.WebRTCDir, conf.GclientConf)
 	conf.GclientEntries = y.Join(conf.WebRTCDir, conf.GclientEntries)
