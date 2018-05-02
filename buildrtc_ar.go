@@ -97,3 +97,7 @@ func (n *Android) Archive() {
 func (n *Android) Clean() {
 	y.Exec("rm", "-rf", n.ArchiveDir(), n.ArchiveZip())
 }
+
+func (n *Android) Reset() {
+	// do nothing
+}

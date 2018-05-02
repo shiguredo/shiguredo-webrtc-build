@@ -56,8 +56,7 @@ func main() {
 	if y.IsMac {
 		native = rtc.NewIOS(conf)
 	} else if y.IsLinux {
-		//native = rtc.NewAndroid(conf)
-		panic("notimpl")
+		native = rtc.NewAndroid(conf)
 	} else {
 		y.Eprintf("%s OS is not supported\n", runtime.GOOS)
 		y.Fail()
