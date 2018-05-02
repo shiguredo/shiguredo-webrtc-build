@@ -73,7 +73,8 @@ func main() {
 
 	case "build":
 		if !y.Exists(conf.GclientConf) || !y.Exists(conf.GclientEntries) {
-			y.Eprintf("webrtc/.gclient or webrtc/.gclient_entries are not found. Do './webrtc-build fetch'.")
+			y.Eprintf("%s or %s are not found. Do './webrtc-build fetch'.",
+				conf.GclientConf, conf.GclientEntries)
 			y.Fail()
 		}
 		bld.Build()
