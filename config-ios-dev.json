@@ -2,7 +2,7 @@
     "webrtc_branch": "66",
     "webrtc_commit": "8",
     "webrtc_revision": "ab42706b6ce5158085ab04c3c85953366242a731",
-    "maint_version": "1",
+    "maint_version": "2",
 
     "debug": false,
     "release": true,
