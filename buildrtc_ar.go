@@ -86,8 +86,12 @@ func (n *Android) Archive() {
 	y.Exec("mkdir", distDirRl)
 
 	// library
-	y.Exec("cp", y.Join(bldDir, "android-debug", n.Conf.AndroidAAR), distDirDg)
-	y.Exec("cp", y.Join(bldDir, "android-release", n.Conf.AndroidAAR), distDirRl)
+	if n.Conf.Debug {
+		y.Exec("cp", y.Join(bldDir, "android-debug", n.Conf.AndroidAAR), distDirDg)
+	}
+	if n.Conf.Release {
+		y.Exec("cp", y.Join(bldDir, "android-release", n.Conf.AndroidAAR), distDirRl)
+	}
 
 	// archive
 	y.Exec("mv", distDir, n.ArchiveDir())
