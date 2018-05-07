@@ -43,7 +43,7 @@
     "_ios_release_dir": "ios-release",
     "_ios_carthage_dir": "ios-carthage",
 
-    "_android_arr": "libwebrtc.aar",
+    "_android_aar": "libwebrtc.aar",
     "_android_build_script": "tools_webrtc/android/build_aar.py",
     "_android_debug_dir": "android-debug",
     "_android_release_dir": "android-release",
