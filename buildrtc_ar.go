@@ -46,7 +46,7 @@ func (n *Android) Build() {
 }
 
 func (n *Android) BuildAAR(conf string) {
-	y.Printf("Build Android AAR for ...", conf)
+	y.Printf("Build Android AAR for %s...", conf)
 
 	wd, _ := os.Getwd()
 	os.Chdir(n.Conf.WebRTCSrcDir)
