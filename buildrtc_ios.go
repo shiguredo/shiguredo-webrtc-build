@@ -184,32 +184,47 @@ func (n *IOS) Archive() {
 	y.Exec("mkdir", distDirRl)
 	y.Exec("mkdir", distDirCr)
 
-	// framework
-	var fwDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSFramework)
-	var fwRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSFramework)
-	var dsymDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSDSYM)
-	var dsymRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSDSYM)
-	y.Exec("cp", "-r", fwDg, distDirDg)
-	y.Exec("cp", "-r", fwRl, distDirRl)
-	y.Exec("cp", "-r", dsymDg, distDirDg)
-	y.Exec("cp", "-r", dsymRl, distDirRl)
+	if n.Conf.Debug {
+		// framework
+		if n.Conf.IOSTargetFw {
+			var fwDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSFramework)
+			var dsymDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSDSYM)
+			y.Exec("cp", "-r", fwDg, distDirDg)
+			y.Exec("cp", "-r", dsymDg, distDirDg)
+		}
 
-	// carthage
-	y.Exec("cp", "-r", fwRl, ".")
-	y.Exec("zip", "-rq", n.CarthageZip(), n.Carthage())
-	y.Exec("rm", "-rf", n.Carthage())
-	y.Exec("mv", n.CarthageZip(), distDirDg)
+		// static
+		if n.Conf.IOSTargetSt {
+			y.Exec("cp", "-r", y.Join(bldDir,
+				"ios-static-debug/arm64_libs/librtc_sdk_objc.a"),
+				distDirDg)
+			y.Exec("cp", "-r", y.Join(bldDir,
+				"ios-static-debug/include"), distDirDg)
+			y.Exec("cp", "-r", y.Join(bldDir, "ios-static-release/include"), distDirRl)
+		}
+	} else if n.Conf.Release {
+		// framework
+		if n.Conf.IOSTargetFw {
+			var fwRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSFramework)
+			var dsymRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSDSYM)
+			y.Exec("cp", "-r", fwRl, distDirRl)
+			y.Exec("cp", "-r", dsymRl, distDirRl)
 
-	// static
-	y.Exec("cp", "-r", y.Join(bldDir,
-		"ios-static-debug/arm64_libs/librtc_sdk_objc.a"),
-		distDirDg)
-	y.Exec("cp", "-r", y.Join(bldDir,
-		"ios-static-debug/include"), distDirDg)
-	y.Exec("cp", "-r", y.Join(bldDir,
-		"ios-static-release/arm64_libs/librtc_sdk_objc.a"),
-		distDirRl)
-	y.Exec("cp", "-r", y.Join(bldDir, "ios-static-release/include"), distDirRl)
+			// carthage
+			y.Exec("cp", "-r", fwRl, ".")
+			y.Exec("zip", "-rq", n.CarthageZip(), n.Carthage())
+			y.Exec("rm", "-rf", n.Carthage())
+			y.Exec("mv", n.CarthageZip(), distDirDg)
+		}
+
+		// static
+		if n.Conf.IOSTargetSt {
+			y.Exec("cp", "-r", y.Join(bldDir,
+				"ios-static-release/arm64_libs/librtc_sdk_objc.a"),
+				distDirRl)
+			y.Exec("cp", "-r", y.Join(bldDir, "ios-static-release/include"), distDirRl)
+		}
+	}
 
 	// archive
 	y.Exec("mv", distDir, n.ArchiveDir())
