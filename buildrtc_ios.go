@@ -29,7 +29,7 @@ func (n *IOS) DistDirCarthage() string {
 }
 
 func (n *IOS) ArchiveDir() string {
-	return fmt.Sprintf("sora-webrtc-%s-ios", n.Conf.WebRTCVersion)
+	return fmt.Sprintf("sora-webrtc-%s-ios", n.Conf.WebRTCVersion())
 }
 
 func (n *IOS) ArchiveZip() string {

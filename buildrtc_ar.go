@@ -16,7 +16,7 @@ func NewAndroid(conf *Config) *Android {
 }
 
 func (n *Android) ArchiveDir() string {
-	return fmt.Sprintf("sora-webrtc-%s-android", n.Conf.WebRTCVersion)
+	return fmt.Sprintf("sora-webrtc-%s-android", n.Conf.WebRTCVersion())
 }
 
 func (n *Android) ArchiveZip() string {
