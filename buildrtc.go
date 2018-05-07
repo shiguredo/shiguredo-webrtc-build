@@ -214,8 +214,12 @@ func (b *Builder) Reset() {
 		files = append(files, f)
 	}
 	for _, f := range files {
-		y.Printf("Discard changes of %s...", f)
-		y.Exec(b.Conf.Git, "-C", f, "checkout", "--", ".")
+		if y.Exists(f) {
+			y.Printf("Discard changes of %s...", f)
+			y.Exec(b.Conf.Git, "-C", f, "checkout", "--", ".")
+		} else {
+			y.Printf("Discard changes of %s (not found, ignore)", f)
+		}
 	}
 	b.Native.Reset()
 }
