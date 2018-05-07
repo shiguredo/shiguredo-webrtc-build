@@ -90,7 +90,7 @@ func main() {
 
 	case "version":
 		y.Printf("webrtc-build %s, library %s",
-			rtc.FullVersion, conf.WebRTCVersion)
+			rtc.FullVersion, conf.WebRTCVersion())
 
 	case "selfdist":
 		dist := fmt.Sprintf("sora-webrtc-build-%s", rtc.FullVersion)
