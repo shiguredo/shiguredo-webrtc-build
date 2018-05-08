@@ -6,6 +6,7 @@ import (
 	rtc "github.com/shiguredo/sora-webrtc-build"
 	y "github.com/shiguredo/yspata"
 	"os"
+	"path/filepath"
 	"runtime"
 )
 
@@ -94,17 +95,21 @@ func main() {
 
 	case "selfdist":
 		dist := fmt.Sprintf("sora-webrtc-build-%s", rtc.FullVersion)
-		patchDir := y.Join(dist, "patch")
+
+		wd, _ := os.Getwd()
+		curPatchDir, _ := filepath.Rel(wd, conf.PatchDir)
+		distPatchDir := y.Join(dist, curPatchDir)
 		y.Execf("rm -rf %s %s.zip", dist, dist)
 		y.Execf("mkdir %s", dist)
-		y.Execf("go build webrtc-build.go")
+		y.Execf("go build -o webrtc-build cmd/main.go")
 		y.Execf("cp webrtc-build %s", dist)
 		y.Execf("cp config.json %s", dist)
-		os.MkdirAll(patchDir, 0755)
-		y.Execf("cp patch/webrtc_tools_BUILD.gn.diff %s", patchDir)
-		y.Execf("cp patch/webrtc_webrtc.gni.diff %s", patchDir)
-		y.Execf("cp patch/build_ios_libs.py.diff %s", patchDir)
-		y.Execf("cp patch/build_aar.py.diff %s", patchDir)
+		y.Execf("cp config-ios-dev.json %s", dist)
+		os.MkdirAll(distPatchDir, 0755)
+		for _, p := range conf.Patches {
+			path := y.Join(curPatchDir, p.Patch)
+			y.Execf("cp %s %s", path, distPatchDir)
+		}
 		y.Execf("tar czf %s.tar.gz %s", dist, dist)
 
 	default:
