@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	y "github.com/shiguredo/yspata"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -157,7 +158,11 @@ func (b *Builder) Fetch() {
 
 	os.Chdir(b.Conf.WebRTCDir)
 	y.Exec(b.Conf.Gclient, "config", "--spec", b.Native.Solutions())
-	y.Exec(b.Conf.Gclient, "sync", "--nohooks", "--with_branch_heads", "-v", "-R")
+	syncCmd := y.Command(b.Conf.Gclient, "sync", "--nohooks", "--with_branch_heads", "-v", "-R")
+	syncCmd.OnStdin = func(w io.WriteCloser) {
+		io.WriteString(w, "y\n")
+	}
+	syncCmd.Run().FailIf("build failed: syncCmd")
 
 	os.Chdir(b.Conf.WebRTCSrcDir)
 	y.Exec(b.Conf.Git, "submodule", "foreach", "'git config -f $toplevel/.git/config submodule.$name.ignore all'")
@@ -168,7 +173,12 @@ func (b *Builder) Fetch() {
 		fmt.Sprintf("M%s", b.Conf.WebRTCBranch),
 		fmt.Sprintf("remotes/branch-heads/%s", b.Conf.WebRTCBranch))
 	y.Exec(b.Conf.Git, "checkout", b.Conf.WebRTCRevision)
-	y.Exec(b.Conf.Gclient, "sync", "--with_branch_heads", "-v", "-R")
+	syncCmd2 := y.Command(b.Conf.Gclient, "sync", "--with_branch_heads", "-v", "-R")
+	syncCmd2.OnStdin = func(w io.WriteCloser) {
+		io.WriteString(w, "y\n")
+	}
+	syncCmd2.Run().FailIf("build failed: syncCmd2")
+
 	y.Exec(b.Conf.Gclient, "runhooks", "-v")
 
 	os.Chdir(wd)
