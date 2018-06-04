@@ -158,11 +158,7 @@ func (b *Builder) Fetch() {
 
 	os.Chdir(b.Conf.WebRTCDir)
 	y.Exec(b.Conf.Gclient, "config", "--spec", b.Native.Solutions())
-	syncCmd := y.Command(b.Conf.Gclient, "sync", "--nohooks", "--with_branch_heads", "-v", "-R")
-	syncCmd.OnStdin = func(w io.WriteCloser) {
-		io.WriteString(w, "y\n")
-	}
-	syncCmd.Run().FailIf("build failed: syncCmd")
+	y.Exec(b.Conf.Gclient, "sync", "--nohooks", "--with_branch_heads", "-v", "-R")
 
 	os.Chdir(b.Conf.WebRTCSrcDir)
 	y.Exec(b.Conf.Git, "submodule", "foreach", "'git config -f $toplevel/.git/config submodule.$name.ignore all'")
@@ -177,7 +173,7 @@ func (b *Builder) Fetch() {
 	syncCmd2.OnStdin = func(w io.WriteCloser) {
 		io.WriteString(w, "y\n")
 	}
-	syncCmd2.Run().FailIf("build failed: syncCmd2")
+	syncCmd2.Run().FailIf("build failed, gclient sync")
 
 	y.Exec(b.Conf.Gclient, "runhooks", "-v")
 
