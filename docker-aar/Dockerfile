@@ -32,6 +32,11 @@ RUN ./webrtc-build fetch
 
 # RUN ./webrtc/src/build/install-build-deps.sh
 
+RUN apt-get install -y \
+         time
+
+ADD config.json config.json
+
 RUN ./webrtc-build build
 
 RUN ./webrtc-build archive
