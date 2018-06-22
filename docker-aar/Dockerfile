@@ -4,16 +4,18 @@ MAINTAINER SHINOHARA, Shunichi <shino@shiguredo.jp>
 
 ADD sources.list /etc/apt/sources.list
 
-RUN apt-get update \
-  && apt-get install -y \
+RUN apt-get update
+
+RUN apt-get install -y \
+         lsb-release \
          net-tools \
          git \
          curl \
          python \
-  && apt-get clean \
-  && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
+         sudo
 
-RUN python --version
+ADD install-build-deps.sh install-build-deps.sh
+RUN yes | ./install-build-deps.sh
 
 ENV BUILD_URL_PREFIX=https://github.com/shiguredo/sora-webrtc-build/releases/download/
 ENV BUILD_TAG=66.8.2
@@ -28,7 +30,7 @@ WORKDIR /build
 
 RUN ./webrtc-build fetch
 
-RUN ./webrtc/src/build/install-build-deps.sh
+# RUN ./webrtc/src/build/install-build-deps.sh
 
 RUN ./webrtc-build build
 
