@@ -1,0 +1,9 @@
+###### Ubuntu Main Repos
+deb http://jp.archive.ubuntu.com/ubuntu/ xenial main restricted
+deb-src http://jp.archive.ubuntu.com/ubuntu/ xenial main restricted
+
+###### Ubuntu Update Repos
+deb http://jp.archive.ubuntu.com/ubuntu/ xenial-security main restricted
+deb http://jp.archive.ubuntu.com/ubuntu/ xenial-updates main restricted
+deb-src http://jp.archive.ubuntu.com/ubuntu/ xenial-security main restricted
+deb-src http://jp.archive.ubuntu.com/ubuntu/ xenial-updates main restricted

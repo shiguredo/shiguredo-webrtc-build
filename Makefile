@@ -10,3 +10,6 @@ dist:
 
 clean:
 	rm -rf webrtc-build sora-webrtc-build-*
+
+aar:
+	docker build --rm -t sora-webrtc-build/docker-aar docker-aar
