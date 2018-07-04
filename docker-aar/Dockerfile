@@ -4,9 +4,12 @@ MAINTAINER SHINOHARA, Shunichi <shino@shiguredo.jp>
 
 ADD sources.list /etc/apt/sources.list
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update
 
 RUN apt-get install -y \
+         tzdata \
          lsb-release \
          net-tools \
          git \
@@ -15,7 +18,7 @@ RUN apt-get install -y \
          sudo
 
 ADD install-build-deps.sh install-build-deps.sh
-RUN yes | ./install-build-deps.sh --no-chromeos-fonts
+RUN yes | ./install-build-deps.sh --no-chromeos-fonts --no-prompt
 
 ENV BUILD_URL_PREFIX=https://github.com/shiguredo/sora-webrtc-build/releases/download/
 ENV BUILD_TAG=67.28.0
