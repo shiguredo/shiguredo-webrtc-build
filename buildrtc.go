@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	y "github.com/shiguredo/yspata"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -168,7 +169,12 @@ func (b *Builder) Fetch() {
 		fmt.Sprintf("M%s", b.Conf.WebRTCBranch),
 		fmt.Sprintf("remotes/branch-heads/%s", b.Conf.WebRTCBranch))
 	y.Exec(b.Conf.Git, "checkout", b.Conf.WebRTCRevision)
-	y.Exec(b.Conf.Gclient, "sync", "--with_branch_heads", "-v", "-R")
+	syncCmd2 := y.Command(b.Conf.Gclient, "sync", "--with_branch_heads", "-v", "-R")
+	syncCmd2.OnStdin = func(w io.WriteCloser) {
+		io.WriteString(w, "y\n")
+	}
+	syncCmd2.Run().FailIf("build failed, gclient sync")
+
 	y.Exec(b.Conf.Gclient, "runhooks", "-v")
 
 	os.Chdir(wd)
