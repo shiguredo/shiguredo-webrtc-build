@@ -1,6 +1,6 @@
 .PHONY: all dist clean
 
-AAR_VERSION=68.6.0
+AAR_VERSION=67.28.0
 
 webrtc-build:
 	go build -o webrtc-build cmd/main.go
