@@ -1,0 +1,67 @@
+{
+    "webrtc_branch": "68",
+    "webrtc_commit": "6",
+    "webrtc_revision": "fa07dc316c6b6b9007a3a44a7f5b045ba547e27a",
+    "maint_version": "0",
+
+    "debug": false,
+    "release": true,
+    "vp9": true,
+
+    "ios_arch_arm64": true,
+    "ios_arch_arm": true,
+    "ios_arch_x64": true,
+    "ios_target_framework": true,
+    "ios_target_static": true,
+    "ios_bitcode": true,
+
+    "android_arch_v7a": true,
+    "android_arch_v8a": true,
+
+    "_depot_tools_url": "https://chromium.googlesource.com/chromium/tools/depot_tools.git",
+    "_webrtc_url": "https://chromium.googlesource.com/external/webrtc",
+
+    "_git": "git",
+    "_python": "python",
+    "_webrtc_dir": "webrtc",
+    "_webrtc_src_dir": "webrtc/src",
+    "_build_dir": "webrtc/build",
+    "_dist_dir": "webrtc/dist",
+    "_patch_dir": "patch",
+    "_depot_tools_dir": "webrtc/depot_tools",
+    "_gclient": "gclient",
+    "_gclient_config": ".gclient",
+    "_gclient_entries": ".gclient_entries",
+
+    "_ios_build_info": "build_info.json",
+    "_ios_build_script": "tools_webrtc/ios/build_ios_libs.py",
+    "_ios_framework": "WebRTC.framework",
+    "_ios_dsym": "WebRTC.dSYM",
+    "_ios_header_dir": "sdk/objc/Framework/Headers/WebRTC",
+    "_ios_static": "librtc_sdk_objc.a",
+    "_ios_debug_dir": "ios-debug",
+    "_ios_release_dir": "ios-release",
+    "_ios_carthage_dir": "ios-carthage",
+
+    "_android_aar": "libwebrtc.aar",
+    "_android_build_script": "tools_webrtc/android/build_aar.py",
+    "_android_debug_dir": "android-debug",
+    "_android_release_dir": "android-release",
+
+    "_apply_patch": true,
+    "_patches": [
+        {
+            "patch": "build_aar.py.diff",
+            "target": "tools_webrtc/android/build_aar.py"
+        }
+    ],
+
+    "_clean": [
+        "webrtc/src/testing/gmock",
+        "webrtc/src/testing/gtest"
+    ],
+    "_reset": [
+        "webrtc/src/webrtc",
+        "webrtc/src/tools_webrtc"
+    ]
+}
