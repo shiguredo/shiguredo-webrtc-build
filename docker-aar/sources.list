@@ -1,4 +1,6 @@
-###### Ubuntu Main Repos
-deb http://jp.archive.ubuntu.com/ubuntu/ xenial main restricted universe
-deb http://jp.archive.ubuntu.com/ubuntu/ xenial-security main restricted universe
-deb http://jp.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe
+## jp.archive.ubuntu.com のときは 220.152.35.166 にすげ替えられてエラーが出るので
+## IP 直指定、あまりよくない
+
+deb http://160.26.2.187/ubuntu/ xenial main restricted universe
+deb http://160.26.2.187/ubuntu/ xenial-security main restricted universe
+deb http://160.26.2.187/ubuntu/ xenial-updates main restricted universe
