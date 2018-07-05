@@ -4,11 +4,11 @@
 
 
 ###### Ubuntu Main Repos
-deb http://archive.ubuntu.com/ubuntu/ bionic main restricted universe 
+deb http://us.archive.ubuntu.com/ubuntu/ bionic main restricted universe 
 
 ###### Ubuntu Update Repos
-deb http://archive.ubuntu.com/ubuntu/ bionic-security main restricted universe 
-deb http://archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe 
+deb http://us.archive.ubuntu.com/ubuntu/ bionic-security main restricted universe 
+deb http://us.archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe 
 
 # ###### Ubuntu Main Repos
 # deb http://jp.archive.ubuntu.com/ubuntu/ bionic main restricted universe 
