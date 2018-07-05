@@ -16,7 +16,9 @@ RUN apt-get install -y \
          curl \
          python \
          sudo \
-         openjdk-11-jdk-headless
+         openjdk-8-jdk-headless
+
+RUN update-java-alternatives -s java-1.8.0-openjdk-amd64
 
 ADD install-build-deps.sh install-build-deps.sh
 RUN yes | ./install-build-deps.sh --no-chromeos-fonts --no-prompt
