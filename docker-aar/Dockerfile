@@ -15,7 +15,9 @@ RUN apt-get install -y \
          git \
          curl \
          python \
-         sudo
+         sudo \
+         openjdk-11-jdk-headless \
+
 
 ADD install-build-deps.sh install-build-deps.sh
 RUN yes | ./install-build-deps.sh --no-chromeos-fonts --no-prompt
