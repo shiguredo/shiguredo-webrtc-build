@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:16.04
 
 MAINTAINER SHINOHARA, Shunichi <shino@shiguredo.jp>
 
@@ -16,7 +16,8 @@ RUN apt-get install -y \
          curl \
          python \
          sudo \
-         openjdk-8-jdk-headless
+         openjdk-8-jdk-headless \
+         time
 
 RUN update-java-alternatives -s java-1.8.0-openjdk-amd64
 
@@ -34,14 +35,9 @@ RUN curl -L -O ${BUILD_URL_PREFIX}/${BUILD_TAG}/${BUILD_TOOL_FILE}.tar.gz \
 
 WORKDIR /build
 
-RUN ./webrtc-build fetch
-
-# RUN ./webrtc/src/build/install-build-deps.sh
-
-RUN apt-get install -y \
-         time
-
 ADD config.json config.json
+
+RUN ./webrtc-build fetch
 
 RUN ./webrtc-build build
 
