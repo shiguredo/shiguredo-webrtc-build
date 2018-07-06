@@ -49,6 +49,10 @@
     "_apply_patch": true,
     "_patches": [
         {
+            "patch": "build_ios_libs.py.diff",
+            "target": "tools_webrtc/ios/build_ios_libs.py"
+        },
+        {
             "patch": "build_aar.py.diff",
             "target": "tools_webrtc/android/build_aar.py"
         }
