@@ -144,14 +144,21 @@ func (n *IOS) Archive() {
 	y.Exec("mkdir", distDirRl)
 	y.Exec("mkdir", distDirCr)
 
+	_, base := filepath.Split(n.Conf.Path)
+	base = strings.TrimSuffix(base, ".json")
+
 	if n.Conf.Debug {
-		var fwDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSFramework)
-		var dsymDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSDSYM)
+		var fwDg = y.Join(bldDir, fmt.Sprintf("build-%s", base),
+			"ios-framework-debug", n.Conf.IOSFramework)
+		var dsymDg = y.Join(bldDir, fmt.Sprintf("build-%s", base),
+			"ios-framework-debug", n.Conf.IOSDSYM)
 		y.Exec("cp", "-r", fwDg, distDirDg)
 		y.Exec("cp", "-r", dsymDg, distDirDg)
 	} else if n.Conf.Release {
-		var fwRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSFramework)
-		var dsymRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSDSYM)
+		var fwRl = y.Join(bldDir, fmt.Sprintf("build-%s", base),
+			"ios-framework-release", n.Conf.IOSFramework)
+		var dsymRl = y.Join(bldDir, fmt.Sprintf("build-%s", base),
+			"ios-framework-release", n.Conf.IOSDSYM)
 		y.Exec("cp", "-r", fwRl, distDirRl)
 		y.Exec("cp", "-r", dsymRl, distDirRl)
 
