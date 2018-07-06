@@ -215,14 +215,6 @@ func (b *Builder) Clean() {
 
 }
 
-func (b *Builder) BuildClean() {
-	files := []string{b.Conf.BuildDir}
-	for _, f := range files {
-		y.Exec("rm", "-rf", f)
-	}
-	b.Reset()
-}
-
 func (b *Builder) Reset() {
 	files := []string{b.Conf.DepotToolsDir, b.Conf.WebRTCSrcDir}
 	for _, f := range b.Conf.Reset {
