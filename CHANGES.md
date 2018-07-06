@@ -16,6 +16,14 @@ M67 コミットポジション 28
 - [ADD] AAR ビルド用の Dockerfile, make ターゲットを追加した
 - [ADD] M68 お試しビルドをしたので、68.6.0 でビルド、AAR を
   sora-webrtc-android にアップロードした
+- [FIX] ios build から build_type が消えたため対応した
+  - ios 用 patch の微修正
+  - webrtc-build から build type 関連(static)を削除
+- [FIX] ios archive コマンドのパスを修正した
+- [ADD] build-clean コマンドを追加した
+  - fetch, build でエラーになった場合に build-clean すると fetch の状態でビルドが可能
+- [ADD] build_info.json を gitignore に追加した
+- [FIX] ios ビルド後に dSYM diretory が存在しないため、archive からコピーを消した
 
 # 66.8.x
 
