@@ -21,6 +21,8 @@ func printHelp() {
 		"        Build libraries",
 		"  archive",
 		"        Archive libraries",
+		"  build-clean",
+		"        Remove/restore files generated build command",
 		"  clean",
 		"        Remove all built files and discard all changes",
 		"  help",
@@ -85,6 +87,9 @@ func main() {
 	case "clean":
 		bld.Clean()
 		bld.Reset()
+
+	case "build-clean":
+		bld.BuildClean()
 
 	case "help":
 		printHelp()

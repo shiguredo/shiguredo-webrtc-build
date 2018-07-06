@@ -1,8 +1,8 @@
 {
-    "webrtc_branch": "66",
-    "webrtc_commit": "8",
-    "webrtc_revision": "ab42706b6ce5158085ab04c3c85953366242a731",
-    "maint_version": "2",
+    "webrtc_branch": "67",
+    "webrtc_commit": "28",
+    "webrtc_revision": "89c6af1578dd6ed086fd144fdd19ae5fa7183435",
+    "maint_version": "0",
 
     "debug": false,
     "release": true,
@@ -11,8 +11,6 @@
     "ios_arch_arm64": true,
     "ios_arch_arm": false,
     "ios_arch_x64": false,
-    "ios_target_framework": true,
-    "ios_target_static": false,
     "ios_bitcode": false,
 
     "android_arch_v7a": true,
