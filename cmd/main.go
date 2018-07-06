@@ -88,9 +88,6 @@ func main() {
 		bld.Clean()
 		bld.Reset()
 
-	case "build-clean":
-		bld.BuildClean()
-
 	case "help":
 		printHelp()
 
