@@ -58,21 +58,11 @@ func (n *IOS) Solutions() string {
 }
 
 func (n *IOS) Build() {
-	if n.Conf.IOSTargetFw {
-		if n.Conf.Debug {
-			n.BuildFramework(BUILD_DEBUG)
-		}
-		if n.Conf.Release {
-			n.BuildFramework(BUILD_RELEASE)
-		}
+	if n.Conf.Debug {
+		n.BuildFramework(BUILD_DEBUG)
 	}
-	if n.Conf.IOSTargetSt {
-		if n.Conf.Debug {
-			n.BuildStatic(BUILD_DEBUG)
-		}
-		if n.Conf.Release {
-			n.BuildStatic(BUILD_RELEASE)
-		}
+	if n.Conf.Release {
+		n.BuildFramework(BUILD_RELEASE)
 	}
 }
 
@@ -95,16 +85,16 @@ func (n *IOS) BuildFramework(conf int) {
 		y.Join(dir, "arm64_libs", fw),
 		y.Join(dir, "arm_libs", fw),
 		y.Join(dir, "x64_libs", fw))
-	n.ExecBuildScript("framework", dir, conf)
+	n.ExecBuildScript(dir, conf)
 
 	os.Chdir(wd)
 	n.GenerateBuildInfo(dir + "/" + fw)
 }
 
-func (n *IOS) ExecBuildScript(ty string, dir string, conf int) {
+func (n *IOS) ExecBuildScript(dir string, conf int) {
 	name := BuildConfigName(conf)
 	args := []string{n.Conf.Python, n.Conf.IOSBuildScript,
-		"-o", dir, "-b", ty, "--build_config", name, "--arch"}
+		"-o", dir, "--build_config", name, "--arch"}
 	if n.Conf.IOSArchArm64 {
 		args = append(args, "arm64")
 	}
@@ -137,39 +127,6 @@ func (n *IOS) GenerateBuildInfo(dir string) {
 	y.ExecIg("cp", n.Conf.IOSBuildInfo, dir)
 }
 
-func (n *IOS) BuildStatic(conf int) {
-	name := BuildConfigName(conf)
-
-	y.Printf("Build iOS static library for %s...", conf)
-	wd, _ := os.Getwd()
-	os.Chdir(n.Conf.WebRTCSrcDir)
-
-	bldDir := y.Join(n.Conf.BuildDir, fmt.Sprintf("ios-static-%s", name))
-	incDir := y.Join(bldDir, "include")
-	y.Execf("rm -rf %s %s %s %s",
-		y.Join(bldDir, n.Conf.IOSStatic),
-		incDir,
-		y.Join(bldDir, "arm64_libs", n.Conf.IOSStatic),
-		y.Join(bldDir, "arm64_libs", "include"))
-	n.ExecBuildScript("static_only", bldDir, conf)
-
-	if !y.Exists(incDir) {
-		y.FailIf(os.Mkdir(incDir, 0755), "cannot mkdir")
-	}
-	handle, err1 := os.Open(n.Conf.IOSHeaderDir)
-	y.FailIf(err1, "cannot open %s", n.Conf.IOSHeaderDir)
-	infos, err2 := handle.Readdir(0)
-	y.FailIf(err2, "cannot read")
-	for _, info := range infos {
-		if !info.IsDir() && strings.HasSuffix(info.Name(), ".h") {
-			y.Execf("cp %s %s", y.Join(n.Conf.IOSHeaderDir, info.Name()), incDir)
-		}
-	}
-
-	os.Chdir(wd)
-	n.GenerateBuildInfo(bldDir)
-}
-
 func (n *IOS) Archive() {
 	bldDir := n.Conf.BuildDir
 	distDir := n.Conf.DistDir
@@ -185,45 +142,21 @@ func (n *IOS) Archive() {
 	y.Exec("mkdir", distDirCr)
 
 	if n.Conf.Debug {
-		// framework
-		if n.Conf.IOSTargetFw {
-			var fwDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSFramework)
-			var dsymDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSDSYM)
-			y.Exec("cp", "-r", fwDg, distDirDg)
-			y.Exec("cp", "-r", dsymDg, distDirDg)
-		}
-
-		// static
-		if n.Conf.IOSTargetSt {
-			y.Exec("cp", "-r", y.Join(bldDir,
-				"ios-static-debug/arm64_libs/librtc_sdk_objc.a"),
-				distDirDg)
-			y.Exec("cp", "-r", y.Join(bldDir,
-				"ios-static-debug/include"), distDirDg)
-			y.Exec("cp", "-r", y.Join(bldDir, "ios-static-release/include"), distDirRl)
-		}
+		var fwDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSFramework)
+		var dsymDg = y.Join(bldDir, "ios-framework-debug", n.Conf.IOSDSYM)
+		y.Exec("cp", "-r", fwDg, distDirDg)
+		y.Exec("cp", "-r", dsymDg, distDirDg)
 	} else if n.Conf.Release {
-		// framework
-		if n.Conf.IOSTargetFw {
-			var fwRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSFramework)
-			var dsymRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSDSYM)
-			y.Exec("cp", "-r", fwRl, distDirRl)
-			y.Exec("cp", "-r", dsymRl, distDirRl)
+		var fwRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSFramework)
+		var dsymRl = y.Join(bldDir, "ios-framework-release", n.Conf.IOSDSYM)
+		y.Exec("cp", "-r", fwRl, distDirRl)
+		y.Exec("cp", "-r", dsymRl, distDirRl)
 
-			// carthage
-			y.Exec("cp", "-r", fwRl, ".")
-			y.Exec("zip", "-rq", n.CarthageZip(), n.Carthage())
-			y.Exec("rm", "-rf", n.Carthage())
-			y.Exec("mv", n.CarthageZip(), distDirDg)
-		}
-
-		// static
-		if n.Conf.IOSTargetSt {
-			y.Exec("cp", "-r", y.Join(bldDir,
-				"ios-static-release/arm64_libs/librtc_sdk_objc.a"),
-				distDirRl)
-			y.Exec("cp", "-r", y.Join(bldDir, "ios-static-release/include"), distDirRl)
-		}
+		// carthage
+		y.Exec("cp", "-r", fwRl, ".")
+		y.Exec("zip", "-rq", n.CarthageZip(), n.Carthage())
+		y.Exec("rm", "-rf", n.Carthage())
+		y.Exec("mv", n.CarthageZip(), distDirDg)
 	}
 
 	// archive

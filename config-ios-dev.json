@@ -11,8 +11,6 @@
     "ios_arch_arm64": true,
     "ios_arch_arm": false,
     "ios_arch_x64": false,
-    "ios_target_framework": true,
-    "ios_target_static": false,
     "ios_bitcode": false,
 
     "android_arch_v7a": true,
