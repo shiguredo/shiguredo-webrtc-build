@@ -15,6 +15,6 @@
      BuildWebRTC(args.output_dir, arch, args.build_config, gn_target_name,
 -                IOS_DEPLOYMENT_TARGET, LIBVPX_BUILD_VP9, args.bitcode,
 +                IOS_DEPLOYMENT_TARGET, args.vp9, args.bitcode,
-                 args.use_goma, gn_args, args.build_type == 'static_only')
+                 args.use_goma, gn_args)
  
    # Create FAT archive.
