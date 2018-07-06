@@ -95,6 +95,9 @@ func (n *IOS) ExecBuildScript(dir string, conf int) {
 	name := BuildConfigName(conf)
 	args := []string{n.Conf.Python, n.Conf.IOSBuildScript,
 		"-o", dir, "--build_config", name, "--arch"}
+	// build_ios_libs.py の中で x86 が強制削除されるのでここで入れておく
+	// 入れないと ValueError: list.remove(x): x not in list が発生する。
+	args = append(args, "x86")
 	if n.Conf.IOSArchArm64 {
 		args = append(args, "arm64")
 	}
