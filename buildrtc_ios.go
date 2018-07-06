@@ -157,10 +157,7 @@ func (n *IOS) Archive() {
 	} else if n.Conf.Release {
 		var fwRl = y.Join(bldDir, fmt.Sprintf("build-%s", base),
 			"ios-framework-release", n.Conf.IOSFramework)
-		var dsymRl = y.Join(bldDir, fmt.Sprintf("build-%s", base),
-			"ios-framework-release", n.Conf.IOSDSYM)
 		y.Exec("cp", "-r", fwRl, distDirRl)
-		y.Exec("cp", "-r", dsymRl, distDirRl)
 
 		// carthage
 		y.Exec("cp", "-r", fwRl, ".")
