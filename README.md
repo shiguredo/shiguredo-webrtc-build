@@ -107,6 +107,13 @@ AAR(Android ARchive)ビルドは Docker 上でのビルドが可能です。
      `fetch`, `gclient sync` すると `src/build/` 以下に取得できます。
 4. `make aar`
 
+注意
+
+Docker でのビルドにおいて、`org.webrtc.WebrtcBuildVersion` インターフェイスを生成、コンパイルし
+AAR に含める手順があります。
+現状、手動ビルドには入っていませんので `Makefile` および `docker-aar/Dockerfile` を参考にして
+生成、組み込みしてください。必要な手順は java ファイルの生成、配置、Build.gn の変更(1行)です。
+
 ## Android ライブラリのビルドについて
 
 - 実行時のシェルは Bash を推奨します。 Zsh だとビルドエラーになる場合がありました。

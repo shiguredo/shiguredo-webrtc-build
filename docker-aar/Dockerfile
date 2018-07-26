@@ -39,6 +39,12 @@ ADD config.json config.json
 
 RUN ./webrtc-build fetch
 
+COPY WebrtcBuildVersion.java webrtc/src/sdk/android/api/org/webrtc/WebrtcBuildVersion.java
+RUN mv webrtc/src/sdk/android/BUILD.gn BUILD.gn.orig
+RUN sed -e 's:\("api/org/webrtc/RefCounted.java",\):    "api/org/webrtc/WebrtcBuildVersion.java",\n    \1:' \
+    BUILD.gn.orig \
+    > webrtc/src/sdk/android/BUILD.gn
+
 RUN ./webrtc-build build
 
 RUN ./webrtc-build archive

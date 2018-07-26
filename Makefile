@@ -13,7 +13,17 @@ dist:
 clean:
 	rm -rf webrtc-build sora-webrtc-build-*
 
-aar:
+docker-aar/WebrtcBuildVersion.java:
+	@echo "package org.webrtc;" > docker-aar/WebrtcBuildVersion.java
+	@echo "public interface WebrtcBuildVersion {" > docker-aar/WebrtcBuildVersion.java
+	@grep '"webrtc_' docker-aar/config.json | sed \
+		-e 's/^ *"/    public static final String /' \
+		-e 's/": *"/ = "/' \
+        -e 's/",/";/ ' \
+		>> docker-aar/WebrtcBuildVersion.java
+	@echo "}" >> docker-aar/WebrtcBuildVersion.java
+
+aar: docker-aar/WebrtcBuildVersion.java
 	@echo AAR_VERSION=$(AAR_VERSION)
 	rm -f sora-webrtc-$(AAR_VERSION)-android.zip
 	docker build --rm -t sora-webrtc-build/docker-aar docker-aar
