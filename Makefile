@@ -1,6 +1,6 @@
-.PHONY: all dist clean
+.PHONY: all dist clean aar
 
-AAR_VERSION=67.28.0
+AAR_VERSION = $(shell ./webrtc-build version | awk '{print $$NF}')
 
 webrtc-build:
 	go build -o webrtc-build cmd/main.go
@@ -14,6 +14,7 @@ clean:
 	rm -rf webrtc-build sora-webrtc-build-*
 
 aar:
+	@echo AAR_VERSION=$(AAR_VERSION)
 	rm -f sora-webrtc-$(AAR_VERSION)-android.zip
 	docker build --rm -t sora-webrtc-build/docker-aar docker-aar
 	(docker rm aar-container > /dev/null 2>&1 ; true)
