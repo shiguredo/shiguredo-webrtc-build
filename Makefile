@@ -14,7 +14,7 @@ clean:
 docker-aar/WebrtcBuildVersion.java:
 	@echo "package org.webrtc;" > docker-aar/WebrtcBuildVersion.java
 	@echo "public interface WebrtcBuildVersion {" >> docker-aar/WebrtcBuildVersion.java
-	@grep '"webrtc_' docker-aar/config.json | sed \
+	@grep -E '"(webrtc_|maint)' docker-aar/config.json | sed \
 		-e 's/^ *"/    public static final String /' \
 		-e 's/": *"/ = "/' \
         -e 's/",/";/ ' \
