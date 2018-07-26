@@ -87,6 +87,26 @@ Mac OS X では iOS 向け、 Linux では Android 向けのライブラリが�
 
 ``clean`` はビルドの成果物を削除し、パッチを当てたソースコードを元の状態に戻します。
 
+## Android ライブラリの Docker でのビルドについて
+
+AAR(Android ARchive)ビルドは Docker 上でのビルドが可能です。
+ただしビルドエラーのデバッグの際には、手順の詳細や Docker ではない環境でビルドする必要があるかもしれません。
+その際は "Android ライブラリのビルドについて" を参照してください。
+
+手順
+
+1. `docker-aar/Dockerfile` の編集
+   - `webrtc-build` のバージョンが上がった際にはバージョン番号の編集が必要です
+2. `docer-aar/config.json` の変更
+   - 現状 `docker-aar/` ディレクトリ内に `config.json` を持っています
+   - トップレベルの `config.json` をコピーしてください
+3. `docker-aar/install-build-deps.sh` の変更
+   - Ubuntu パッケージ依存まわりのエラーが出た場合には更新してください
+     - 毎回更新する必要はあまりないと思います (断言はできません)
+   - スクリプトは https://webrtc.org/native-code/development/ の手順で、対象のブランチを指定して
+     `fetch`, `gclient sync` すると `src/build/` 以下に取得できます。
+4. `make aar`
+
 ## Android ライブラリのビルドについて
 
 - 実行時のシェルは Bash を推奨します。 Zsh だとビルドエラーになる場合がありました。
