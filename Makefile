@@ -24,6 +24,7 @@ docker-aar/WebrtcBuildVersion.java:
 AAR_VERSION = $(shell ./webrtc-build -config docker-aar/config.json version | awk '{print $$NF}')
 
 aar:
+	cp config.json docker-aar/config.json
 	@rm -f docker-aar/WebrtcBuildVersion.java
 	$(MAKE) docker-aar/WebrtcBuildVersion.java
 	@echo AAR_VERSION=$(AAR_VERSION)

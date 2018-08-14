@@ -10,3 +10,4 @@ WebRTC.framework
 sora-webrtc-*
 /build_info.json
 docker-aar/WebrtcBuildVersion.java
+docker-aar/config.json
