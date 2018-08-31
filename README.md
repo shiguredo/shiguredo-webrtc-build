@@ -15,6 +15,24 @@ iOS と Android 向けの WebRTC ライブラリをビルドします。WebRTC �
 
 Chrome の安定版のバージョンに合わせて追従していきます。 master ブランチやリリースブランチの HEAD への追従は行いません。
 
+## ライセンス
+
+以下に示す例外を覗いて、すべてのソースコードは Apache License Version 2.0 でライセンスされます。
+
+例外は次のとおりです。
+
+- libwebrtc (webrtc.org) のコードを元にしたファイルは webrtc.org と同様に BSD ライセンス(三条項)で
+  ライセンスされます。
+
+  - ライセンスファイル: https://webrtc.googlesource.com/src/+/master/LICENSE
+  - 対象ファイル: `patch/` 以下のファイル
+
+- chromium のコードを本にしたファイルは chromium と同様に BSD ライセンス(三条項)で
+  ライセンスされます。
+
+  - ライセンスファイル: https://chromium.googlesource.com/chromium/src/+/master/LICENSE
+  - 対象ファイル: `docker-aar/install-build-deps.sh`
+
 ## ダウンロード
 
 実行可能なビルドツールは [Releases](https://github.com/shiguredo/sora-webrtc-build/releases) からダウンロードできます (ビルド済みの WebRTC ライブラリではありません) 。
