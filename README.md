@@ -26,12 +26,15 @@ Chrome の安定版のバージョンに合わせて追従していきます。 
 
   - ライセンスファイル: https://webrtc.googlesource.com/src/+/master/LICENSE
   - 対象ファイル: `patch/` 以下のファイル
+  - オリジナル: `config.json` の `_patches` にある `target`
 
 - chromium のコードを本にしたファイルは chromium と同様に BSD ライセンス(三条項)で
   ライセンスされます。
 
   - ライセンスファイル: https://chromium.googlesource.com/chromium/src/+/master/LICENSE
   - 対象ファイル: `docker-aar/install-build-deps.sh`
+  - オリジナル: M68 ブランチの
+    https://chromium.googlesource.com/chromium/src/+/master/build/install-build-deps.sh
 
 ## ダウンロード
 
