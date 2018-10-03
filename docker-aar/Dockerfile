@@ -25,8 +25,8 @@ ADD install-build-deps.sh install-build-deps.sh
 RUN yes | ./install-build-deps.sh --no-chromeos-fonts --no-prompt
 
 ENV BUILD_URL_PREFIX=https://github.com/shiguredo/sora-webrtc-build/releases/download/
-ENV BUILD_TAG=67.28.0
-ENV BUILD_TOOL_VERSION=2.1.0
+ENV BUILD_TAG=67.28.1
+ENV BUILD_TOOL_VERSION=2.2.0
 ENV BUILD_TOOL_FILE=sora-webrtc-build-${BUILD_TOOL_VERSION}-linux-amd64
 
 RUN curl -L -O ${BUILD_URL_PREFIX}/${BUILD_TAG}/${BUILD_TOOL_FILE}.tar.gz \

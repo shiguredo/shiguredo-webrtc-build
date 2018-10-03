@@ -36,4 +36,6 @@ copy-aar:
 	(docker rm aar-container > /dev/null 2>&1 ; true)
 	docker run --name aar-container sora-webrtc-build/docker-aar /bin/true
 	docker cp aar-container:/build/sora-webrtc-$(AAR_VERSION)-android.zip .
+	docker cp aar-container:/build/webrtc/build/android-release/LICENSE.md \
+		THIRD_PARTY_LICENSES.md
 	docker rm aar-container
