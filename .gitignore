@@ -11,3 +11,5 @@ sora-webrtc-*
 /build_info.json
 docker-aar/WebrtcBuildVersion.java
 docker-aar/config.json
+/THIRD_PARTY_LICENSES.md
+
