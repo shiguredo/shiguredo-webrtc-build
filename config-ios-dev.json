@@ -1,7 +1,7 @@
 {
-    "webrtc_branch": "72",
-    "webrtc_commit": "26",
-    "webrtc_revision": "784fccbd71c0130b32345d81459b5d0cb07ff6e5",
+    "webrtc_branch": "m73",
+    "webrtc_commit": "10",
+    "webrtc_revision": "8bb9968c6c8643b108e1e972bf77256a97588890",
     "maint_version": "0",
 
     "debug": false,
