@@ -6,11 +6,10 @@ URL=https://chromium.googlesource.com/external/webrtc
 DTOOLS=$(cd $(dirname $0)/../build/depot_tools && pwd)
 
 CONFIG_DIR=$(cd $1 && pwd)
-VERSION_CONFIG=$CONF_DIR/VERSION
-GCLIENT_CONFIG=$CONF_DIR/GCLIENT
-BUILD_DIR=$(dirname $0)/../build/$(basename $CONFIG_DIR)
-RTC_DIR=$BUILD_DIR/webrtc
-RTC_SRC_DIR=$RTC_DIR/src
+VERSION_CONFIG=$CONFIG_DIR/VERSION
+GCLIENT_CONFIG=$CONFIG_DIR/GCLIENT
+BUILD_DIR=$(cd $(dirname $0)/../build/$(basename $CONFIG_DIR) && pwd)
+RTC_DIR=$BUILD_DIR/src
 
 export PATH=$DTOOLS:$PATH
 
@@ -34,7 +33,7 @@ gclient config --spec "$GCLIENT_CONFIG_SPEC"
 echo "Sync..."
 gclient sync --nohooks --with_branch_heads -v -R
 
-pushd $RTC_SRC_DIR > /dev/null
+pushd $RTC_DIR > /dev/null
 git submodule foreach "'git config -f \$toplevel/.git/config submodule.\$name.ignore all'"
 git config diff.ignoreSubmodules all
 

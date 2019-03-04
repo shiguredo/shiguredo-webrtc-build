@@ -1,5 +1,7 @@
 .PHONY: all dist clean aar copy-aar
 
+IOS_BUILD_SCRIPT=./scripts/build_all_ios.sh
+
 webrtc-build:
 	go build -o webrtc-build cmd/main.go
 
@@ -39,3 +41,9 @@ copy-aar:
 	docker cp aar-container:/build/webrtc/build/android-release/LICENSE.md \
 		THIRD_PARTY_LICENSES.md
 	docker rm aar-container
+
+ios-m73.10-develop:
+	 $(IOS_BUILD_SCRIPT) config/ios-m73.10-develop
+
+ios-m73.10-develop-nofetch:
+	 $(IOS_BUILD_SCRIPT) --nofetch config/ios-m73.10-develop
