@@ -52,3 +52,4 @@ cat <<EOF > $BUILD_INFO_FILE
 }
 EOF
 
+zip -rq $BUILD_LIB_PATH.zip $BUILD_LIB_PATH 
