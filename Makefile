@@ -2,6 +2,12 @@
 
 IOS_BUILD_SCRIPT=./scripts/build_all_ios.sh
 
+ios-%-nofetch:
+	 $(IOS_BUILD_SCRIPT) --nofetch config/ios-$*
+
+ios-%:
+	$(IOS_BUILD_SCRIPT) config/ios-$*
+
 webrtc-build:
 	go build -o webrtc-build cmd/main.go
 
@@ -42,8 +48,3 @@ copy-aar:
 		THIRD_PARTY_LICENSES.md
 	docker rm aar-container
 
-ios-m73.10-develop:
-	 $(IOS_BUILD_SCRIPT) config/ios-m73.10-develop
-
-ios-m73.10-develop-nofetch:
-	 $(IOS_BUILD_SCRIPT) --nofetch config/ios-m73.10-develop
