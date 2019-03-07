@@ -8,8 +8,12 @@ DTOOLS=$(cd $(dirname $0)/../build/depot_tools && pwd)
 CONFIG_DIR=$(cd $1 && pwd)
 VERSION_CONFIG=$CONFIG_DIR/VERSION
 GCLIENT_CONFIG=$CONFIG_DIR/GCLIENT
-BUILD_DIR=$(cd $(dirname $0)/../build/$(basename $CONFIG_DIR) && pwd)
 RTC_DIR=$BUILD_DIR/src
+
+BUILD_DIR=$(dirname $0)/../build/$(basename $CONFIG_DIR)
+mkdir -p $BUILD_DIR
+BUILD_DIR=$(cd $BUILD_DIR && pwd)
+
 
 export PATH=$DTOOLS:$PATH
 
@@ -24,7 +28,6 @@ fi
 
 echo "Checkout the code with release branch M$BRANCH ($REVISION)..."
 
-mkdir -p $BUILD_DIR
 pushd $BUILD_DIR > /dev/null
 
 echo "Initialize gclient..."
