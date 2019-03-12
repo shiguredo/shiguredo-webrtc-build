@@ -1,12 +1,19 @@
 .PHONY: all dist clean aar copy-aar
 
 IOS_BUILD_SCRIPT=./scripts/build_all_ios.sh
+ANDROID_BUILD_SCRIPT=./scripts/build_all_android.sh
 
 ios-%-nofetch:
 	 $(IOS_BUILD_SCRIPT) --nofetch config/ios-$*
 
 ios-%:
 	$(IOS_BUILD_SCRIPT) config/ios-$*
+
+android-%-nofetch:
+	 $(ANDROID_BUILD_SCRIPT) --nofetch config/android-$*
+
+android-%:
+	$(ANDROID_BUILD_SCRIPT) config/android-$*
 
 webrtc-build:
 	go build -o webrtc-build cmd/main.go

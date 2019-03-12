@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # usage: ./fetch_webrtc.sh CONFIG_DIR
 
