@@ -16,7 +16,10 @@ do
 done
 shift $((OPTIND - 1))
 
-DTOOLS_DIR=$(cd $(dirname $0)/../build/depot_tools && pwd)
+DTOOLS_DIR=$(dirname $0)/../build/depot_tools
+mkdir -p $DTOOLS_DIR
+DTOOLS_DIR=$(cd $DTOOLS_DIR && pwd)
+
 CONFIG_DIR=$(cd $1 && pwd)
 SCRIPT_DIR=$(dirname $0)
 
