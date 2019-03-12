@@ -1,0 +1,4 @@
+CONFIG=release
+VP9=true
+
+AAR_ARCH="armeabi-v7a arm64-v8a"
