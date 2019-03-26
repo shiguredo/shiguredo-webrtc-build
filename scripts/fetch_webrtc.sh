@@ -8,11 +8,11 @@ DTOOLS=$(cd $(dirname $0)/../build/depot_tools && pwd)
 CONFIG_DIR=$(cd $1 && pwd)
 VERSION_CONFIG=$CONFIG_DIR/VERSION
 GCLIENT_CONFIG=$CONFIG_DIR/GCLIENT
-RTC_DIR=$BUILD_DIR/src
 
 BUILD_DIR=$(dirname $0)/../build/$(basename $CONFIG_DIR)
 mkdir -p $BUILD_DIR
 BUILD_DIR=$(cd $BUILD_DIR && pwd)
+RTC_DIR=$BUILD_DIR/src
 
 
 export PATH=$DTOOLS:$PATH
