@@ -14,9 +14,10 @@ PATCH_DIR=$CONFIG_DIR/patch
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 GEN_VERSION_CMD=$SCRIPT_DIR/generate_version_android.sh
 VERSION_FILE=WebrtcBuildVersion.java
-BUILD_VERSION_FILE=$BUILD_DIR/$VERSION_FILE
-
 RTC_DIR=$BUILD_DIR/src
+JAVA_SRC_DIR=$RTC_DIR/sdk/android/src/java/org/webrtc
+BUILD_VERSION_FILE=$JAVA_SRC_DIR/$VERSION_FILE
+
 BUILD_AAR_CMD=$RTC_DIR/tools_webrtc/android/build_aar.py
 
 export PATH=$DTOOLS_DIR:$PATH
@@ -31,10 +32,9 @@ if [ -e "$PATCH_SCRIPT" ]; then
   source $PATCH_SCRIPT
 fi
 
-
 echo "Generate $VERSION_FILE..."
-. $GEN_VERSION_CMD $CONFIG_DIR > $BUILD_VERSION_FILE
-cp $BUILD_VERSION_FILE
+echo "$GEN_VERSION_CMD $CONFIG_DIR > $BUILD_VERSION_FILE"
+$GEN_VERSION_CMD $CONFIG_DIR > $BUILD_VERSION_FILE
 
 
 echo "Build Android AAR..."
