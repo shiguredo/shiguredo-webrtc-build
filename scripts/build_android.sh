@@ -19,6 +19,7 @@ JAVA_SRC_DIR=$RTC_DIR/sdk/android/src/java/org/webrtc
 BUILD_VERSION_FILE=$JAVA_SRC_DIR/$VERSION_FILE
 
 BUILD_AAR_CMD=$RTC_DIR/tools_webrtc/android/build_aar.py
+AAR_FILE=$BUILD_DIR/libwebrtc.aar
 
 export PATH=$DTOOLS_DIR:$PATH
 
@@ -39,7 +40,7 @@ $GEN_VERSION_CMD $CONFIG_DIR > $BUILD_VERSION_FILE
 
 echo "Build Android AAR..."
 
-BUILD_SCRIPT_OPTS="--build-dir $BUILD_DIR --build_config $CONFIG --arch $AAR_ARCH"
+BUILD_SCRIPT_OPTS="--build-dir $BUILD_DIR --output $AAR_FILE --build_config $CONFIG --arch $AAR_ARCH"
 
 pushd $RTC_DIR > /dev/null
 
