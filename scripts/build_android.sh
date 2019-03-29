@@ -15,7 +15,7 @@ SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 GEN_VERSION_CMD=$SCRIPT_DIR/generate_version_android.sh
 VERSION_FILE=WebrtcBuildVersion.java
 RTC_DIR=$BUILD_DIR/src
-JAVA_SRC_DIR=$RTC_DIR/sdk/android/src/java/org/webrtc
+JAVA_SRC_DIR=$RTC_DIR/sdk/android/api/org/webrtc
 BUILD_VERSION_FILE=$JAVA_SRC_DIR/$VERSION_FILE
 
 BUILD_AAR_CMD=$RTC_DIR/tools_webrtc/android/build_aar.py
