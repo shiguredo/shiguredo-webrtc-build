@@ -47,8 +47,8 @@ $BUILD_IOS_CMD $BUILD_SCRIPT_OPTS
 echo "Generate build_info.json..."
 cat <<EOF > $BUILD_INFO_FILE
 {
-    "webrtc_version" = "$BRANCH",
-    "webrtc_revision" = "$REVISION"
+    "webrtc_version": "$BRANCH",
+    "webrtc_revision": "$REVISION"
 }
 EOF
 
