@@ -14,7 +14,8 @@ PATCH_DIR=$CONFIG_DIR/patch
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 RTC_DIR=$BUILD_DIR/src
 BUILD_IOS_CMD=$RTC_DIR/tools_webrtc/ios/build_ios_libs.sh
-BUILD_LIB_PATH=$BUILD_DIR/WebRTC.framework
+FRAMEWORK=WebRTC.framework
+BUILD_LIB_PATH=$BUILD_DIR/$FRAMEWORK
 BUILD_INFO_FILE=$BUILD_LIB_PATH/build_info.json
 
 export PATH=$DTOOLS_DIR:$PATH
@@ -52,4 +53,4 @@ cat <<EOF > $BUILD_INFO_FILE
 }
 EOF
 
-zip -rq $BUILD_LIB_PATH.zip $BUILD_LIB_PATH 
+cd $BUILD_DIR; zip -rq $FRAMEWORK.zip $FRAMEWORK
