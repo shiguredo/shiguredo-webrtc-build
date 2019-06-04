@@ -30,4 +30,4 @@ ADD scripts scripts
 
 ADD config config
 
-RUN ./scripts/build_all_android.sh config
+RUN ./scripts/build_all_android.sh config/android-aar

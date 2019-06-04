@@ -26,11 +26,12 @@ dist:
 clean:
 	rm -rf webrtc-build sora-webrtc-build-*
 
-AAR_VERSION = $(shell ./webrtc-build -config docker-aar/config.json version | awk '{print $$NF}')
+AAR_DIR = "android-aar-"$(shell date +%Y%m%d-%H%M%S)
 
 aar-%:
 	rm -rf docker-aar/config
-	cp -a config/android-$* docker-aar/config
+	mkdir -p docker-aar/config/
+	cp -a config/android-$* docker-aar/config/android-aar
 	rm -rf docker-aar/scripts
 	cp -a scripts docker-aar/scripts
 	@echo AAR_VERSION=$(AAR_VERSION)
@@ -41,8 +42,10 @@ aar-%:
 copy-aar:
 	(docker rm aar-container > /dev/null 2>&1 ; true)
 	docker run --name aar-container sora-webrtc-build/docker-aar /bin/true
-	docker cp aar-container:/work/build/android/libwebrtc.aar .
+	echo "Output dir: " $(AAR_DIR)
+	mkdir -p $(AAR_DIR)
+	docker cp aar-container:/work/build/android/libwebrtc.aar $(AAR_DIR).
 	docker cp aar-container:/work/build/android/android-release/LICENSE.md \
-		THIRD_PARTY_LICENSES.md
-	# docker rm aar-container
+		$(AAR_DIR)/THIRD_PARTY_LICENSES.md
+	docker rm aar-container
 
