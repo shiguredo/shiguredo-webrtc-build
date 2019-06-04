@@ -24,27 +24,10 @@ RUN update-java-alternatives -s java-1.8.0-openjdk-amd64
 ADD install-build-deps.sh install-build-deps.sh
 RUN yes | ./install-build-deps.sh --no-chromeos-fonts --no-prompt
 
-ENV BUILD_URL_PREFIX=https://github.com/shiguredo/sora-webrtc-build/releases/download/
-ENV BUILD_TAG=67.28.1
-ENV BUILD_TOOL_VERSION=2.2.0
-ENV BUILD_TOOL_FILE=sora-webrtc-build-${BUILD_TOOL_VERSION}-linux-amd64
+WORKDIR /work
 
-RUN curl -L -O ${BUILD_URL_PREFIX}/${BUILD_TAG}/${BUILD_TOOL_FILE}.tar.gz \
-    && tar zxf ${BUILD_TOOL_FILE}.tar.gz \
-    && mv ${BUILD_TOOL_FILE} build
+ADD scripts scripts
 
-WORKDIR /build
+ADD config config
 
-ADD config.json config.json
-
-RUN ./webrtc-build fetch
-
-COPY WebrtcBuildVersion.java webrtc/src/sdk/android/api/org/webrtc/WebrtcBuildVersion.java
-RUN mv webrtc/src/sdk/android/BUILD.gn BUILD.gn.orig
-RUN sed -e 's:\("api/org/webrtc/RefCounted.java",\):    "api/org/webrtc/WebrtcBuildVersion.java",\n    \1:' \
-    BUILD.gn.orig \
-    > webrtc/src/sdk/android/BUILD.gn
-
-RUN ./webrtc-build build
-
-RUN ./webrtc-build archive
+RUN ./scripts/build_all_android.sh config

@@ -9,7 +9,7 @@ dist
 WebRTC.framework
 sora-webrtc-*
 /build_info.json
-docker-aar/WebrtcBuildVersion.java
-docker-aar/config.json
+docker-aar/config/
+docker-aar/scripts/
 /THIRD_PARTY_LICENSES.md
 build

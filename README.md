@@ -45,13 +45,12 @@ Chrome の安定版のバージョンに合わせて追従していきます。 
 
 Android のビルドは Linux のみサポートされているため、一台の Mac で iOS/Android の両方のビルドはできません。
 
-- Go 1.9.2+ (``webrtc-build`` コマンドをビルドする場合)
 - iOS
   - Mac OS X 10.12.6+
   - Xcode 9.0+
   - Python 2.7
 - Android
-  - Ubuntu Linux 16.04 64bit
+  - Ubuntu Linux 18.04 64bit
   - Python 2.7
 
 ## バージョン表記について
@@ -106,64 +105,43 @@ $ make ios-m73.10-nofetch
 
 ## 使い方 (Android 向け)
 
-``webrtc-build`` コマンドを使います。
+``make`` にビルドしたい設定をターゲットに指定して実行します。 ``config`` ディレクトリ下のディレクトリ名をターゲットとして指定可能です。
 
-``webrtc-build`` コマンドをソースコードからビルドするには ``make`` を実行します。 Go のインストールが必要です。
+例:
 
 ```
-$ make
+# config/android-m73.10 以下の設定でビルドされます。
+# ビルドされたライブラリは build/android-m73.10/libwebrtc.aar にあります。
+$ make android-m73.10
 ```
 
-``webrtc-build`` の主なサブコマンドは以下の通りです。
-``fetch`` と ``build`` を順に実行してください。
+### ビルドのみ行う
 
-### コマンドラインオプション
+これらのターゲットは、ビルドの前にビルドツール ``depot_tools`` と libwebrtc のソースコードのダウンロード及び更新を行います。すでにダウンロード済みで、更新の必要もない場合は、ターゲット名の末尾に ``-nofetch`` を指定するとビルドのみを実行可能です。
 
-- ``-h``: ヘルプメッセージを表示します。
+例:
 
-- ``-config`: 設定ファイルを指定します。デフォルトは ``config.json`` です。
-
-### ``fetch``
-
-``fetch`` は WebRTC ライブラリのソースコードと、ビルドに必要なツール [depot_tools](https://www.chromium.org/developers/how-tos/depottools) をダウンロードします。
-
-ソースコードのダウンロードは非常に時間がかかります。
-途中で中断してしまっても、再度実行すれば途中から再開できます。
-
-### ``build``
-
-``build`` は設定ファイル (``config.json``) で指定されたパッチをソースコードに当ててからビルドします。ビルドの成果物は ``webrtc/build`` ディレクトリ以下にあります。 iOS では設定ファイルごとにディレクトリが生成されます (設定ファイル名が ``config.json`` であれば ``webrtc/build/build-config`` に成果物が生成されます) 。
-
-実行するプラットフォームによってビルド対象が異なります。
-Mac OS X では iOS 向け、 Linux では Android 向けのライブラリがビルドされます。
-
-### ``clean``
-
-``clean`` はビルドの成果物を削除し、パッチを当てたソースコードを元の状態に戻します。
+```
+# ビルドのみ行います。ソースコードのダウンロードは行われません。
+$ make android-m73.10-nofetch
+```
 
 ## Android ライブラリの Docker でのビルドについて
 
 AAR(Android ARchive)ビルドは Docker 上でのビルドが可能です。
 ただしビルドエラーのデバッグの際には、手順の詳細や Docker ではない環境でビルドする必要があるかもしれません。
-その際は "Android ライブラリのビルドについて" を参照してください。
+その際は "使い方 (Android 向け)" を参照してください。
 
 手順
 
-1. `docker-aar/Dockerfile` の編集
-   - `webrtc-build` のバージョンが上がった際にはバージョン番号の編集が必要です
-2. `docker-aar/install-build-deps.sh` の変更
+1. `docker-aar/install-build-deps.sh` の変更
    - Ubuntu パッケージ依存まわりのエラーが出た場合には更新してください
      - 毎回更新する必要はあまりないと思います (断言はできません)
    - スクリプトは https://webrtc.org/native-code/development/ の手順で、対象のブランチを指定して
      `fetch`, `gclient sync` すると `src/build/` 以下に取得できます。
-3. `make aar`
+2. `make aar-<config-path>`
+   - 例: `make aar-android-m73.10`
 
-注意
-
-Docker でのビルドにおいて、`org.webrtc.WebrtcBuildVersion` インターフェイスを生成、コンパイルし
-AAR に含める手順があります。
-現状、手動ビルドには入っていませんので `Makefile` および `docker-aar/Dockerfile` を参考にして
-生成、組み込みしてください。必要な手順は java ファイルの生成、配置、Build.gn の変更(1行)です。
 
 ## Android ライブラリのビルドについて
 
