@@ -44,8 +44,8 @@ copy-aar:
 	docker run --name aar-container sora-webrtc-build/docker-aar /bin/true
 	echo "Output dir: " $(AAR_DIR)
 	mkdir -p $(AAR_DIR)
-	docker cp aar-container:/work/build/android/libwebrtc.aar $(AAR_DIR).
-	docker cp aar-container:/work/build/android/android-release/LICENSE.md \
+	docker cp aar-container:/work/build/android-aar/libwebrtc.aar $(AAR_DIR)/libwebrtc.aar
+	docker cp aar-container:/work/build/android-aar/LICENSE.md \
 		$(AAR_DIR)/THIRD_PARTY_LICENSES.md
 	docker rm aar-container
 
