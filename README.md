@@ -112,6 +112,7 @@ $ make ios-m73.10-nofetch
 ```
 # config/android-m73.10 以下の設定でビルドされます。
 # ビルドされたライブラリは build/android-m73.10/libwebrtc.aar にあります。
+# バイナリライセンスは build/android-m73.10/LICENSE.md です。
 $ make android-m73.10
 ```
 
