@@ -9,7 +9,7 @@
 - FIX
     - バグ修正
 
-# android-m75.10.0
+# ビルドツールを shell script ベースに移行
 
 - Go ベースのビルドツールから shell script ベースのツールへ移行した
 - Docker スクリプトを shell script ベースに書き換えた
