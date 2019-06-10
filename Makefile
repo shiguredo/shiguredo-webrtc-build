@@ -28,7 +28,7 @@ clean:
 
 AAR_DIR = "android-aar-"$(shell date +%Y%m%d-%H%M%S)
 
-aar-%:
+aar-android-%:
 	rm -rf docker-aar/config
 	mkdir -p docker-aar/config/
 	cp -a config/android-$* docker-aar/config/android-aar
