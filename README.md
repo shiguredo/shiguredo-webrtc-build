@@ -45,13 +45,12 @@ Chrome の安定版のバージョンに合わせて追従していきます。 
 
 Android のビルドは Linux のみサポートされているため、一台の Mac で iOS/Android の両方のビルドはできません。
 
-- Go 1.9.2+ (``webrtc-build`` コマンドをビルドする場合)
 - iOS
   - Mac OS X 10.12.6+
   - Xcode 9.0+
   - Python 2.7
 - Android
-  - Ubuntu Linux 16.04 64bit
+  - Ubuntu Linux 18.04 64bit
   - Python 2.7
 
 ## バージョン表記について
@@ -78,8 +77,8 @@ Android のビルドは Linux のみサポートされているため、一台�
 例:
 
 ```
-# config/ios-m73.10 以下の設定でビルドされます。
-# ビルドされたライブラリは build/ios-m73.10/WebRTC.framework にあります。
+// config/ios-m73.10 以下の設定でビルドされます。
+// ビルドされたライブラリは build/ios-m73.10/WebRTC.framework にあります。
 $ make ios-m73.10
 ```
 
@@ -94,7 +93,7 @@ $ make ios-m73.10
 例:
 
 ```
-# ビルドのみ行います。ソースコードのダウンロードは行われません。
+// ビルドのみ行います。ソースコードのダウンロードは行われません。
 $ make ios-m73.10-nofetch
 ```
 
@@ -106,64 +105,51 @@ $ make ios-m73.10-nofetch
 
 ## 使い方 (Android 向け)
 
-``webrtc-build`` コマンドを使います。
-
-``webrtc-build`` コマンドをソースコードからビルドするには ``make`` を実行します。 Go のインストールが必要です。
+Java 8 の開発環境が必要です。Ubuntu 18.04 の場合は次のコマンドでインストール,、設定できます。
 
 ```
-$ make
+# apt-get install -y openjdk-8-jdk-headless
+# update-java-alternatives -s java-1.8.0-openjdk-amd64
 ```
 
-``webrtc-build`` の主なサブコマンドは以下の通りです。
-``fetch`` と ``build`` を順に実行してください。
+``make`` にビルドしたい設定をターゲットに指定して実行します。 ``config`` ディレクトリ下のディレクトリ名をターゲットとして指定可能です。
 
-### コマンドラインオプション
+例:
 
-- ``-h``: ヘルプメッセージを表示します。
+```
+// config/android-m73.10 以下の設定でビルドされます。
+// ビルドされたライブラリは build/android-m73.10/libwebrtc.aar にあります。
+// バイナリライセンスは build/android-m73.10/LICENSE.md です。
+$ make android-m73.10
+```
 
-- ``-config`: 設定ファイルを指定します。デフォルトは ``config.json`` です。
+### ビルドのみ行う
 
-### ``fetch``
+これらのターゲットは、ビルドの前にビルドツール ``depot_tools`` と libwebrtc のソースコードのダウンロード及び更新を行います。すでにダウンロード済みで、更新の必要もない場合は、ターゲット名の末尾に ``-nofetch`` を指定するとビルドのみを実行可能です。
 
-``fetch`` は WebRTC ライブラリのソースコードと、ビルドに必要なツール [depot_tools](https://www.chromium.org/developers/how-tos/depottools) をダウンロードします。
+例:
 
-ソースコードのダウンロードは非常に時間がかかります。
-途中で中断してしまっても、再度実行すれば途中から再開できます。
-
-### ``build``
-
-``build`` は設定ファイル (``config.json``) で指定されたパッチをソースコードに当ててからビルドします。ビルドの成果物は ``webrtc/build`` ディレクトリ以下にあります。 iOS では設定ファイルごとにディレクトリが生成されます (設定ファイル名が ``config.json`` であれば ``webrtc/build/build-config`` に成果物が生成されます) 。
-
-実行するプラットフォームによってビルド対象が異なります。
-Mac OS X では iOS 向け、 Linux では Android 向けのライブラリがビルドされます。
-
-### ``clean``
-
-``clean`` はビルドの成果物を削除し、パッチを当てたソースコードを元の状態に戻します。
+```
+// ビルドのみ行います。ソースコードのダウンロードは行われません。
+$ make android-m73.10-nofetch
+```
 
 ## Android ライブラリの Docker でのビルドについて
 
 AAR(Android ARchive)ビルドは Docker 上でのビルドが可能です。
 ただしビルドエラーのデバッグの際には、手順の詳細や Docker ではない環境でビルドする必要があるかもしれません。
-その際は "Android ライブラリのビルドについて" を参照してください。
+その際は "使い方 (Android 向け)" を参照してください。
 
 手順
 
-1. `docker-aar/Dockerfile` の編集
-   - `webrtc-build` のバージョンが上がった際にはバージョン番号の編集が必要です
-2. `docker-aar/install-build-deps.sh` の変更
+1. `docker-aar/install-build-deps.sh` の変更
    - Ubuntu パッケージ依存まわりのエラーが出た場合には更新してください
      - 毎回更新する必要はあまりないと思います (断言はできません)
    - スクリプトは https://webrtc.org/native-code/development/ の手順で、対象のブランチを指定して
      `fetch`, `gclient sync` すると `src/build/` 以下に取得できます。
-3. `make aar`
+2. `make aar-<config-path>`
+   - 例: `make aar-android-m73.10`
 
-注意
-
-Docker でのビルドにおいて、`org.webrtc.WebrtcBuildVersion` インターフェイスを生成、コンパイルし
-AAR に含める手順があります。
-現状、手動ビルドには入っていませんので `Makefile` および `docker-aar/Dockerfile` を参考にして
-生成、組み込みしてください。必要な手順は java ファイルの生成、配置、Build.gn の変更(1行)です。
 
 ## Android ライブラリのビルドについて
 
@@ -220,6 +206,22 @@ AAR に含める手順があります。
 
 - `webrtc_version` (string): WebRTC のリリースブランチ番号
 - `webrtc_revision` (string): WebRTC のリビジョン番号
+
+## ビルド情報 (Android)
+
+ビルド時の情報は `org.webrtc.WebrtcBuildVersion` クラスに保存されます。
+ビルドされた libwebrtc.aar に含まれる classes.jar に同梱されており、依存するアプリケーションから参照できます。
+
+```
+% javap org/webrtc/WebrtcBuildVersion.class
+Compiled from "WebrtcBuildVersion.java"
+public interface org.webrtc.WebrtcBuildVersion {
+  public static final java.lang.String webrtc_branch;
+  public static final java.lang.String webrtc_commit;
+  public static final java.lang.String webrtc_revision;
+  public static final java.lang.String maint_version;
+}
+```
 
 ## トラブルシューティング
 
@@ -317,4 +319,18 @@ Traceback (most recent call last):
     % (str(e), kwargs.get('cwd'), args[0]))
 OSError: Execution failed with error: [Errno 2] No such file or directory.
 Check that /home/shiguredo/sora-webrtc-build/webrtc or download_from_google_storage exist and have execution permission.
+```
+
+### `FAILED: gen/sdk/android/generated_external_classes_jni/jni/BigInteger_jni.h`
+
+Java の開発環境が設定されていない場合に発生します。
+ビルドで javap が使われるため、Java 8 JDK をインストールしてください。
+
+```
+$ java -version
+openjdk version "1.8.0_212"
+OpenJDK Runtime Environment (build 1.8.0_212-8u212-b03-0ubuntu1.18.04.1-b03)
+OpenJDK 64-Bit Server VM (build 25.212-b03, mixed mode)
+$ javap -version
+1.8.0_212
 ```

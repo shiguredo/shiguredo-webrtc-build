@@ -9,6 +9,12 @@
 - FIX
     - バグ修正
 
+# android-m75.10.0
+
+- Go ベースのビルドツールから shell script ベースのツールへ移行した
+- Docker スクリプトを shell script ベースに書き換えた
+- Git のタグを ios- / android- とプラットフォーム別に打つように変更した
+
 # m73.10.1
 
 - jitpack.io が m 付きを認識しなかったため AAR 作り直し

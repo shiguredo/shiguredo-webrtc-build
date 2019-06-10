@@ -1,0 +1,10 @@
+--- BUILD.gn.orig    2019-03-29 15:25:43.725980912 +0900
++++ BUILD.gn    2019-03-29 15:28:18.049043589 +0900
+@@ -193,6 +193,7 @@
+     java_files = [
+       "api/org/webrtc/RefCounted.java",
+       "api/org/webrtc/Predicate.java",
++      "api/org/webrtc/WebrtcBuildVersion.java",
+       "src/java/org/webrtc/CalledByNative.java",
+       "src/java/org/webrtc/CalledByNativeUnchecked.java",
+       "src/java/org/webrtc/Histogram.java",
