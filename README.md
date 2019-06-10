@@ -77,8 +77,8 @@ Android のビルドは Linux のみサポートされているため、一台�
 例:
 
 ```
-# config/ios-m73.10 以下の設定でビルドされます。
-# ビルドされたライブラリは build/ios-m73.10/WebRTC.framework にあります。
+// config/ios-m73.10 以下の設定でビルドされます。
+// ビルドされたライブラリは build/ios-m73.10/WebRTC.framework にあります。
 $ make ios-m73.10
 ```
 
@@ -93,7 +93,7 @@ $ make ios-m73.10
 例:
 
 ```
-# ビルドのみ行います。ソースコードのダウンロードは行われません。
+// ビルドのみ行います。ソースコードのダウンロードは行われません。
 $ make ios-m73.10-nofetch
 ```
 
@@ -105,14 +105,21 @@ $ make ios-m73.10-nofetch
 
 ## 使い方 (Android 向け)
 
+Java 8 の開発環境が必要です。Ubuntu 18.04 の場合は次のコマンドでインストール,、設定できます。
+
+```
+# apt-get install -y openjdk-8-jdk-headless
+# update-java-alternatives -s java-1.8.0-openjdk-amd64
+```
+
 ``make`` にビルドしたい設定をターゲットに指定して実行します。 ``config`` ディレクトリ下のディレクトリ名をターゲットとして指定可能です。
 
 例:
 
 ```
-# config/android-m73.10 以下の設定でビルドされます。
-# ビルドされたライブラリは build/android-m73.10/libwebrtc.aar にあります。
-# バイナリライセンスは build/android-m73.10/LICENSE.md です。
+// config/android-m73.10 以下の設定でビルドされます。
+// ビルドされたライブラリは build/android-m73.10/libwebrtc.aar にあります。
+// バイナリライセンスは build/android-m73.10/LICENSE.md です。
 $ make android-m73.10
 ```
 
@@ -123,7 +130,7 @@ $ make android-m73.10
 例:
 
 ```
-# ビルドのみ行います。ソースコードのダウンロードは行われません。
+// ビルドのみ行います。ソースコードのダウンロードは行われません。
 $ make android-m73.10-nofetch
 ```
 
@@ -199,6 +206,22 @@ AAR(Android ARchive)ビルドは Docker 上でのビルドが可能です。
 
 - `webrtc_version` (string): WebRTC のリリースブランチ番号
 - `webrtc_revision` (string): WebRTC のリビジョン番号
+
+## ビルド情報 (Android)
+
+ビルド時の情報は `org.webrtc.WebrtcBuildVersion` クラスに保存されます。
+ビルドされた libwebrtc.aar に含まれる classes.jar に同梱されており、依存するアプリケーションから参照できます。
+
+```
+% javap org/webrtc/WebrtcBuildVersion.class
+Compiled from "WebrtcBuildVersion.java"
+public interface org.webrtc.WebrtcBuildVersion {
+  public static final java.lang.String webrtc_branch;
+  public static final java.lang.String webrtc_commit;
+  public static final java.lang.String webrtc_revision;
+  public static final java.lang.String maint_version;
+}
+```
 
 ## トラブルシューティング
 
@@ -296,4 +319,18 @@ Traceback (most recent call last):
     % (str(e), kwargs.get('cwd'), args[0]))
 OSError: Execution failed with error: [Errno 2] No such file or directory.
 Check that /home/shiguredo/sora-webrtc-build/webrtc or download_from_google_storage exist and have execution permission.
+```
+
+### `FAILED: gen/sdk/android/generated_external_classes_jni/jni/BigInteger_jni.h`
+
+Java の開発環境が設定されていない場合に発生します。
+ビルドで javap が使われるため、Java 8 JDK をインストールしてください。
+
+```
+$ java -version
+openjdk version "1.8.0_212"
+OpenJDK Runtime Environment (build 1.8.0_212-8u212-b03-0ubuntu1.18.04.1-b03)
+OpenJDK 64-Bit Server VM (build 25.212-b03, mixed mode)
+$ javap -version
+1.8.0_212
 ```
