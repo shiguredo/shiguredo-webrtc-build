@@ -36,7 +36,7 @@ aar-android-%:
 	cp -a scripts docker-aar/scripts
 	@echo AAR_VERSION=$(AAR_VERSION)
 	rm -f sora-webrtc-$(AAR_VERSION)-android.zip
-	docker build --rm -t sora-webrtc-build/docker-aar docker-aar
+	docker build --progress=plain --rm -t sora-webrtc-build/docker-aar docker-aar
 	$(MAKE) copy-aar
 
 copy-aar:
