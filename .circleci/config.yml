@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build_android_m75_16:
+    docker:
+      - image: ubuntu:18.04
+    steps:
+      - checkout
+      - run:
+          command: apt-get update && apt-get install -y make lsb-release net-tools git curl python openjdk-8-jdk-headless
+      - run:
+          command: update-java-alternatives -s java-1.8.0-openjdk-amd64
+      - run:
+          command: make android-m75.16
+          no_output_timeout: 2h
+
+workflows:
+  version: 2
+  build_workflow:
+    jobs:
+      - build_android_m75_16
