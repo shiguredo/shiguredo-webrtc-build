@@ -12,9 +12,19 @@ jobs:
       - run:
           command: make android-m75.16
           no_output_timeout: 2h
+  build_ios_m75_16:
+    macos:
+      xcode: "10.2.1"
+    steps:
+      - checkout
+      - run:
+          command: make ios-m75.16
+          no_output_timeout: 2h
+
 
 workflows:
   version: 2
   build_workflow:
     jobs:
-      - build_android_m75_16
+      # - build_android_m75_16
+      - build_ios_m75_16
