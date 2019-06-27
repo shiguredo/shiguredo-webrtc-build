@@ -37,8 +37,8 @@ Chrome の安定版のバージョンに合わせて追従していきます。 
 ## ビルドのシステム条件
 
 - iOS
-  - Mac OS X 10.12.6+
-  - Xcode 9.0+
+  - macOS 10.14.5
+  - Xcode 10.2.1
   - Python 2.7
 - Android
   - Ubuntu Linux 18.04 64bit
