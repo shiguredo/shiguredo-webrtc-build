@@ -24,7 +24,16 @@ jobs:
 
 workflows:
   version: 2
-  build_workflow:
+  weekly_build_workflow:
+    triggers:
+      - schedule:
+          # 週 1 、日曜日のみビルドする
+          # UTCで記述する事、この場合は日本時間 20 時にしたいので -9 して 11 にしてある
+          cron: "0 11 * * 0"
+          filters:
+            branches:
+              only:
+                - develop
     jobs:
       # - build_android_m75_16
       - build_ios_m75_16
