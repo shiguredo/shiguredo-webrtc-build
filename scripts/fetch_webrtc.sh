@@ -13,7 +13,7 @@ BUILD_DIR=$(dirname $0)/../build/$(basename $CONFIG_DIR)
 mkdir -p $BUILD_DIR
 BUILD_DIR=$(cd $BUILD_DIR && pwd)
 RTC_DIR=$BUILD_DIR/src
-
+GCLIENT=$DTOOLS/gclient
 
 export PATH=$DTOOLS:$PATH
 
@@ -31,10 +31,10 @@ echo "Checkout the code with release branch M$BRANCH ($REVISION)..."
 pushd $BUILD_DIR > /dev/null
 
 echo "Initialize gclient..."
-gclient config --spec "$GCLIENT_CONFIG_SPEC"
+$GCLIENT config --spec "$GCLIENT_CONFIG_SPEC"
 
 echo "Sync..."
-gclient sync --nohooks --with_branch_heads -v -R
+$GCLIENT sync --nohooks --with_branch_heads -v -R
 
 pushd $RTC_DIR > /dev/null
 git submodule foreach "'git config -f \$toplevel/.git/config submodule.\$name.ignore all'"
@@ -45,7 +45,7 @@ git checkout -B "M$BRANCH" remotes/branch-heads/$BRANCH_HEADS
 git checkout $REVISION
 
 # Android だと途中でライセンスの同意が必要になるので yes を置く
-yes | gclient sync --with_branch_heads -v -R
+yes | $GCLIENT sync --with_branch_heads -v -R
 
-gclient runhooks -v
+$GCLIENT runhooks -v
 

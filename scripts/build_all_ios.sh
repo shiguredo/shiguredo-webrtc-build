@@ -16,15 +16,15 @@ do
 done
 shift $((OPTIND - 1))
 
-DTOOLS_DIR=$(dirname $0)/../build/depot_tools
-mkdir -p $DTOOLS_DIR
-DTOOLS_DIR=$(cd $DTOOLS_DIR && pwd)
+BUILD_DIR=$(dirname $0)/../build
+mkdir -p $BUILD_DIR
+BUILD_DIR=$(cd $BUILD_DIR && pwd)
 
 CONFIG_DIR=$(cd $1 && pwd)
 SCRIPT_DIR=$(dirname $0)
 
+$SCRIPT_DIR/fetch_depot_tools.sh $BUILD_DIR
 if [ "$NOFETCH" != "true" ]; then
-  $SCRIPT_DIR/fetch_depot_tools.sh $DTOOLS_DIR
   $SCRIPT_DIR/fetch_webrtc.sh $CONFIG_DIR
 fi
 $SCRIPT_DIR/build_ios.sh $CONFIG_DIR
