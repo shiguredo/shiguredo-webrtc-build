@@ -9,7 +9,7 @@ iOS と Android 向けの WebRTC ライブラリをビルドします。WebRTC �
 
 ## 注意
 
-このビルドツールの主な目的は[株式会社時雨堂](https://shiguredo.jp)の製品である [WebRTC SFU Sora](https://sora.shiguredo.jp) の SDK 利用のために開発されています。
+このビルドツールの主な目的は[株式会社時雨堂](https://shiguredo.jp)の製品である [WebRTC SFU Sora](https://sora.shiguredo.jp) の SDK や [React Native 用 WebRTC ライブラリ](https://github.com/shiguredo/react-native-webrtc-kit)利用のために開発されています。
 そのため、目的を越えた汎用的なビルドツールにする予定はありません。リソースの都合上、バグ報告以外の PR  に対応できるとは限りませんのでご了承ください。
 
 ## 方針
