@@ -51,6 +51,5 @@ workflows:
                 - develop
     jobs:
       # - build_android_m75_16
-      - build_ios_m75_16
       - build_ios_m76_3
       - build_ios_m76_3_develop
