@@ -315,3 +315,7 @@ OpenJDK 64-Bit Server VM (build 25.212-b03, mixed mode)
 $ javap -version
 1.8.0_212
 ```
+
+## Windows 向け WebRTC ライブラリ用ビルドツール
+
+[shiguredo/shiguredo\-webrtc\-windows: Windows 向け WebRTC ライブラリ用ビルドツール](https://github.com/shiguredo/shiguredo-webrtc-windows)
