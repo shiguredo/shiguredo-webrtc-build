@@ -1,7 +1,13 @@
 .PHONY: all dist clean aar copy-aar
 
+IOS_LATEST=m78.8
+
 IOS_BUILD_SCRIPT=./scripts/build_all_ios.sh
 ANDROID_BUILD_SCRIPT=./scripts/build_all_android.sh
+
+ios: ios-$(IOS_LATEST)
+
+ios-develop: ios-$(IOS_LATEST)-develop
 
 ios-%-nofetch:
 	 $(IOS_BUILD_SCRIPT) --nofetch config/ios-$*
