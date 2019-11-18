@@ -1,0 +1,17 @@
+name: Build
+
+on:
+  push:
+    paths-ignore:
+    - '*.md'
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  build-ios:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@feature/actions
+    - name: Build
+      run: make ios
+
