@@ -8,7 +8,7 @@ on:
   - cron: "0 0 * * *"
 
 jobs:
-  build-ios:
+  build-ios-release:
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
