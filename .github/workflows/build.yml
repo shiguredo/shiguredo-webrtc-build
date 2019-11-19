@@ -11,7 +11,9 @@ jobs:
   build-ios:
     runs-on: macOS-latest
     steps:
-    - uses: actions/checkout@develop
+    - uses: actions/checkout@v1
+      with:
+        ref: develop
     - name: Build
       run: make ios
 
