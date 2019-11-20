@@ -8,28 +8,40 @@ on:
   - cron: "0 0 * * *"
 
 jobs:
-  build-ios-release:
+  build-ios:
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
       with:
         ref: develop
-    - name: Build and archive
+    - name: Build and archive (release)
       run: make ios
-    - name: Upload an artifact
+    - name: Build and archive (develop)
+      run: make ios-develop
+    - name: Upload an artifact (release)
       uses: actions/upload-artifact@v1
       with:
         name: WebRTC.framework.zip
         path: build/ios/WebRTC.framework.zip
+    - name: Upload an artifact (develop)
+      uses: actions/upload-artifact@v1
+      with:
+        name: develop-WebRTC.framework.zip
+        path: build/ios-develop/WebRTC.framework.zip
+
   release-ios:
     runs-on: macOS-latest
     if: contains(github.ref, 'tags/ios-m')
-    needs: [build-ios-release]
+    needs: [build-ios]
     steps:
-    - name: Download an artifact
+    - name: Download an artifact (release)
       uses: actions/download-artifact@v1
       with:
         name: WebRTC.framework.zip
+    - name: Download an artifact (develop)
+      uses: actions/download-artifact@v1
+      with:
+        name: develop-WebRTC.framework.zip
     - name: Create release
       id: create_release
       uses: actions/create-release@v1.0.0
@@ -40,8 +52,7 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
-    - name: Upload release asset
-      id: upload-release-asset
+    - name: Upload release asset (release)
       uses: actions/upload-release-asset@v1.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,4 +60,13 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./WebRTC.framework.zip
         asset_name: WebRTC.framework.zip
+        asset_content_type: application/zip
+    - name: Upload release asset (develop)
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./develop-WebRTC.framework.zip
+        asset_name: develop-WebRTC.framework.zip
         asset_content_type: application/zip
