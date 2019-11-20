@@ -23,7 +23,7 @@ jobs:
         path: build/ios/WebRTC.framework.zip
   release-ios:
     runs-on: macOS-latest
-    if: contains(github.ref, 'tags/ios-v')
+    if: contains(github.ref, 'tags/ios-m')
     needs: [build-ios-release]
     steps:
     - name: Download an artifact
