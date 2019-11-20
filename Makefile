@@ -17,7 +17,7 @@ ios: ios-$(IOS_LATEST)
 ios-develop: ios-$(IOS_LATEST)-develop
 	rm -rf $(BUILD_IOS_DIR)-develop
 	mkdir $(BUILD_IOS_DIR)-develop
-	cp $(BUILD_IOS_DIR)-$(IOS_LATEST)-develop/$(IOS_FRAMEWORK) $(BUILD_IOS_DIR)
+	cp $(BUILD_IOS_DIR)-$(IOS_LATEST)-develop/$(IOS_FRAMEWORK) $(BUILD_IOS_DIR)-develop
 
 ios-%-nofetch:
 	 $(IOS_BUILD_SCRIPT) --nofetch config/ios-$*
