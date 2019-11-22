@@ -48,6 +48,6 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./WebRTC.framework.zip
-        asset_name: WebRTC.framework.zip
+        asset_name: libwebrtc-ios-develop.zip
         asset_content_type: application/zip
 
