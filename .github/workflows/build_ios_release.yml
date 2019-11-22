@@ -1,0 +1,52 @@
+name: Build iOS release
+
+on:
+  push:
+    paths-ignore:
+    - '*.md'
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  build-ios:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        ref: develop
+    - name: Build and archive
+      run: make ios
+    - name: Upload an artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: WebRTC.framework.zip
+        path: build/ios/WebRTC.framework.zip
+
+  release-ios:
+    runs-on: macOS-latest
+    if: contains(github.ref, 'tags/ios-m')
+    needs: [build-ios]
+    steps:
+    - name: Download an artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: WebRTC.framework.zip
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./WebRTC.framework.zip
+        asset_name: WebRTC.framework.zip
+        asset_content_type: application/zip
