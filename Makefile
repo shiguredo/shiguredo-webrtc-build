@@ -1,6 +1,6 @@
 .PHONY: all dist clean aar copy-aar
 
-IOS_LATEST=m78.8
+IOS_LATEST=m78.8.1
 
 IOS_BUILD_SCRIPT=./scripts/build_all_ios.sh
 ANDROID_BUILD_SCRIPT=./scripts/build_all_android.sh
