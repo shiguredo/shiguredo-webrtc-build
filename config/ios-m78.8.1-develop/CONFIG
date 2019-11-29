@@ -1,0 +1,6 @@
+CONFIG=debug
+VP9=true
+
+IOS_ARCH="arm64 arm x64 x86"
+IOS_BITCODE=false
+
