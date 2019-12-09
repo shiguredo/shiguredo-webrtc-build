@@ -15,7 +15,7 @@ jobs:
       with:
         ref: develop
     - name: Build and archive
-      run: make ios
+      run: make ios-latest
     - name: Upload an artifact
       uses: actions/upload-artifact@v1
       with:
