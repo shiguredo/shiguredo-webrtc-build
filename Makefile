@@ -9,12 +9,12 @@ BUILD_IOS_DIR=build/ios
 IOS_FRAMEWORK=WebRTC.framework.zip
 BUILD_IOS_FRAMEWORK=$(BUILD_IOS_DIR)-$(IOS_LATEST)/$(IOS_FRAMEWORK)
 
-ios: ios-$(IOS_LATEST)
+ios-latest: ios-$(IOS_LATEST)
 	rm -rf $(BUILD_IOS_DIR)
 	mkdir $(BUILD_IOS_DIR)
 	cp $(BUILD_IOS_DIR)-$(IOS_LATEST)/$(IOS_FRAMEWORK) $(BUILD_IOS_DIR)
 
-ios-develop: ios-$(IOS_LATEST)-develop
+ios-latest-develop: ios-$(IOS_LATEST)-develop
 	rm -rf $(BUILD_IOS_DIR)-develop
 	mkdir $(BUILD_IOS_DIR)-develop
 	cp $(BUILD_IOS_DIR)-$(IOS_LATEST)-develop/$(IOS_FRAMEWORK) $(BUILD_IOS_DIR)-develop
