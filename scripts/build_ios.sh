@@ -49,6 +49,8 @@ echo "Generate build_info.json..."
 cat <<EOF > $BUILD_INFO_FILE
 {
     "webrtc_version": "$BRANCH",
+    "webrtc_commit": "$COMMIT",
+    "webrtc_maint": "$MAINT",
     "webrtc_revision": "$REVISION"
 }
 EOF
