@@ -1,9 +1,12 @@
-.PHONY: all dist clean aar copy-aar
+.PHONY: all dist clean aar copy-aar deps
 
 IOS_LATEST=m79.5.0
 
+SCRIPT_DIR=scripts
 IOS_BUILD_SCRIPT=./scripts/build_all_ios.sh
 ANDROID_BUILD_SCRIPT=./scripts/build_all_android.sh
+INSTALL_BUILD_DEPS_SCRIPT=$(SCRIPT_DIR)/install-build-deps.sh
+INSTALL_BUILD_DEPS_ANDROID_SCRIPT=$(SCRIPT_DIR)/install-build-deps-android.sh
 
 BUILD_IOS_DIR=build/ios
 IOS_FRAMEWORK=WebRTC.framework.zip
@@ -24,6 +27,10 @@ ios-%-nofetch:
 
 ios-%:
 	$(IOS_BUILD_SCRIPT) config/ios-$*
+
+deps:
+	./$(INSTALL_BUILD_DEPS_SCRIPT) --no-chromeos-fonts --no-prompt
+	./$(INSTALL_BUILD_DEPS_ANDROID_SCRIPT)
 
 android-%-nofetch:
 	 $(ANDROID_BUILD_SCRIPT) --nofetch config/android-$*
