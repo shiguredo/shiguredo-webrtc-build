@@ -37,7 +37,7 @@ Chrome の安定版のバージョンに合わせて追従していきます。 
   ライセンスされます。
 
   - ライセンスファイル: https://chromium.googlesource.com/chromium/src/+/master/LICENSE
-  - 対象ファイル: `docker-aar/install-build-deps.sh`
+  - 対象ファイル: `docker-aar/install-build-deps.sh`, `scripts/install-build-deps.sh`, `scripts/install-build-deps-android.sh`
 
 ## ビルドのシステム条件
 
