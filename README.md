@@ -102,14 +102,11 @@ $ make ios-m73.10-nofetch
 
 ## 使い方 (Android 向け)
 
-Java 8 の開発環境が必要です。Ubuntu 18.04 の場合は次のコマンドでインストール,、設定できます。
+初回のみ、ビルド前に ``make android-deps`` を実行してください。
+実行すると、 libwebrtc のビルドに必要なツールをインストールします。
+実行途中で sudo のパスワードを求められるので、適宜入力してください。
 
-```
-# apt-get install -y openjdk-8-jdk-headless
-# update-java-alternatives -s java-1.8.0-openjdk-amd64
-```
-
-``make`` にビルドしたい設定をターゲットに指定して実行します。 ``config/`` ディレクトリ下のディレクトリ名をターゲットとして指定可能です。
+次に、 ``make`` にビルドしたい設定をターゲットに指定して実行します。 ``config/`` ディレクトリ下のディレクトリ名をターゲットとして指定可能です。
 
 例:
 
