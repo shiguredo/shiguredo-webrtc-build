@@ -1,6 +1,7 @@
 .PHONY: all dist clean aar copy-aar android-deps
 
 IOS_LATEST=m79.5.0
+ANDROID_LATEST=m79.5.0-onremovetrack
 
 SCRIPT_DIR=scripts
 IOS_BUILD_SCRIPT=./scripts/build_all_ios.sh
@@ -12,6 +13,9 @@ BUILD_IOS_DIR=build/ios
 IOS_FRAMEWORK=WebRTC.framework.zip
 BUILD_IOS_FRAMEWORK=$(BUILD_IOS_DIR)-$(IOS_LATEST)/$(IOS_FRAMEWORK)
 
+BUILD_ANDROID_DIR=build/android
+ANDROID_AAR=libwebrtc.aar
+
 ios-latest: ios-$(IOS_LATEST)
 	rm -rf $(BUILD_IOS_DIR)
 	mkdir $(BUILD_IOS_DIR)
@@ -21,6 +25,12 @@ ios-latest-develop: ios-$(IOS_LATEST)-develop
 	rm -rf $(BUILD_IOS_DIR)-develop
 	mkdir $(BUILD_IOS_DIR)-develop
 	cp $(BUILD_IOS_DIR)-$(IOS_LATEST)-develop/$(IOS_FRAMEWORK) $(BUILD_IOS_DIR)-develop
+
+android-latest: android-$(ANDROID_LATEST)
+	rm -rf $(BUILD_ANDROID_DIR)
+	mkdir $(BUILD_ANDROID_DIR)
+	cp build/android-$(ANDROID_LATEST)/libwebrtc.aar $(BUILD_ANDROID_DIR)
+	cp build/android-$(ANDROID_LATEST)/LICENSE.md $(BUILD_ANDROID_DIR)/THIRD_PARTY_LICENSES.md
 
 ios-%-nofetch:
 	 $(IOS_BUILD_SCRIPT) --nofetch config/ios-$*
