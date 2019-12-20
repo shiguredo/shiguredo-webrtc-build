@@ -1,4 +1,4 @@
-.PHONY: all dist clean aar copy-aar deps
+.PHONY: all dist clean aar copy-aar android-deps
 
 IOS_LATEST=m79.5.0
 
@@ -28,7 +28,7 @@ ios-%-nofetch:
 ios-%:
 	$(IOS_BUILD_SCRIPT) config/ios-$*
 
-deps:
+android-deps:
 	./$(INSTALL_BUILD_DEPS_SCRIPT) --no-chromeos-fonts --no-prompt
 	./$(INSTALL_BUILD_DEPS_ANDROID_SCRIPT)
 
