@@ -1,0 +1,73 @@
+diff --git a/sdk/android/BUILD.gn b/sdk/android/BUILD.gn
+index f6fd46230c..d38a3ddcbd 100644
+--- a/sdk/android/BUILD.gn
++++ b/sdk/android/BUILD.gn
+@@ -166,6 +166,7 @@ if (is_android) {
+     java_files = [
+       "api/org/webrtc/RefCounted.java",
+       "api/org/webrtc/Predicate.java",
++      "api/org/webrtc/WebrtcBuildVersion.java",
+       "src/java/org/webrtc/CalledByNative.java",
+       "src/java/org/webrtc/CalledByNativeUnchecked.java",
+       "src/java/org/webrtc/Histogram.java",
+diff --git a/sdk/android/api/org/webrtc/PeerConnection.java b/sdk/android/api/org/webrtc/PeerConnection.java
+index b981520746..abda50766d 100644
+--- a/sdk/android/api/org/webrtc/PeerConnection.java
++++ b/sdk/android/api/org/webrtc/PeerConnection.java
+@@ -143,6 +143,8 @@ public class PeerConnection {
+      */
+     @CalledByNative("Observer") void onAddTrack(RtpReceiver receiver, MediaStream[] mediaStreams);
+ 
++    @CalledByNative("Observer") void onRemoveTrack(RtpReceiver receiver);
++
+     /**
+      * Triggered when the signaling from SetRemoteDescription indicates that a transceiver
+      * will be receiving media from a remote endpoint. This is only called if UNIFIED_PLAN
+diff --git a/sdk/android/src/jni/pc/peer_connection.cc b/sdk/android/src/jni/pc/peer_connection.cc
+index f40a7bff3a..b213eee0d4 100644
+--- a/sdk/android/src/jni/pc/peer_connection.cc
++++ b/sdk/android/src/jni/pc/peer_connection.cc
+@@ -408,6 +408,16 @@ void PeerConnectionObserverJni::OnAddTrack(
+                            NativeToJavaMediaStreamArray(env, streams));
+ }
+ 
++void PeerConnectionObserverJni::OnRemoveTrack(
++    rtc::scoped_refptr<RtpReceiverInterface> receiver) {
++  JNIEnv* env = AttachCurrentThreadIfNeeded();
++  ScopedJavaLocalRef<jobject> j_rtp_receiver =
++      NativeToJavaRtpReceiver(env, receiver);
++  rtp_receivers_.emplace_back(env, j_rtp_receiver);
++
++  Java_Observer_onRemoveTrack(env, j_observer_global_, j_rtp_receiver);
++}
++
+ void PeerConnectionObserverJni::OnTrack(
+     rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+   JNIEnv* env = AttachCurrentThreadIfNeeded();
+diff --git a/sdk/android/src/jni/pc/peer_connection.h b/sdk/android/src/jni/pc/peer_connection.h
+index a9e2af2a47..3e6a67bcee 100644
+--- a/sdk/android/src/jni/pc/peer_connection.h
++++ b/sdk/android/src/jni/pc/peer_connection.h
+@@ -70,6 +70,7 @@ class PeerConnectionObserverJni : public PeerConnectionObserver {
+   void OnAddTrack(rtc::scoped_refptr<RtpReceiverInterface> receiver,
+                   const std::vector<rtc::scoped_refptr<MediaStreamInterface>>&
+                       streams) override;
++  void OnRemoveTrack(rtc::scoped_refptr<RtpReceiverInterface> receiver) override;
+   void OnTrack(
+       rtc::scoped_refptr<RtpTransceiverInterface> transceiver) override;
+ 
+diff --git a/tools_webrtc/android/build_aar.py b/tools_webrtc/android/build_aar.py
+index 81e545d11c..07bf9afa8e 100755
+--- a/tools_webrtc/android/build_aar.py
++++ b/tools_webrtc/android/build_aar.py
+@@ -65,6 +65,10 @@ def _ParseArgs():
+       help='Use goma.')
+   parser.add_argument('--verbose', action='store_true', default=False,
+       help='Debug logging.')
++  parser.add_argument('--build_config', default='release',
++      choices=['debug', 'release'],
++      help='The build config. Can be "debug" or "release". '
++           'Defaults to "release".')
+   parser.add_argument('--extra-gn-args', default=[], nargs='*',
+       help="""Additional GN arguments to be used during Ninja generation.
+               These are passed to gn inside `--args` switch and
