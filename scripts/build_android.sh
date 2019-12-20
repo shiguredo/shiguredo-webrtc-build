@@ -40,7 +40,8 @@ $GEN_VERSION_CMD $CONFIG_DIR > $BUILD_VERSION_FILE
 
 echo "Build Android AAR..."
 
-BUILD_SCRIPT_OPTS="--build-dir $BUILD_DIR --output $AAR_FILE --arch $AAR_ARCH"
+# --build_config はパッチ適用時に追加されるオプション
+BUILD_SCRIPT_OPTS="--build-dir $BUILD_DIR --output $AAR_FILE --build_config $CONFIG --arch $AAR_ARCH"
 
 pushd $RTC_DIR > /dev/null
 
