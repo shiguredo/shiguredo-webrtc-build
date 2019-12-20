@@ -1,0 +1,23 @@
+name: Build Android AAR
+
+on:
+  push:
+    paths-ignore:
+    - '*.md'
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        ref: develop
+    - name: Build and archive
+      run: make android-latest
+    - name: Upload an artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: android
+        path: build/android
