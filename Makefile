@@ -1,7 +1,7 @@
 .PHONY: all dist clean aar copy-aar android-deps
 
 IOS_LATEST=m79.5.0
-ANDROID_LATEST=m79.5-onremovetrack
+ANDROID_LATEST=m79.5
 
 SCRIPT_DIR=scripts
 IOS_BUILD_SCRIPT=./scripts/build_all_ios.sh
