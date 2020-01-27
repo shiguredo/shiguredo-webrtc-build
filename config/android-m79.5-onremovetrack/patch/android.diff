@@ -27,7 +27,7 @@ diff --git a/sdk/android/src/jni/pc/peer_connection.cc b/sdk/android/src/jni/pc/
 index f40a7bff3a..b213eee0d4 100644
 --- a/sdk/android/src/jni/pc/peer_connection.cc
 +++ b/sdk/android/src/jni/pc/peer_connection.cc
-@@ -408,6 +408,16 @@ void PeerConnectionObserverJni::OnAddTrack(
+@@ -408,6 +408,14 @@ void PeerConnectionObserverJni::OnAddTrack(
                             NativeToJavaMediaStreamArray(env, streams));
  }
  
@@ -36,8 +36,6 @@ index f40a7bff3a..b213eee0d4 100644
 +  JNIEnv* env = AttachCurrentThreadIfNeeded();
 +  ScopedJavaLocalRef<jobject> j_rtp_receiver =
 +      NativeToJavaRtpReceiver(env, receiver);
-+  rtp_receivers_.emplace_back(env, j_rtp_receiver);
-+
 +  Java_Observer_onRemoveTrack(env, j_observer_global_, j_rtp_receiver);
 +}
 +
