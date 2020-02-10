@@ -1,4 +1,5 @@
 .PHONY: all dist clean aar copy-aar android-deps
+.PHONY: ios-micext
 
 IOS_LATEST=m79.5.0
 ANDROID_LATEST=m79.5
@@ -37,6 +38,8 @@ ios-%-nofetch:
 
 ios-%:
 	$(IOS_BUILD_SCRIPT) config/ios-$*
+
+ios-micext: ios-m79.5.0-micext-nofetch
 
 android-deps:
 	./$(INSTALL_BUILD_DEPS_SCRIPT) --no-chromeos-fonts --no-prompt

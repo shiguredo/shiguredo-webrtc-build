@@ -1,0 +1,83 @@
+diff --git a/sdk/objc/components/audio/RTCAudioSession.mm b/sdk/objc/components/audio/RTCAudioSession.mm
+index 09ffa16fcc..01753fe659 100644
+--- a/sdk/objc/components/audio/RTCAudioSession.mm
++++ b/sdk/objc/components/audio/RTCAudioSession.mm
+@@ -403,14 +403,17 @@ - (BOOL)setCategory:(NSString *)category
+   if (![self checkLock:outError]) {
+     return NO;
+   }
+-  return [self.session setCategory:category withOptions:options error:outError];
++  RTCLog(@"setCategory: ignore category options: %@", category);
++  return [self.session setCategory:category error:outError];
+ }
+ 
+ - (BOOL)setMode:(NSString *)mode error:(NSError **)outError {
+   if (![self checkLock:outError]) {
+     return NO;
+   }
+-  return [self.session setMode:mode error:outError];
++  RTCLog(@"ignore setMode: %@", mode);
++  // return [self.session setMode:mode error:outError];
++  return YES;
+ }
+ 
+ - (BOOL)setInputGain:(float)gain error:(NSError **)outError {
+diff --git a/sdk/objc/components/audio/RTCAudioSessionConfiguration.m b/sdk/objc/components/audio/RTCAudioSessionConfiguration.m
+index 2247e65ab5..3deacc3a92 100644
+--- a/sdk/objc/components/audio/RTCAudioSessionConfiguration.m
++++ b/sdk/objc/components/audio/RTCAudioSessionConfiguration.m
+@@ -69,7 +69,7 @@ - (instancetype)init {
+     // By default, using this category implies that our app’s audio is
+     // nonmixable, hence activating the session will interrupt any other
+     // audio sessions which are also nonmixable.
+-    _category = AVAudioSessionCategoryPlayAndRecord;
++    _category = AVAudioSessionCategoryAmbient;
+     _categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth;
+ 
+     // Specify mode for two-way voice communication (e.g. VoIP).
+diff --git a/sdk/objc/native/src/audio/voice_processing_audio_unit.mm b/sdk/objc/native/src/audio/voice_processing_audio_unit.mm
+index 15a09b31e2..796ae423c7 100644
+--- a/sdk/objc/native/src/audio/voice_processing_audio_unit.mm
++++ b/sdk/objc/native/src/audio/voice_processing_audio_unit.mm
+@@ -91,7 +91,8 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
+   // I/O audio unit.
+   AudioComponentDescription vpio_unit_description;
+   vpio_unit_description.componentType = kAudioUnitType_Output;
+-  vpio_unit_description.componentSubType = kAudioUnitSubType_VoiceProcessingIO;
++  //vpio_unit_description.componentSubType = kAudioUnitSubType_VoiceProcessingIO;
++  vpio_unit_description.componentSubType = kAudioUnitSubType_RemoteIO;
+   vpio_unit_description.componentManufacturer = kAudioUnitManufacturer_Apple;
+   vpio_unit_description.componentFlags = 0;
+   vpio_unit_description.componentFlagsMask = 0;
+@@ -109,6 +110,7 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
+     return false;
+   }
+ 
++  /*
+   // Enable input on the input scope of the input element.
+   UInt32 enable_input = 1;
+   result = AudioUnitSetProperty(vpio_unit_, kAudioOutputUnitProperty_EnableIO,
+@@ -121,6 +123,7 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
+                 (long)result);
+     return false;
+   }
++  */
+ 
+   // Enable output on the output scope of the output element.
+   UInt32 enable_output = 1;
+@@ -165,6 +168,7 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
+     return false;
+   }
+ 
++  /*
+   // Specify the callback to be called by the I/O thread to us when input audio
+   // is available. The recorded samples can then be obtained by calling the
+   // AudioUnitRender() method.
+@@ -182,6 +186,7 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
+                 (long)result);
+     return false;
+   }
++  */
+ 
+   state_ = kUninitialized;
+   return true;

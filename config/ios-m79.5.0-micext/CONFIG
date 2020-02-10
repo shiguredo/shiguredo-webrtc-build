@@ -1,0 +1,7 @@
+CONFIG=release
+VP9=true
+
+#IOS_ARCH="arm64 arm x64 x86"
+IOS_ARCH="arm64"
+IOS_BITCODE=true
+
