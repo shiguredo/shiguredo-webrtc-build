@@ -39,6 +39,10 @@ NSString * const kRTCAudioSessionOutputVolumeSelector = @"outputVolume";
   BOOL _isAudioEnabled;
   BOOL _canPlayOrRecord;
   BOOL _isInterrupted;
+  //AudioUnit _vpioUnit;
+  //AURenderCallbackStruct _inputCallback;
+  webrtc::ios_adm::VoiceProcessingAudioUnit *_vpAudioUnit;
+  BOOL _isInputInitialized;
 }
 
 @synthesize session = _session;
@@ -993,6 +997,107 @@ NSString * const kRTCAudioSessionOutputVolumeSelector = @"outputVolume";
       [delegate audioSession:self failedToSetActive:active error:error];
     }
   }
+}
+
+// A VP I/O unit's bus 1 connects to input hardware (microphone).
+static const AudioUnitElement kInputBus = 1;
+
+- (void)setVoiceProcessingAudioUnit:(webrtc::ios_adm::VoiceProcessingAudioUnit *)vpAudioUnit {
+  _vpAudioUnit = vpAudioUnit;
+
+  BOOL shouldInit = YES;
+
+  // TODO: カテゴリチェック
+
+  for (id delegate : self.delegates) {
+    if ([delegate respondsToSelector: @selector(audioSessionShouldInitializeInput:)]) {
+      if (![delegate audioSessionShouldInitializeInput: self]) {
+        shouldInit = NO;
+      }
+    }
+  }
+
+  if (shouldInit) {
+    [self initializeInput];
+  }
+}
+
+- (BOOL)initializeInput {
+  if (_isInputInitialized) {
+      NSLog(@"-[RTCAudioSession initializeInput:] input is already initialized.");
+      return NO;
+  }
+
+  if (_vpAudioUnit == nil) {
+      NSLog(@"-[RTCAudioSession initializeInput:] voice processing audio unit is not initialized. This method must be invoked after voice processing audio unit is initialized.");
+      return NO;
+  }
+
+  for (id delegate : self.delegates) {
+    if ([delegate respondsToSelector: @selector(audioSessionWillInitializeInput:)]) {
+      [delegate audioSessionWillInitializeInput: self];
+    }
+  }
+
+  // Enable input on the input scope of the input element.
+  OSStatus result = noErr;
+  UInt32 enable_input = 1;
+  result = AudioUnitSetProperty(_vpAudioUnit->vpio_unit_,
+                                kAudioOutputUnitProperty_EnableIO,
+                                kAudioUnitScope_Input, kInputBus, &enable_input,
+                                sizeof(enable_input));
+  if (result != noErr) {
+    _vpAudioUnit->DisposeAudioUnit();
+    NSLog(@"Failed to enable input on input scope of input element. "
+                 "Error=%ld.",
+                (long)result);
+    RTCLogError(@"Failed to enable input on input scope of input element. "
+                 "Error=%ld.",
+                (long)result);
+    for (id delegate : self.delegates) {
+      if ([delegate respondsToSelector: @selector(audioSessionFailedInitializeInput:)]) {
+        [delegate audioSessionFailedInitializeInput: self];
+      }
+    }
+    return NO;
+  }
+
+
+  // Specify the callback to be called by the I/O thread to us when input audio
+  // is available. The recorded samples can then be obtained by calling the
+  // AudioUnitRender() method.
+  AURenderCallbackStruct input_callback;
+  input_callback.inputProc = _vpAudioUnit->OnDeliverRecordedData;
+  input_callback.inputProcRefCon = _vpAudioUnit;
+  result = AudioUnitSetProperty(_vpAudioUnit->vpio_unit_,
+                                kAudioOutputUnitProperty_SetInputCallback,
+                                kAudioUnitScope_Global, kInputBus,
+                                &input_callback, sizeof(input_callback));
+  if (result != noErr) {
+    _vpAudioUnit->DisposeAudioUnit();
+    NSLog(@"Failed to specify the input callback on the input bus. "
+                 "Error=%ld.",
+                (long)result);
+    RTCLogError(@"Failed to specify the input callback on the input bus. "
+                 "Error=%ld.",
+                (long)result);
+    for (id delegate : self.delegates) {
+      if ([delegate respondsToSelector: @selector(audioSessionFailedInitializeInput:)]) {
+        [delegate audioSessionFailedInitializeInput: self];
+      }
+    }
+    return NO;
+  }
+
+  _isInputInitialized = YES;
+
+  for (id delegate : self.delegates) {
+    if ([delegate respondsToSelector: @selector(audioSessionDidInitializeInput:)]) {
+      [delegate audioSessionDidInitializeInput: self];
+    }
+  }
+
+  return YES;
 }
 
 @end

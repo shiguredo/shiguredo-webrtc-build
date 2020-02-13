@@ -15,6 +15,7 @@
 #include "system_wrappers/include/metrics.h"
 
 #import "base/RTCLogging.h"
+#import "sdk/objc/components/audio/RTCAudioSession+Private.h"
 #import "sdk/objc/components/audio/RTCAudioSessionConfiguration.h"
 
 #if !defined(NDEBUG)
@@ -124,7 +125,7 @@ bool VoiceProcessingAudioUnit::Init() {
     return false;
   }
   */
-
+  NSLog(@"Enable output on the output scope of the output element.");
   // Enable output on the output scope of the output element.
   UInt32 enable_output = 1;
   result = AudioUnitSetProperty(vpio_unit_, kAudioOutputUnitProperty_EnableIO,
@@ -188,6 +189,11 @@ bool VoiceProcessingAudioUnit::Init() {
   }
   */
 
+  NSLog(@"initialize audio session");
+  RTCAudioSession *session = [RTCAudioSession sharedInstance];
+  [session setVoiceProcessingAudioUnit: this];
+
+  NSLog(@"finish initialization");
   state_ = kUninitialized;
   return true;
 }

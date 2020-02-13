@@ -96,6 +96,11 @@ RTC_OBJC_EXPORT
     failedToSetActive:(BOOL)active
                 error:(NSError *)error;
 
+- (BOOL)audioSessionShouldInitializeInput:(RTCAudioSession *)audioSession;
+- (void)audioSessionWillInitializeInput:(RTCAudioSession *)audioSession;
+- (void)audioSessionDidInitializeInput:(RTCAudioSession *)audioSession;
+- (void)audioSessionFailedInitializeInput:(RTCAudioSession *)audioSession;
+
 @end
 
 /** This is a protocol used to inform RTCAudioSession when the audio session
@@ -235,6 +240,9 @@ RTC_OBJC_EXPORT
                      error:(NSError **)outError;
 - (BOOL)setOutputDataSource:(AVAudioSessionDataSourceDescription *)dataSource
                       error:(NSError **)outError;
+
+- (BOOL)initializeInput;
+
 @end
 
 @interface RTCAudioSession (Configuration)
