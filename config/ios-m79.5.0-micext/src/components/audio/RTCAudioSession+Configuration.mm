@@ -173,7 +173,8 @@
     *outError = error;
   }
 
-  return error == nil;
+  //return error == nil;
+  return YES;
 }
 
 @end
