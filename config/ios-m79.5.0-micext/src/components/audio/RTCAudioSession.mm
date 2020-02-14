@@ -415,9 +415,7 @@ NSString * const kRTCAudioSessionOutputVolumeSelector = @"outputVolume";
   if (![self checkLock:outError]) {
     return NO;
   }
-  RTCLog(@"ignore setMode: %@", mode);
-  // return [self.session setMode:mode error:outError];
-  return YES;
+  return [self.session setMode:mode error:outError];
 }
 
 - (BOOL)setInputGain:(float)gain error:(NSError **)outError {
