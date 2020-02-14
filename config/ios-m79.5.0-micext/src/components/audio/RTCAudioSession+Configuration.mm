@@ -51,11 +51,9 @@
   // everything we can.
   NSError *error = nil;
 
-  if (self.category != configuration.category ||
-      self.categoryOptions != configuration.categoryOptions) {
+  if (self.category != configuration.category) {
     NSError *categoryError = nil;
     if (![self setCategory:configuration.category
-               withOptions:configuration.categoryOptions
                      error:&categoryError]) {
       RTCLogError(@"Failed to set category: %@",
                   categoryError.localizedDescription);

@@ -402,13 +402,20 @@ NSString * const kRTCAudioSessionOutputVolumeSelector = @"outputVolume";
 }
 
 - (BOOL)setCategory:(NSString *)category
+              error:(NSError **)outError {
+  if (![self checkLock:outError]) {
+    return NO;
+  }
+  return [self.session setCategory:category error:outError];
+}
+
+- (BOOL)setCategory:(NSString *)category
         withOptions:(AVAudioSessionCategoryOptions)options
               error:(NSError **)outError {
   if (![self checkLock:outError]) {
     return NO;
   }
-  RTCLog(@"setCategory: ignore category options: %@", category);
-  return [self.session setCategory:category error:outError];
+  return [self.session setCategory:category withOptions:options error:outError];
 }
 
 - (BOOL)setMode:(NSString *)mode error:(NSError **)outError {
