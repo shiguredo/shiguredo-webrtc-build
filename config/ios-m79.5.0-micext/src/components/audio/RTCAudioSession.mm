@@ -1012,7 +1012,13 @@ static const AudioUnitElement kInputBus = 1;
 
   BOOL shouldInit = YES;
 
-  // TODO: カテゴリチェック
+  RTCAudioSessionConfiguration *webRTCConfig =
+      [RTCAudioSessionConfiguration webRTCConfiguration];
+  if ([webRTCConfig.category isEqualToString: AVAudioSessionCategoryAmbient] ||
+      [webRTCConfig.category isEqualToString: AVAudioSessionCategorySoloAmbient] ||
+      [webRTCConfig.category isEqualToString: AVAudioSessionCategoryPlayback]) {
+    shouldInit = NO;
+  }
 
   for (id delegate : self.delegates) {
     if ([delegate respondsToSelector: @selector(audioSessionShouldInitializeInput:)]) {
@@ -1024,6 +1030,8 @@ static const AudioUnitElement kInputBus = 1;
 
   if (shouldInit) {
     [self initializeInput];
+  } else {
+    NSLog(@"RTCAudioSession: skip initializing input");
   }
 }
 
