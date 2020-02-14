@@ -1052,6 +1052,17 @@ static const AudioUnitElement kInputBus = 1;
     }
   }
 
+  NSError *error;
+  [self lockForConfiguration];
+  if (![self setCategory: AVAudioSessionCategoryPlayAndRecord
+             withOptions: 0
+                   error: &error]) {
+      NSLog(@"RTCAudioSession: Failed to set category to PlayAndRecord (%@)",
+              [error description]);
+      return NO;
+  }
+  [self unlockForConfiguration];
+
   // Enable input on the input scope of the input element.
   OSStatus result = noErr;
   UInt32 enable_input = 1;
