@@ -55,7 +55,8 @@
     NSError *categoryError = nil;
     if (![self setCategory:configuration.category
                      error:&categoryError]) {
-      RTCLogError(@"Failed to set category: %@",
+      RTCLogError(@"Failed to set category to %@: %@",
+                  configuration.category,
                   categoryError.localizedDescription);
       error = categoryError;
     } else {
@@ -66,7 +67,8 @@
   if (self.mode != configuration.mode) {
     NSError *modeError = nil;
     if (![self setMode:configuration.mode error:&modeError]) {
-      RTCLogError(@"Failed to set mode: %@",
+      RTCLogError(@"Failed to set mode to %@: %@",
+                  configuration.mode,
                   modeError.localizedDescription);
       error = modeError;
     } else {
@@ -80,7 +82,8 @@
     if (![self setCategory:configuration.category
                withOptions:configuration.categoryOptions
                      error:&categoryError]) {
-      RTCLogError(@"Failed to set category options: %@",
+      RTCLogError(@"Failed to set category options to %ld: %@",
+                  (long)configuration.categoryOptions,
                   categoryError.localizedDescription);
       error = categoryError;
     } else {
