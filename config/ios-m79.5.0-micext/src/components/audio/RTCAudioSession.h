@@ -20,6 +20,7 @@ extern NSString *const kRTCAudioSessionErrorDomain;
 extern NSInteger const kRTCAudioSessionErrorLockRequired;
 /** Unknown configuration error occurred. */
 extern NSInteger const kRTCAudioSessionErrorConfiguration;
+extern NSInteger const kRTCAudioSessionErrorInputInitialization;
 
 @class RTCAudioSession;
 @class RTCAudioSessionConfiguration;
@@ -95,11 +96,6 @@ RTC_OBJC_EXPORT
 - (void)audioSession:(RTCAudioSession *)audioSession
     failedToSetActive:(BOOL)active
                 error:(NSError *)error;
-
-- (BOOL)audioSessionShouldInitializeInput:(RTCAudioSession *)audioSession;
-- (void)audioSessionWillInitializeInput:(RTCAudioSession *)audioSession;
-- (void)audioSessionDidInitializeInput:(RTCAudioSession *)audioSession;
-- (void)audioSessionFailedInitializeInput:(RTCAudioSession *)audioSession;
 
 @end
 
@@ -243,7 +239,7 @@ RTC_OBJC_EXPORT
 - (BOOL)setOutputDataSource:(AVAudioSessionDataSourceDescription *)dataSource
                       error:(NSError **)outError;
 
-- (BOOL)initializeInput;
+- (void)initializeInput:(nullable void (^)(NSError *_Nullable error))completionHandler;
 
 @end
 

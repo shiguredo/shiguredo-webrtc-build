@@ -93,10 +93,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)notifyDidDetectPlayoutGlitch:(int64_t)totalNumberOfGlitches;
 
 @property(nonatomic, readonly) webrtc::ios_adm::VoiceProcessingAudioUnit *vpAudioUnit;
-//@property(nonatomic, assign) AudioUnit vpioUnit;
-//@property(nonatomic, assign) AURenderCallbackStruct inputCallback;
 
 - (void)setVoiceProcessingAudioUnit:(webrtc::ios_adm::VoiceProcessingAudioUnit *)vpAudioUnit;
+- (void)finishInitializeInput;
 
 @end
 

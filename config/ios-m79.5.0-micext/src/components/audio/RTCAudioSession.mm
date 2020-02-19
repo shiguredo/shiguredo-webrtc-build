@@ -23,6 +23,7 @@
 NSString * const kRTCAudioSessionErrorDomain = @"org.webrtc.RTCAudioSession";
 NSInteger const kRTCAudioSessionErrorLockRequired = -1;
 NSInteger const kRTCAudioSessionErrorConfiguration = -2;
+NSInteger const kRTCAudioSessionErrorInputInitialization = -3;
 NSString * const kRTCAudioSessionOutputVolumeSelector = @"outputVolume";
 
 // This class needs to be thread-safe because it is accessed from many threads.
@@ -39,10 +40,11 @@ NSString * const kRTCAudioSessionOutputVolumeSelector = @"outputVolume";
   BOOL _isAudioEnabled;
   BOOL _canPlayOrRecord;
   BOOL _isInterrupted;
-  //AudioUnit _vpioUnit;
-  //AURenderCallbackStruct _inputCallback;
+
   webrtc::ios_adm::VoiceProcessingAudioUnit *_vpAudioUnit;
-  BOOL _isInputInitialized;
+  BOOL _waitsInputInit;
+  BOOL _isInputInited;
+  void (^_inputInitCompletionHandler)(NSError *_Nullable error);
 }
 
 @synthesize session = _session;
@@ -1009,59 +1011,54 @@ static const AudioUnitElement kInputBus = 1;
 
 - (void)setVoiceProcessingAudioUnit:(webrtc::ios_adm::VoiceProcessingAudioUnit *)vpAudioUnit {
   _vpAudioUnit = vpAudioUnit;
-
-  BOOL shouldInit = YES;
-
-  RTCAudioSessionConfiguration *webRTCConfig =
-      [RTCAudioSessionConfiguration webRTCConfiguration];
-  if ([webRTCConfig.category isEqualToString: AVAudioSessionCategoryAmbient] ||
-      [webRTCConfig.category isEqualToString: AVAudioSessionCategorySoloAmbient] ||
-      [webRTCConfig.category isEqualToString: AVAudioSessionCategoryPlayback]) {
-    shouldInit = NO;
-  }
-
-  for (id delegate : self.delegates) {
-    if ([delegate respondsToSelector: @selector(audioSessionShouldInitializeInput:)]) {
-      if (![delegate audioSessionShouldInitializeInput: self]) {
-        shouldInit = NO;
-      }
-    }
-  }
-
-  if (shouldInit) {
-    [self initializeInput];
-  } else {
-    NSLog(@"RTCAudioSession: skip initializing input");
+  if (_waitsInputInit) {
+    [self finishInitializeInput];
   }
 }
 
-- (BOOL)initializeInput {
-  if (_isInputInitialized) {
-      NSLog(@"-[RTCAudioSession initializeInput:] input is already initialized.");
-      return NO;
+- (void)initializeInput:(nullable void (^)(NSError *_Nullable error))completionHandler {
+  NSError *error = nil;
+
+  if (_isInputInited) {
+    RTCLogError(@"Input is already initialized.");
+    error = [[NSError alloc] initWithDomain:kRTCAudioSessionErrorDomain
+                                       code:kRTCAudioSessionErrorInputInitialization
+                                   userInfo:nil];
+    if (completionHandler != nil) {
+      completionHandler(error);
+    }
+  } else if (_vpAudioUnit != nil) {
+    _inputInitCompletionHandler = completionHandler;
+    [self finishInitializeInput];
+  } else if (_waitsInputInit) {
+    RTCLogError(@"Audio session is already waiting for input initialization.");
+    error = [[NSError alloc] initWithDomain:kRTCAudioSessionErrorDomain
+                                       code:kRTCAudioSessionErrorInputInitialization
+                                   userInfo:nil];
+    if (completionHandler != nil) {
+      completionHandler(error);
+    }
+  } else {
+    _inputInitCompletionHandler = completionHandler;
+    _waitsInputInit = YES;
   }
+}
+
+- (void)finishInitializeInput {
+  NSError *error = nil;
+
+  RTCLog(@"Initializing input...");
 
   if (_vpAudioUnit == nil) {
-      NSLog(@"-[RTCAudioSession initializeInput:] voice processing audio unit is not initialized. This method must be invoked after voice processing audio unit is initialized.");
-      return NO;
+      RTCLogError(@"Voice processing audio unit is not initialized. This method must be invoked after voice processing audio unit is initialized.");
+      error = [[NSError alloc] initWithDomain:kRTCAudioSessionErrorDomain
+                                         code:kRTCAudioSessionErrorInputInitialization
+                                     userInfo:nil];
+      if (_inputInitCompletionHandler != nil) {
+        _inputInitCompletionHandler(error);
+      }
+      return;
   }
-
-  for (id delegate : self.delegates) {
-    if ([delegate respondsToSelector: @selector(audioSessionWillInitializeInput:)]) {
-      [delegate audioSessionWillInitializeInput: self];
-    }
-  }
-
-  NSError *error;
-  [self lockForConfiguration];
-  if (![self setCategory: AVAudioSessionCategoryPlayAndRecord
-             withOptions: 0
-                   error: &error]) {
-      NSLog(@"RTCAudioSession: Failed to set category to PlayAndRecord (%@)",
-              [error description]);
-      return NO;
-  }
-  [self unlockForConfiguration];
 
   // Enable input on the input scope of the input element.
   OSStatus result = noErr;
@@ -1071,21 +1068,18 @@ static const AudioUnitElement kInputBus = 1;
                                 kAudioUnitScope_Input, kInputBus, &enable_input,
                                 sizeof(enable_input));
   if (result != noErr) {
-    _vpAudioUnit->DisposeAudioUnit();
-    NSLog(@"Failed to enable input on input scope of input element. "
-                 "Error=%ld.",
-                (long)result);
+    //_vpAudioUnit->DisposeAudioUnit();
     RTCLogError(@"Failed to enable input on input scope of input element. "
                  "Error=%ld.",
                 (long)result);
-    for (id delegate : self.delegates) {
-      if ([delegate respondsToSelector: @selector(audioSessionFailedInitializeInput:)]) {
-        [delegate audioSessionFailedInitializeInput: self];
-      }
+    error = [[NSError alloc] initWithDomain:kRTCAudioSessionErrorDomain
+                                       code:kRTCAudioSessionErrorInputInitialization
+                                   userInfo:nil];
+    if (_inputInitCompletionHandler != nil) {
+      _inputInitCompletionHandler(error);
     }
-    return NO;
+    return;
   }
-
 
   // Specify the callback to be called by the I/O thread to us when input audio
   // is available. The recorded samples can then be obtained by calling the
@@ -1098,30 +1092,25 @@ static const AudioUnitElement kInputBus = 1;
                                 kAudioUnitScope_Global, kInputBus,
                                 &input_callback, sizeof(input_callback));
   if (result != noErr) {
-    _vpAudioUnit->DisposeAudioUnit();
-    NSLog(@"Failed to specify the input callback on the input bus. "
-                 "Error=%ld.",
-                (long)result);
+    //_vpAudioUnit->DisposeAudioUnit();
     RTCLogError(@"Failed to specify the input callback on the input bus. "
                  "Error=%ld.",
                 (long)result);
-    for (id delegate : self.delegates) {
-      if ([delegate respondsToSelector: @selector(audioSessionFailedInitializeInput:)]) {
-        [delegate audioSessionFailedInitializeInput: self];
-      }
+    error = [[NSError alloc] initWithDomain:kRTCAudioSessionErrorDomain
+                                       code:kRTCAudioSessionErrorInputInitialization
+                                   userInfo:nil];
+    if (_inputInitCompletionHandler != nil) {
+      _inputInitCompletionHandler(error);
     }
-    return NO;
+    return;
   }
 
-  _isInputInitialized = YES;
-
-  for (id delegate : self.delegates) {
-    if ([delegate respondsToSelector: @selector(audioSessionDidInitializeInput:)]) {
-      [delegate audioSessionDidInitializeInput: self];
-    }
+  RTCLog(@"Finish input initialization.");
+  _isInputInited = YES;
+  _waitsInputInit = NO;
+  if (_inputInitCompletionHandler != nil) {
+    _inputInitCompletionHandler(nil);
   }
-
-  return YES;
 }
 
 @end
