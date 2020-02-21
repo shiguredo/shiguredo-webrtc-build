@@ -106,7 +106,7 @@ index b5bba2f21e..282bcda7dc 100644
  
  @interface RTCAudioSession (Configuration)
 diff --git a/sdk/objc/components/audio/RTCAudioSession.mm b/sdk/objc/components/audio/RTCAudioSession.mm
-index 09ffa16fcc..3c100958bf 100644
+index 09ffa16fcc..0c79ccd8ce 100644
 --- a/sdk/objc/components/audio/RTCAudioSession.mm
 +++ b/sdk/objc/components/audio/RTCAudioSession.mm
 @@ -23,6 +23,7 @@
@@ -129,15 +129,7 @@ index 09ffa16fcc..3c100958bf 100644
  }
  
  @synthesize session = _session;
-@@ -63,6 +69,7 @@ - (instancetype)init {
- - (instancetype)initWithAudioSession:(id)audioSession {
-   if (self = [super init]) {
-     _session = audioSession;
-+    _isAudioEnabled = YES;
- 
-     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-     [center addObserver:self
-@@ -397,6 +404,14 @@ - (BOOL)setActive:(BOOL)active
+@@ -397,6 +403,14 @@ - (BOOL)setActive:(BOOL)active
    return success;
  }
  
@@ -152,7 +144,7 @@ index 09ffa16fcc..3c100958bf 100644
  - (BOOL)setCategory:(NSString *)category
          withOptions:(AVAudioSessionCategoryOptions)options
                error:(NSError **)outError {
-@@ -992,4 +1007,111 @@ - (void)notifyFailedToSetActive:(BOOL)active error:(NSError *)error {
+@@ -992,4 +1006,111 @@ - (void)notifyFailedToSetActive:(BOOL)active error:(NSError *)error {
    }
  }
  
@@ -291,7 +283,7 @@ index 7293032f6f..78b9b2c891 100644
    // called, they will invoke the relevant instance method by casting
    // in_ref_con to VoiceProcessingAudioUnit*.
 diff --git a/sdk/objc/native/src/audio/voice_processing_audio_unit.mm b/sdk/objc/native/src/audio/voice_processing_audio_unit.mm
-index 15a09b31e2..340f45d94f 100644
+index 15a09b31e2..6702bae683 100644
 --- a/sdk/objc/native/src/audio/voice_processing_audio_unit.mm
 +++ b/sdk/objc/native/src/audio/voice_processing_audio_unit.mm
 @@ -15,6 +15,7 @@
@@ -310,16 +302,14 @@ index 15a09b31e2..340f45d94f 100644
    // Enable input on the input scope of the input element.
    UInt32 enable_input = 1;
    result = AudioUnitSetProperty(vpio_unit_, kAudioOutputUnitProperty_EnableIO,
-@@ -121,7 +123,8 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
+@@ -121,6 +123,7 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
                  (long)result);
      return false;
    }
--
 +  */
-+  NSLog(@"Enable output on the output scope of the output element.");
+ 
    // Enable output on the output scope of the output element.
    UInt32 enable_output = 1;
-   result = AudioUnitSetProperty(vpio_unit_, kAudioOutputUnitProperty_EnableIO,
 @@ -165,6 +168,7 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
      return false;
    }
@@ -328,17 +318,14 @@ index 15a09b31e2..340f45d94f 100644
    // Specify the callback to be called by the I/O thread to us when input audio
    // is available. The recorded samples can then be obtained by calling the
    // AudioUnitRender() method.
-@@ -182,7 +186,13 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
+@@ -182,6 +186,10 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
                  (long)result);
      return false;
    }
 +  */
 +
-+  NSLog(@"initialize audio session");
 +  RTCAudioSession *session = [RTCAudioSession sharedInstance];
 +  [session setVoiceProcessingAudioUnit: this];
  
-+  NSLog(@"finish initialization");
    state_ = kUninitialized;
    return true;
- }
