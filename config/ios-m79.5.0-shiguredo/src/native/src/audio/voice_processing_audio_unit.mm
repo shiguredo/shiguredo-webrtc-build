@@ -188,9 +188,6 @@ bool VoiceProcessingAudioUnit::Init() {
   }
   */
 
-  RTCAudioSession *session = [RTCAudioSession sharedInstance];
-  [session setVoiceProcessingAudioUnit: this];
-
   state_ = kUninitialized;
   return true;
 }
@@ -202,6 +199,9 @@ VoiceProcessingAudioUnit::State VoiceProcessingAudioUnit::GetState() const {
 bool VoiceProcessingAudioUnit::Initialize(Float64 sample_rate) {
   RTC_DCHECK_GE(state_, kUninitialized);
   RTCLog(@"Initializing audio unit with sample rate: %f", sample_rate);
+
+  RTCAudioSession *session = [RTCAudioSession sharedInstance];
+  [session startVoiceProcessingAudioUnit: this];
 
   OSStatus result = noErr;
   AudioStreamBasicDescription format = GetFormat(sample_rate);
@@ -337,6 +337,9 @@ bool VoiceProcessingAudioUnit::Start() {
 bool VoiceProcessingAudioUnit::Stop() {
   RTC_DCHECK_GE(state_, kUninitialized);
   RTCLog(@"Stopping audio unit.");
+
+  RTCAudioSession *session = [RTCAudioSession sharedInstance];
+  [session stopVoiceProcessingAudioUnit];
 
   OSStatus result = AudioOutputUnitStop(vpio_unit_);
   if (result != noErr) {

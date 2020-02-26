@@ -1009,11 +1009,26 @@ NSString * const kRTCAudioSessionOutputVolumeSelector = @"outputVolume";
 // A VP I/O unit's bus 1 connects to input hardware (microphone).
 static const AudioUnitElement kInputBus = 1;
 
-- (void)setVoiceProcessingAudioUnit:(webrtc::ios_adm::VoiceProcessingAudioUnit *)vpAudioUnit {
+- (void)startVoiceProcessingAudioUnit:(webrtc::ios_adm::VoiceProcessingAudioUnit *)vpAudioUnit {
   _vpAudioUnit = vpAudioUnit;
+
+  [self lockForConfiguration];
+  BOOL result = [self configureWebRTCSession:nil];
+  [self unlockForConfiguration];
+  if (!result) {
+      RTCLogError(@"Failed to configure WebRTC audio session.");
+  }
+
   if (_waitsInputInit) {
     [self finishInitializeInput];
   }
+}
+
+- (void)stopVoiceProcessingAudioUnit {
+  _vpAudioUnit = nil;
+  _isInputInited = NO;
+  _waitsInputInit = NO;
+  _inputInitCompletionHandler = nil;
 }
 
 - (void)initializeInput:(nullable void (^)(NSError *_Nullable error))completionHandler {

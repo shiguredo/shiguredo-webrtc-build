@@ -94,7 +94,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, readonly) webrtc::ios_adm::VoiceProcessingAudioUnit *vpAudioUnit;
 
-- (void)setVoiceProcessingAudioUnit:(webrtc::ios_adm::VoiceProcessingAudioUnit *)vpAudioUnit;
+- (void)startVoiceProcessingAudioUnit:(webrtc::ios_adm::VoiceProcessingAudioUnit *)vpAudioUnit;
+- (void)stopVoiceProcessingAudioUnit;
 - (void)finishInitializeInput;
 
 @end
