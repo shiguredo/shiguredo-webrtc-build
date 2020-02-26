@@ -51,6 +51,8 @@
   // everything we can.
   NSError *error = nil;
 
+  RTCLog(@"Current category => %@, configuration category => %@",
+         self.category, configuration.category);
   if (self.category != configuration.category) {
     NSError *categoryError = nil;
     if (![self setCategory:configuration.category
@@ -64,6 +66,8 @@
     }
   }
 
+  RTCLog(@"Current mode => %@, configuration mode => %@",
+         self.mode , configuration.mode);
   if (self.mode != configuration.mode) {
     NSError *modeError = nil;
     if (![self setMode:configuration.mode error:&modeError]) {
