@@ -1,7 +1,7 @@
 .PHONY: all dist clean aar copy-aar android-deps
 .PHONY: ios-shiguredo
 
-IOS_LATEST=m79.5.0
+IOS_LATEST=m79.5.1-shiguredo
 ANDROID_LATEST=m79.5
 
 SCRIPT_DIR=scripts
@@ -22,10 +22,14 @@ ios-latest: ios-$(IOS_LATEST)
 	mkdir $(BUILD_IOS_DIR)
 	cp $(BUILD_IOS_DIR)-$(IOS_LATEST)/$(IOS_FRAMEWORK) $(BUILD_IOS_DIR)
 
+ios-latest-nofetch: ios-$(IOS_LATEST)-nofetch
+
 ios-latest-develop: ios-$(IOS_LATEST)-develop
 	rm -rf $(BUILD_IOS_DIR)-develop
 	mkdir $(BUILD_IOS_DIR)-develop
 	cp $(BUILD_IOS_DIR)-$(IOS_LATEST)-develop/$(IOS_FRAMEWORK) $(BUILD_IOS_DIR)-develop
+
+ios-latest-develop-nofetch: ios-$(IOS_LATEST)-develop-nofetch
 
 android-latest: android-$(ANDROID_LATEST)
 	rm -rf $(BUILD_ANDROID_DIR)
@@ -38,8 +42,6 @@ ios-%-nofetch:
 
 ios-%:
 	$(IOS_BUILD_SCRIPT) config/ios-$*
-
-ios-shiguredo: ios-m79.5.0-shiguredo-nofetch
 
 android-deps:
 	./$(INSTALL_BUILD_DEPS_SCRIPT) --no-chromeos-fonts --no-prompt
