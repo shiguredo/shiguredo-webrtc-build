@@ -114,7 +114,7 @@ index b5bba2f21e..282bcda7dc 100644
  
  @interface RTCAudioSession (Configuration)
 diff --git a/sdk/objc/components/audio/RTCAudioSession.mm b/sdk/objc/components/audio/RTCAudioSession.mm
-index 09ffa16fcc..744c6f63bb 100644
+index 09ffa16fcc..824c25cd03 100644
 --- a/sdk/objc/components/audio/RTCAudioSession.mm
 +++ b/sdk/objc/components/audio/RTCAudioSession.mm
 @@ -23,6 +23,7 @@
@@ -152,7 +152,7 @@ index 09ffa16fcc..744c6f63bb 100644
  - (BOOL)setCategory:(NSString *)category
          withOptions:(AVAudioSessionCategoryOptions)options
                error:(NSError **)outError {
-@@ -992,4 +1006,130 @@ - (void)notifyFailedToSetActive:(BOOL)active error:(NSError *)error {
+@@ -992,4 +1006,126 @@ - (void)notifyFailedToSetActive:(BOOL)active error:(NSError *)error {
    }
  }
  
@@ -212,10 +212,10 @@ index 09ffa16fcc..744c6f63bb 100644
 +- (void)finishInitializeInput {
 +  NSError *error = nil;
 +
-+  NSLog(@"Initializing input..., check vpAudioUnit");
++  RTCLog(@"Initializing input...");
 +
 +  if (_vpAudioUnit == nil) {
-+      NSLog(@"Voice processing audio unit is not initialized. This method must be invoked after voice processing audio unit is initialized.");
++      RTCLogError(@"Voice processing audio unit is not initialized. This method must be invoked after voice processing audio unit is initialized.");
 +      error = [[NSError alloc] initWithDomain:kRTCAudioSessionErrorDomain
 +                                         code:kRTCAudioSessionErrorInputInitialization
 +                                     userInfo:nil];
@@ -225,16 +225,13 @@ index 09ffa16fcc..744c6f63bb 100644
 +      return;
 +  }
 +
-+  NSLog(@"Enable input on the input scope of the input element.");
-+  NSLog(@"vpAudioUnit => %p", _vpAudioUnit);
-+  NSLog(@"vpAudioUnit->vpio_unit_ => %p", _vpAudioUnit->vpio_unit_);
++  // Enable input on the input scope of the input element.
 +  OSStatus result = noErr;
 +  UInt32 enable_input = 1;
 +  result = AudioUnitSetProperty(_vpAudioUnit->vpio_unit_,
 +                                kAudioOutputUnitProperty_EnableIO,
 +                                kAudioUnitScope_Input, kInputBus, &enable_input,
 +                                sizeof(enable_input));
-+  NSLog(@"AudioUnitSetProperty result => %d", result);
 +  if (result != noErr) {
 +    //_vpAudioUnit->DisposeAudioUnit();
 +    RTCLogError(@"Failed to enable input on input scope of input element. "
@@ -252,7 +249,6 @@ index 09ffa16fcc..744c6f63bb 100644
 +  // Specify the callback to be called by the I/O thread to us when input audio
 +  // is available. The recorded samples can then be obtained by calling the
 +  // AudioUnitRender() method.
-+  NSLog(@"Specify the callback to be called by the I/O thread to us when input audio is available.");
 +  AURenderCallbackStruct input_callback;
 +  input_callback.inputProc = _vpAudioUnit->OnDeliverRecordedData;
 +  input_callback.inputProcRefCon = _vpAudioUnit;
@@ -262,7 +258,7 @@ index 09ffa16fcc..744c6f63bb 100644
 +                                &input_callback, sizeof(input_callback));
 +  if (result != noErr) {
 +    //_vpAudioUnit->DisposeAudioUnit();
-+    NSLog(@"Failed to specify the input callback on the input bus. "
++    RTCLogError(@"Failed to specify the input callback on the input bus. "
 +                 "Error=%ld.",
 +                (long)result);
 +    error = [[NSError alloc] initWithDomain:kRTCAudioSessionErrorDomain
@@ -274,7 +270,7 @@ index 09ffa16fcc..744c6f63bb 100644
 +    return;
 +  }
 +
-+  NSLog(@"Finish input initialization.");
++  RTCLog(@"Finish input initialization.");
 +  _isInputInited = YES;
 +  _waitsInputInit = NO;
 +  if (_inputInitCompletionHandler != nil) {
@@ -310,7 +306,7 @@ index 7293032f6f..78b9b2c891 100644
    // called, they will invoke the relevant instance method by casting
    // in_ref_con to VoiceProcessingAudioUnit*.
 diff --git a/sdk/objc/native/src/audio/voice_processing_audio_unit.mm b/sdk/objc/native/src/audio/voice_processing_audio_unit.mm
-index 15a09b31e2..9419abd5ff 100644
+index 15a09b31e2..531b16a751 100644
 --- a/sdk/objc/native/src/audio/voice_processing_audio_unit.mm
 +++ b/sdk/objc/native/src/audio/voice_processing_audio_unit.mm
 @@ -15,6 +15,7 @@
@@ -363,29 +359,7 @@ index 15a09b31e2..9419abd5ff 100644
    OSStatus result = noErr;
    AudioStreamBasicDescription format = GetFormat(sample_rate);
    UInt32 size = sizeof(format);
-@@ -315,6 +323,11 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
-   RTC_DCHECK_GE(state_, kUninitialized);
-   RTCLog(@"Starting audio unit.");
- 
-+  /*
-+  RTCAudioSession *session = [RTCAudioSession sharedInstance];
-+  [session startVoiceProcessingAudioUnit: this];
-+  */
-+
-   OSStatus result = AudioOutputUnitStart(vpio_unit_);
-   if (result != noErr) {
-     RTCLogError(@"Failed to start audio unit. Error=%ld", (long)result);
-@@ -322,7 +335,9 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
-   } else {
-     RTCLog(@"Started audio unit");
-   }
-+
-   state_ = kStarted;
-+
-   return true;
- }
- 
-@@ -330,6 +345,9 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
+@@ -330,6 +338,9 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
    RTC_DCHECK_GE(state_, kUninitialized);
    RTCLog(@"Stopping audio unit.");
  
@@ -395,11 +369,3 @@ index 15a09b31e2..9419abd5ff 100644
    OSStatus result = AudioOutputUnitStop(vpio_unit_);
    if (result != noErr) {
      RTCLogError(@"Failed to stop audio unit. Error=%ld", (long)result);
-@@ -339,6 +357,7 @@ static OSStatus GetAGCState(AudioUnit audio_unit, UInt32* enabled) {
-   }
- 
-   state_ = kInitialized;
-+
-   return true;
- }
- 
