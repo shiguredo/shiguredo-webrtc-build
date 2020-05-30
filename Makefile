@@ -1,7 +1,7 @@
 .PHONY: all dist clean aar copy-aar android-deps
 .PHONY: ios-shiguredo
 
-IOS_LATEST=m79.5.1-shiguredo
+IOS_LATEST=m83.4103.12.0
 ANDROID_LATEST=m79.5
 
 SCRIPT_DIR=scripts
