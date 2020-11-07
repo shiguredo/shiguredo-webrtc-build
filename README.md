@@ -1,6 +1,7 @@
-# WebRTC ライブラリ用ビルドツール
+今後は **https://github.com/shiguredo-webrtc-build/webrtc-build** を利用してください
 
-[![CircleCI](https://circleci.com/gh/shiguredo/shiguredo-webrtc-build/tree/develop.svg?style=svg)](https://circleci.com/gh/shiguredo/shiguredo-webrtc-build/tree/develop)
+
+# WebRTC ライブラリ用ビルドツール
 
 iOS と Android 向けの WebRTC ライブラリをビルドします。WebRTC ライブラリのビルドは複雑でわかりにくいです。
 また WebRTC ライブラリのバージョンが上がるごとにビルド方法が変わることも多く、追従するのは現実的ではありませんでした。
